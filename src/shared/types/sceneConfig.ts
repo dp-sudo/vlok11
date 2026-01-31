@@ -153,6 +153,7 @@ export interface StyleEffectsConfig
     RetroStyleConfig {}
 
 export interface UIDisplayConfig {
+  enableFaceTracking: boolean;
   showAxes: boolean;
   showGrid: boolean;
   videoMuted: boolean;

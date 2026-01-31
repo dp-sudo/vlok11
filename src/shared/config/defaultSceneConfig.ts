@@ -124,4 +124,7 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   videoMuted: true,
   enableFrameInterpolation: true,
   enableVignette: false,
+
+  // ========== Tracking Configuration ==========
+  enableFaceTracking: false,
 };

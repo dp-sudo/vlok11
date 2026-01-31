@@ -119,6 +119,7 @@ export const SceneViewer = memo(
     if (!imageUrl || !depthUrl) return null;
     const planeWidth = SCENE_CONFIG.PLANE_BASE_WIDTH;
     const planeHeight = planeWidth / aspectRatio;
+    const {enableFaceTracking} = config;
 
     return (
       <div
@@ -126,7 +127,7 @@ export const SceneViewer = memo(
         style={colorGradeStyle}
       >
         <PerformanceOverlay position="bottom-left" visible />
-        <WebcamTracker />
+        {enableFaceTracking && <WebcamTracker />}
 
         {enableVignette ? (
           <div

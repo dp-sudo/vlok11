@@ -29,11 +29,8 @@ export const useRenderStyle = () => useAppStore((s) => s.config.renderStyle);
 export const useSceneStore = useAppStore;
 export const useSessionStore = useAppStore;
 
-// Optimized video state selector using shallow comparison
-export const useVideoState = () =>
-  useAppStore((s) => [s.currentTime, s.duration, s.isMuted, s.isPlaying]);
-
-// Individual video state selectors to avoid unnecessary re-renders
+// Video state selectors - individual hooks to avoid unnecessary re-renders
 export const useCurrentTime = () => useAppStore((s) => s.currentTime);
 export const useDuration = () => useAppStore((s) => s.duration);
 export const useIsMuted = () => useAppStore((s) => s.isMuted);
+export const useVideoState = () => useAppStore((s) => s);

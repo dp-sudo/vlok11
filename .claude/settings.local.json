@@ -5,7 +5,11 @@
       "Bash(npm run lint:strict)",
       "Bash(npx tsc:*)",
       "Bash(npm run lint:fix)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git config:*)",
+      "Bash(git remote add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Immersa 3D - 单视图场景重建</title>
+    
+    <!-- Cyberpunk Theme Meta -->
+    <meta name="theme-color" content="#0b0b10" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Preload Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+
+    <title>IMMERSA 3D // SYSTEM</title>
+    
+    <style>
+      /* CRITICAL BOOT STYLES - ZERO LATENCY */
+      body {
+        background-color: #0b0b10;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      #boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at center, #1e1e24 0%, #0b0b10 100%);
+        font-family: 'Courier New', Courier, monospace;
+        color: #f59e0b; /* Amber */
+        transition: opacity 0.5s ease-out;
+      }
+
+      /* Pulse Core */
+      .core-pulse {
+        width: 60px;
+        height: 60px;
+        border: 2px solid rgba(245, 158, 11, 0.3);
+        border-radius: 50%;
+        position: relative;
+        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      }
+      
+      .core-pulse::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        background: #f59e0b;
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+        animation: pulse-core 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+      }
+
+      /* Terminal Text */
+      .sys-text {
+        margin-top: 2rem;
+        font-size: 12px;
+        letter-spacing: 2px;
+        opacity: 0.8;
+        text-transform: uppercase;
+      }
+
+      .sys-text::after {
+        content: '...';
+        animation: ellipsis 1.5s infinite;
+      }
+
+      @keyframes pulse-ring {
+        0% { transform: scale(0.8); opacity: 0; border-width: 4px; }
+        50% { opacity: 1; }
+        100% { transform: scale(2); opacity: 0; border-width: 0px; }
+      }
+
+      @keyframes pulse-core {
+        0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+        50% { transform: translate(-50%, -50%) scale(1); opacity: 1; box-shadow: 0 0 30px rgba(245, 158, 11, 1); }
+        100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+      }
+
+      @keyframes ellipsis {
+        0% { content: '.'; }
+        33% { content: '..'; }
+        66% { content: '...'; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SYSTEM BOOT LOADER -->
+    <div id="boot-loader">
+      <div class="core-pulse"></div>
+      <div class="sys-text">INITIALIZING CORE</div>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Loader Cleanup Script -->
+    <script>
+      // Automatically remove loader when app mounts (React will replace #root, but this is a failsafe)
+      // Actually, React mounts INTO #root, so this overlay stays ON TOP until we remove it.
+      // We will listen for a custom event 'lifecycle:app:ready' or just wait for window load + small delay
+      window.onload = () => {
+        // Fallback cleanup if React takes too long or fails
+        setTimeout(() => {
+          const loader = document.getElementById('boot-loader');
+          if (loader) {
+            // loader.style.opacity = '0'; // Let React/App handle this via class logic if possible, 
+            // OR just leave it here as a safety net. 
+            // Real apps usually remove this in main.tsx or App.tsx (useEffect).
+            // For now, we leave it to be covered by the App's mount, 
+            // BUT since this is a z-index overlay, we should probably auto-fade it 
+            // if we assume main.tsx will run.
+            
+            // Let's rely on main.tsx to remove it? Or add a simple strategy here.
+            // Best Practice: main.tsx removes it.
+            // But to ensure it doesn't block forever if main.tsx crashes (after our fix),
+            // let's add a long timeout safety.
+            setTimeout(() => {
+               if(loader) {
+                   loader.style.opacity = '0';
+                   setTimeout(() => loader.remove(), 500);
+               }
+            }, 5000) // 5s safety timeout
+          }
+        }, 100);
+      };
+    </script>
+  </body>
+</html>

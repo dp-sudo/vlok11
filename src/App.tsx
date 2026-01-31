@@ -1,0 +1,166 @@
+import { memo, useRef, useState } from 'react';
+
+import { ModelManager } from '@/features/ai/components/ModelManager';
+import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
+import { ControlPanel } from '@/features/controls';
+import { FloatingControls } from '@/features/controls/FloatingControls';
+import { SceneViewer, type SceneViewerHandle } from '@/features/scene';
+import { StatusDisplay, UploadPanel } from '@/features/upload';
+import { AppHeader, MobileDrawer } from '@/shared/components';
+import { TitleBar } from '@/shared/components/layout/TitleBar';
+
+import { useProjectShortcuts } from '@/shared/hooks/useProjectShortcuts';
+import { useSceneConfigSubscriber } from '@/shared/hooks/useSceneConfigSubscriber';
+
+import type { CameraViewPreset, ProcessingState } from '@/shared/types';
+
+type AppCameraView = CameraViewPreset | 'default';
+
+const App = memo(() => {
+  const vm = useAppViewModel();
+
+  useProjectShortcuts();
+
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [activeCameraView, setActiveCameraView] = useState<AppCameraView>('default');
+  const [isRecording, setIsRecording] = useState(false);
+
+  const { videoState, setVideoTime, setVideoDuration, toggleVideoPlay } = vm;
+
+  const sceneRef = useRef<SceneViewerHandle>(null);
+
+  useSceneConfigSubscriber();
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) vm.uploadStart(file);
+  };
+
+  const handleUrlSubmit = () => {
+    if (urlInput.trim()) {
+      vm.uploadStart(urlInput.trim());
+      setUrlInput('');
+      setShowUrlInput(false);
+    }
+  };
+
+  const handleSetCameraView = (view: CameraViewPreset) => {
+    setActiveCameraView(view);
+    sceneRef.current?.setCameraView(view);
+  };
+
+  const handleVideoSeek = (time: number) => {
+    sceneRef.current?.seekVideo?.(time);
+    setVideoTime(time);
+  };
+
+  const controlPanelProps = {
+    hasVideo: vm.currentAsset?.type === 'video',
+    videoState,
+    onVideoTogglePlay: toggleVideoPlay,
+    onVideoSeek: handleVideoSeek,
+    onSetCameraView: handleSetCameraView,
+    activeCameraView: activeCameraView === 'default' ? null : activeCameraView,
+    onExportScene: () => sceneRef.current?.exportScene(),
+    onDownloadSnapshot: () => sceneRef.current?.downloadSnapshot(),
+    onToggleRecording: () => {
+      if (isRecording) {
+        sceneRef.current?.stopRecording();
+        setIsRecording(false);
+      } else {
+        sceneRef.current?.startRecording(true);
+        setIsRecording(true);
+      }
+    },
+    isRecording,
+  };
+
+  return (
+    <div className="h-screen w-screen bg-black text-white overflow-hidden flex flex-col">
+      <TitleBar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <AppHeader />
+
+        <main className="flex-1 flex overflow-hidden">
+          {/* ... main content */}
+        {vm.showUpload ? (
+          <div className="flex-1 flex items-center justify-center">
+            <UploadPanel
+              acceptedFormats=".jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov"
+              onFileUpload={handleFileUpload}
+              onUrlSubmit={handleUrlSubmit}
+              setShowUrlInput={setShowUrlInput}
+              setUrlInput={setUrlInput}
+              showUrlInput={showUrlInput}
+              urlInput={urlInput}
+            />
+          </div>
+        ) : null}
+
+        {vm.showProcessing ? (
+          <div className="flex-1 flex items-center justify-center">
+            <StatusDisplay
+              onRetry={vm.resetSession}
+              processingState={{
+                status: vm.status as ProcessingState['status'],
+                progress: vm.progress,
+                message: vm.statusMessage ?? '',
+              }}
+            />
+          </div>
+        ) : null}
+
+        {vm.showScene && vm.result ? (
+          <>
+            {/* Scene Container */}
+            <div className="flex-1 relative bg-zinc-950">
+              <SceneViewer
+                aspectRatio={vm.result.asset.aspectRatio}
+                backgroundUrl={vm.result.backgroundUrl ?? null}
+                depthUrl={vm.result.depthMapUrl}
+                imageUrl={vm.result.imageUrl}
+                isLooping={vm.videoState.isLooping}
+                isVideoPlaying={vm.videoState.isPlaying}
+                onVideoDurationChange={setVideoDuration}
+                onVideoEnded={() => toggleVideoPlay()}
+                onVideoTimeUpdate={setVideoTime}
+                playbackRate={vm.videoState.playbackRate}
+                ref={sceneRef}
+                videoUrl={vm.result.asset.type === 'video' ? vm.result.asset.sourceUrl : null}
+              />
+              
+              {/* INDUSTRIAL HUD OVERLAY */}
+              <FloatingControls 
+                activeCameraView={activeCameraView}
+                onSetCameraView={handleSetCameraView}
+              />
+            </div>
+
+            {/* Side Panel - Glassmorphism */}
+            <div className="w-80 border-l border-zinc-800/50 bg-zinc-950/80 backdrop-blur-md overflow-y-auto z-10 shadow-xl">
+              <ControlPanel {...controlPanelProps} />
+            </div>
+          </>
+        ) : null}
+      </main>
+      </div>
+
+      <MobileDrawer
+        isOpen={mobileDrawerOpen}
+        onClose={() => setMobileDrawerOpen(false)}
+        onOpen={() => setMobileDrawerOpen(true)}
+      >
+        {vm.showScene ? <ControlPanel {...controlPanelProps} /> : null}
+      </MobileDrawer>
+
+      <ModelManager />
+    </div>
+  );
+});
+
+export { App };
+
+App.displayName = 'App';

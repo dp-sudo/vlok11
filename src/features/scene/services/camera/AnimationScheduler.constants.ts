@@ -1,0 +1,53 @@
+export const EASING_BOUNCE = {
+  N1: 7.5625,
+
+  D1: 2.75,
+
+  OFFSET_1: 1.5,
+
+  RESULT_1: 0.75,
+
+  THRESHOLD_2: 2.5,
+
+  OFFSET_2: 2.25,
+
+  RESULT_2: 0.9375,
+
+  OFFSET_3: 2.625,
+
+  RESULT_3: 0.984375,
+} as const;
+export const EASING_COMMON = {
+  HALF: 0.5,
+
+  QUAD_MULTIPLIER: 2,
+
+  CUBIC_MULTIPLIER: 4,
+
+  CUBIC_POWER: 3,
+
+  CUBIC_NEG_MULTIPLIER: -2,
+
+  CUBIC_DIVISOR: 2,
+} as const;
+export const EASING_ELASTIC = {
+  BASE: 2,
+
+  EXPONENT: 10,
+
+  NEG_EXPONENT: -10,
+
+  PHASE_OFFSET_IN: 10.75,
+
+  PHASE_OFFSET_OUT: 0.75,
+
+  PERIOD_DIVISOR: 3,
+
+  IN_OUT_MULTIPLIER: 20,
+
+  IN_OUT_NEG_MULTIPLIER: -20,
+
+  IN_OUT_PHASE_OFFSET: 11.125,
+
+  IN_OUT_PERIOD_DIVISOR: 4.5,
+} as const;

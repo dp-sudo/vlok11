@@ -1,0 +1,11 @@
+export const AXES_HELPER_SIZE = 5;
+export const BACKGROUND_SPHERE_SCALE = [100, 100, 100] as const;
+export const BACKGROUND_SPHERE_SEGMENTS = 32;
+export const DIRECTIONAL_LIGHT_INTENSITY_MULTIPLIER = 0.5;
+export const DIRECTIONAL_LIGHT_POSITION = [10, 10, 5] as const;
+export const GRID_COLOR_CENTER = 0x444444;
+export const GRID_COLOR_GRID = 0x222222;
+export const GRID_DIVISIONS = 20;
+export const GRID_SIZE = 20;
+export const SCENE_BASE_WIDTH = 10;
+export const WRAPPED_PROJECTION_ANGLE_THRESHOLD = 355;

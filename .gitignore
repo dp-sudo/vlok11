@@ -1,0 +1,21 @@
+node_modules
+dist
+sorted-output
+.env
+.env.*.local
+*.log
+coverage/
+.agent/
+playwright-report/
+test-results/
+# Remote defaults
+workspace.xml
+junitvmwatcher*.properties
+build.properties
+classes_gen
+source_gen
+source_gen.caches
+test_gen
+test_gen.caches
+TEST-*.xml
+junit*.properties

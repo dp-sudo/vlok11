@@ -1,0 +1,11 @@
+export const ASPECT_RATIO_THRESHOLD = {
+  PANORAMA: 3,
+  CYLINDER: 2,
+  DOME: 0.6,
+} as const;
+
+export const TRANSITION_DURATION = {
+  IMMERSIVE_CHANGE: 800,
+  IMMERSIVE_INTERNAL: 400,
+  DEFAULT: 600,
+} as const;

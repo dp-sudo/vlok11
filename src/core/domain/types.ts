@@ -186,7 +186,7 @@ export enum TechPipeline {
 export const SESSION_STATUS_TRANSITIONS: Record<SessionStatus, SessionStatus[]> = {
   idle: ['uploading'],
   uploading: ['analyzing', 'error'],
-  analyzing: ['processing_depth', 'error'],
+  analyzing: ['processing_depth', 'ready', 'error'],
   processing_depth: ['ready', 'error'],
   ready: ['idle'],
   error: ['idle'],

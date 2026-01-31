@@ -50,22 +50,43 @@ const CoreControllerContext = createContext<CoreControllerContextValue>({
   isReady: false,
 });
 
+// Track initialization state globally to prevent re-initialization loops
+let isControllerInitialized = false;
+
 export const CoreControllerProvider = memo(
   ({ children, autoInit = true }: CoreControllerProviderProps) => {
-    const [isReady, setIsReady] = useState(false);
+    const [isReady, setIsReady] = useState(isControllerInitialized);
 
     const controllerRef = useRef<CoreController | null>(null);
+    const initAttemptedRef = useRef(false);
 
     useEffect(() => {
       if (!autoInit) {
         return;
       }
+
+      // Prevent re-initialization if already initialized
+      if (isControllerInitialized) {
+        controllerRef.current = getCoreController();
+        setIsReady(true);
+
+        return;
+      }
+
+      // Prevent multiple init attempts
+      if (initAttemptedRef.current) {
+        return;
+      }
+      initAttemptedRef.current = true;
+
       const controller = getCoreController();
 
       controllerRef.current = controller;
+
       const init = async (): Promise<void> => {
         try {
           await controller.initialize();
+          isControllerInitialized = true;
           setIsReady(true);
         } catch (error) {
           logger.error('Init failed', { error: String(error) });
@@ -75,8 +96,8 @@ export const CoreControllerProvider = memo(
       void init();
 
       return () => {
-        controller.dispose();
-        setIsReady(false);
+        // Don't dispose on unmount - controller is a singleton
+        // setIsReady(false);
       };
     }, [autoInit]);
 

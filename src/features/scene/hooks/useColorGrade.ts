@@ -5,13 +5,11 @@ import { useSceneStore } from '@/stores/sharedStore';
 import { COLOR_GRADE_MULTIPLIERS } from './useColorGrade.constants';
 
 export function useColorGrade(): ColorGradeStyle {
-  // Single selector to avoid multiple re-renders
-  const { saturation, contrast, brightness, colorGrade } = useSceneStore((state) => ({
-    saturation: state.config.saturation,
-    contrast: state.config.contrast,
-    brightness: state.config.brightness,
-    colorGrade: state.config.colorGrade,
-  }));
+  // Use individual selectors to avoid infinite loop with object selector
+  const saturation = useSceneStore((state) => state.config.saturation);
+  const contrast = useSceneStore((state) => state.config.contrast);
+  const brightness = useSceneStore((state) => state.config.brightness);
+  const colorGrade = useSceneStore((state) => state.config.colorGrade);
 
   return useMemo(() => {
     let hueRotate = '0deg';

@@ -114,12 +114,6 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
     },
 
     uploadComplete: (result) => {
-      const currentStatus = get().status;
-      const nextStatus = 'ready' as const;
-
-      if (!isValidStatusTransition(currentStatus, nextStatus)) {
-        console.warn(`[SessionStore] Invalid status transition: ${currentStatus} -> ${nextStatus}`);
-      }
       set({
         status: 'ready',
         progress: 100,
@@ -129,12 +123,6 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
     },
 
     uploadError: (message) => {
-      const currentStatus = get().status;
-      const nextStatus = 'error' as const;
-
-      if (!isValidStatusTransition(currentStatus, nextStatus)) {
-        console.warn(`[SessionStore] Invalid status transition: ${currentStatus} -> ${nextStatus}`);
-      }
       set({
         status: 'error',
         error: new Error(message),

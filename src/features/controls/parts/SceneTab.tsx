@@ -156,6 +156,12 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
             label="显示坐标轴"
             onChange={(v) => set('showAxes', v)}
           />
+          <Toggle
+            checked={config.enableFaceTracking}
+            compact
+            label="人脸追踪"
+            onChange={(v) => set('enableFaceTracking', v)}
+          />
         </div>
       </CollapsibleSection>
     </>

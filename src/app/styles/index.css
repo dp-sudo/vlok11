@@ -1,32 +1,30 @@
 /**
  * Main CSS Entry Point
  * 主样式入口文件
- * 
+ *
  * 重构后的CSS结构：
- * 1. variables.css - CSS变量和设计令牌
- * 2. base.css - 基础重置和元素样式
- * 3. components.css - 自定义组件样式
- * 4. animations.css - 动画和过渡效果
- * 5. responsive.css - 响应式媒体查询
- * 
- * 重构统计：
- * - 原文件：global.css (2770行)
- * - 新结构：5个文件，总计约600行
- * - 删除冗余：约2170行Tailwind重复代码
- * - 修复问题：重复变量、未定义变量
+ * 1. Tailwind CSS v4 - 工具类框架
+ * 2. variables.css - CSS变量和设计令牌
+ * 3. base.css - 基础重置和元素样式
+ * 4. components.css - 自定义组件样式
+ * 5. animations.css - 动画和过渡效果
+ * 6. responsive.css - 响应式媒体查询
  */
 
-/* 1. Design Tokens - 设计令牌 */
+/* 1. Tailwind CSS v4 - 核心框架（必须最先导入） */
+@import 'tailwindcss';
+
+/* 2. Design Tokens - 设计令牌 */
 @import './variables.css';
 
-/* 2. Base Styles - 基础样式 */
+/* 3. Base Styles - 基础样式 */
 @import './base.css';
 
-/* 3. Component Styles - 组件样式 */
+/* 4. Component Styles - 自定义组件样式 */
 @import './components.css';
 
-/* 4. Animations - 动画效果 */
+/* 5. Animations - 动画效果 */
 @import './animations.css';
 
-/* 5. Responsive - 响应式适配 */
+/* 6. Responsive - 响应式适配 */
 @import './responsive.css';

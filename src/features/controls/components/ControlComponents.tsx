@@ -51,10 +51,10 @@ export const Btn: React.FC<BtnProps> = ({ active, onClick, children, small, disa
       rounded-lg border font-medium transition-all duration-200
       ${
         active
-          ? 'bg-gradient-to-b from-cyan-500 to-cyan-600 border-cyan-400 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+          ? 'bg-gradient-to-b from-amber-400 to-orange-500 border-amber-300 text-black shadow-[0_0_20px_rgba(251,191,36,0.6)]'
           : disabled
-          ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed opacity-50'
-          : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white hover:bg-zinc-700'
+            ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed opacity-50'
+            : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white hover:bg-zinc-700'
       }
       active:scale-[0.96]
       disabled:cursor-not-allowed
@@ -83,20 +83,20 @@ export const CardBtn: React.FC<CardBtnProps> = ({
       ${
         active
           ? `
-            bg-gradient-to-b from-cyan-600/50 to-cyan-800/20
-            border-cyan-400 text-white
-            shadow-[0_4px_25px_rgba(6,182,212,0.5)]
+            bg-gradient-to-b from-amber-500/30 to-orange-600/20
+            border-amber-400 text-white
+            shadow-[0_4px_25px_rgba(251,191,36,0.5)]
             scale-[1.02]
           `
           : disabled
-          ? `
+            ? `
             bg-zinc-800/50
             border-zinc-700
             text-zinc-500
             opacity-50
             cursor-not-allowed
           `
-          : `
+            : `
             bg-zinc-800/80
             border-zinc-700
             text-zinc-300
@@ -116,12 +116,12 @@ export const CardBtn: React.FC<CardBtnProps> = ({
   >
     {active && (
       <>
-        {/* 激活状态指示点 - 青色高亮 */}
-        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-500 shadow-md flex items-center justify-center z-10 animate-pulse">
-          <Check className="w-3 h-3 text-cyan-950" strokeWidth={3} />
+        {/* 激活状态指示点 - 琥珀色高亮 */}
+        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-md flex items-center justify-center z-10 animate-pulse">
+          <Check className="w-3 h-3 text-black" strokeWidth={3} />
         </div>
-        {/* 顶部发光条 - 青色渐变 */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 via-white/50 to-cyan-400" />
+        {/* 顶部发光条 - 琥珀色渐变 */}
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-400 via-white/50 to-amber-400" />
       </>
     )}
 
@@ -164,7 +164,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         ) : null}
         <span className="text-xs font-medium text-zinc-300 flex-1">{title}</span>
         {badge !== undefined ? (
-          <span className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30">
             {badge}
           </span>
         ) : null}
@@ -216,7 +216,7 @@ export const Slider: React.FC<SliderProps> = ({
           text-[11px] font-mono px-2 py-0.5 rounded-md transition-all duration-150
           ${
             isDragging
-              ? 'bg-indigo-500/30 text-indigo-300 ring-1 ring-indigo-500/50 scale-105'
+              ? 'bg-amber-500/30 text-amber-300 ring-1 ring-amber-500/50 scale-105'
               : 'bg-zinc-800/60 text-zinc-300'
           }
         `}
@@ -237,17 +237,17 @@ export const Slider: React.FC<SliderProps> = ({
           step={step}
           style={{
             background: `linear-gradient(to right, 
-              #6366f1 0%, 
-              #8b5cf6 ${percentage}%, 
-              #3f3f46 ${percentage}%, 
-              #3f3f46 100%)`,
+            #f59e0b 0%, 
+            #f97316 ${percentage}%, 
+            #3f3f46 ${percentage}%, 
+            #3f3f46 100%)`,
           }}
           type="range"
           value={value}
         />
         {isDragging ? (
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-indigo-400/50 blur-md pointer-events-none"
+            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-amber-400/50 blur-md pointer-events-none"
             style={{ left: `calc(${percentage}% - 8px)` }}
           />
         ) : null}
@@ -260,7 +260,7 @@ export const Slider: React.FC<SliderProps> = ({
                 flex-1 py-1 text-[9px] rounded-md transition-all duration-150
                 ${
                   Math.abs(value - p) < step
-                    ? 'bg-indigo-600/30 text-indigo-300 ring-1 ring-indigo-500/50'
+                    ? 'bg-amber-600/30 text-amber-300 ring-1 ring-amber-500/50'
                     : 'bg-zinc-800/50 text-zinc-500 hover:text-zinc-400 hover:bg-zinc-800/70'
                 }
               `}
@@ -301,7 +301,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         transition-all duration-300 ease-out
         ${
           checked
-            ? 'bg-gradient-to-r from-teal-500/20 to-cyan-500/10 border border-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.2)]'
+            ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-400/50 shadow-[0_0_25px_rgba(251,191,36,0.3)]'
             : 'bg-zinc-800/40 border border-zinc-700/50 hover:bg-zinc-800/60 hover:border-zinc-600/50'
         }
       `}
@@ -311,20 +311,20 @@ export const Toggle: React.FC<ToggleProps> = ({
       aria-checked={checked}
     >
       <div className="flex items-center gap-3">
-        {/* 状态指示器 - 启用时青色，禁用时灰色 */}
+        {/* 状态指示器 - 启用时琥珀色，禁用时灰色 */}
         <div
           className={`
             w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0
             transition-all duration-300
             ${
               checked
-                ? 'bg-gradient-to-br from-cyan-400 to-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.6)]'
+                ? 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_15px_rgba(251,191,36,0.8)]'
                 : 'bg-zinc-700 border-2 border-zinc-600 group-hover:border-zinc-500'
             }
           `}
         >
           <Check
-            className={`w-4 h-4 transition-all duration-300 ${checked ? 'text-white scale-100' : 'text-zinc-500 scale-0'}`}
+            className={`w-4 h-4 transition-all duration-300 ${checked ? 'text-black scale-100' : 'text-zinc-500 scale-0'}`}
             strokeWidth={3}
           />
         </div>
@@ -341,13 +341,13 @@ export const Toggle: React.FC<ToggleProps> = ({
               {label}
             </span>
 
-            {/* 状态标签 - 启用时青色，禁用时灰色 */}
+            {/* 状态标签 - 启用时琥珀色，禁用时灰色 */}
             <span
               className={`
                 text-[10px] px-2 py-0.5 rounded-full font-bold transition-all duration-300
                 ${
                   checked
-                    ? 'bg-cyan-400 text-cyan-950 shadow-[0_0_8px_rgba(6,182,212,0.4)]'
+                    ? 'bg-amber-400 text-black shadow-[0_0_10px_rgba(251,191,36,0.6)]'
                     : 'bg-zinc-700 text-zinc-500 border border-zinc-600'
                 }
               `}
@@ -358,7 +358,7 @@ export const Toggle: React.FC<ToggleProps> = ({
 
           {description && (
             <span
-              className={`text-xs mt-0.5 transition-colors duration-300 ${checked ? 'text-cyan-300/80' : 'text-zinc-500'}`}
+              className={`text-xs mt-0.5 transition-colors duration-300 ${checked ? 'text-amber-300/90' : 'text-zinc-500'}`}
             >
               {description}
             </span>
@@ -366,14 +366,14 @@ export const Toggle: React.FC<ToggleProps> = ({
         </div>
       </div>
 
-      {/* 开关滑块 - 启用时青色渐变，禁用时灰色 */}
+      {/* 开关滑块 - 启用时琥珀色渐变，禁用时灰色 */}
       <div
         className={`
           relative w-12 h-7 rounded-full flex-shrink-0 p-0.5
           transition-all duration-300
           ${
             checked
-              ? 'bg-gradient-to-r from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+              ? 'bg-gradient-to-r from-amber-500 to-orange-400 shadow-[0_0_20px_rgba(251,191,36,0.6)]'
               : 'bg-zinc-700 border border-zinc-600'
           }
         `}
@@ -390,14 +390,14 @@ export const Toggle: React.FC<ToggleProps> = ({
           <div
             className={`
               absolute inset-1 rounded-full transition-all duration-300
-              ${checked ? 'bg-cyan-400/30' : 'bg-zinc-600'}
+              ${checked ? 'bg-amber-400/40' : 'bg-zinc-600'}
             `}
           />
         </div>
 
         {/* 启用时的光效 */}
         {checked && (
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/20 to-transparent animate-pulse" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/30 to-transparent animate-pulse" />
         )}
       </div>
     </button>

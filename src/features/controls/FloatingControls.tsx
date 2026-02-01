@@ -10,12 +10,11 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import React, { memo } from 'react';
-
-import { useSceneStore } from '@/stores/sharedStore';
-import { cn } from '@/shared/utils/cn';
-
+import type React from 'react';
+import { memo } from 'react';
 import { CameraMode, CameraMotionType, type CameraViewPreset } from '@/shared/types';
+import { cn } from '@/shared/utils/cn';
+import { useSceneStore } from '@/stores/sharedStore';
 
 interface FloatingControlsProps {
   activeCameraView: CameraViewPreset | 'default';

@@ -1,6 +1,6 @@
 export {
-  AIProviderPanel,
   AIProgressPanel,
+  AIProviderPanel,
   ApiKeySettings,
   CacheManager,
   ModelCard,
@@ -8,13 +8,6 @@ export {
   ModelManager,
   SmartSuggestions,
 } from './components';
-export {
-  AIService,
-  LightSceneAnalyzer,
-  lightSceneAnalyzer,
-  SmartMotionEngine,
-  smartMotionEngine,
-} from './services';
 export type {
   AICacheConfig,
   AIProgressCallback,
@@ -26,4 +19,11 @@ export type {
   SceneMood,
   SimpleInsight,
   SimpleSceneType,
+} from './services';
+export {
+  AIService,
+  LightSceneAnalyzer,
+  lightSceneAnalyzer,
+  SmartMotionEngine,
+  smartMotionEngine,
 } from './services';

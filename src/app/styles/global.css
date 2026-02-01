@@ -126,6 +126,42 @@
   --duration-200: 200ms;
   --duration-300: 300ms;
   --ease-tech: cubic-bezier(0.22, 1, 0.36, 1); /* Snappy/Robotic */
+
+  /* === STATE SEMANTIC VARIABLES - 启用/禁用状态对比 === */
+  /* 启用状态 - 高饱和度绿色 + 发光效果 */
+  --color-state-enabled-bg: rgba(16, 185, 129, 0.15);
+  --color-state-enabled-border: rgba(16, 185, 129, 0.6);
+  --color-state-enabled-glow: 0 0 16px rgba(16, 185, 129, 0.5);
+  --color-state-enabled-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+
+  /* 禁用状态 - 低饱和度灰色 + 半透明 */
+  --color-state-disabled-bg: rgba(51, 65, 85, 0.4);
+  --color-state-disabled-border: rgba(71, 85, 105, 0.5);
+  --color-state-disabled-text: rgba(148, 163, 184, 0.5);
+  --color-state-disabled-opacity: 0.5;
+
+  /* 悬停状态 */
+  --color-state-hover-bg: rgba(71, 85, 105, 0.6);
+  --color-state-hover-border: rgba(148, 163, 184, 0.5);
+
+  /* 激活状态 - 青色高亮 */
+  --color-state-active-bg: rgba(6, 182, 212, 0.2);
+  --color-state-active-border: rgba(6, 182, 212, 0.6);
+  --color-state-active-glow: 0 0 16px rgba(6, 182, 212, 0.5);
+  --color-state-active-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+
+  /* 强调色系统 */
+  --color-primary: var(--color-blue-500);
+  --color-primary-glow: rgba(59, 130, 246, 0.5);
+
+  --color-active: var(--color-cyan-400);
+  --color-active-glow: rgba(34, 211, 238, 0.5);
+
+  --color-success: var(--color-emerald-400);
+  --color-success-glow: rgba(52, 211, 153, 0.5);
+
+  --color-danger: var(--color-red-500);
+  --color-danger-glow: rgba(239, 68, 68, 0.5);
 }
 
 *,
@@ -2553,3 +2589,169 @@ select:focus {
 .animate-bounce-in {
   animation: bounce-in 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ==========================================================================
+   STATE COMPONENT CLASSES - 启用/禁用状态对比
+   ========================================================================== */
+
+/* Toggle 启用状态 - 鲜明的绿色渐变 + 发光 */
+.toggle-enabled {
+  background: linear-gradient(135deg, var(--color-emerald-500), var(--color-teal-400)) !important;
+  box-shadow: var(--color-state-enabled-glow) !important;
+  border-color: var(--color-emerald-400) !important;
+}
+
+.toggle-enabled .toggle-thumb {
+  background: white !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Toggle 禁用状态 - 灰色 + 半透明 */
+.toggle-disabled {
+  background-color: var(--color-zinc-700) !important;
+  border-color: var(--color-zinc-600) !important;
+  opacity: var(--color-state-disabled-opacity) !important;
+}
+
+.toggle-disabled .toggle-thumb {
+  background: var(--color-zinc-500) !important;
+}
+
+/* CardBtn 启用状态 - 青色渐变 + 强阴影 */
+.card-btn-enabled {
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.4), rgba(6, 182, 212, 0.15)) !important;
+  border: 2px solid var(--color-cyan-400) !important;
+  box-shadow: var(--color-state-active-shadow) !important;
+  color: white !important;
+}
+
+/* CardBtn 禁用状态 - 灰色 + 低透明度 */
+.card-btn-disabled {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border: 2px solid var(--color-zinc-700) !important;
+  opacity: var(--color-state-disabled-opacity) !important;
+  cursor: not-allowed !important;
+}
+
+/* Btn 启用状态 */
+.btn-enabled {
+  background: linear-gradient(180deg, var(--color-cyan-600), var(--color-cyan-700)) !important;
+  border-color: var(--color-cyan-400) !important;
+  color: white !important;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.5) !important;
+}
+
+/* Btn 禁用状态 */
+.btn-disabled {
+  background: var(--color-zinc-900) !important;
+  border-color: var(--color-zinc-800) !important;
+  color: var(--color-zinc-600) !important;
+  cursor: not-allowed !important;
+  opacity: var(--color-state-disabled-opacity) !important;
+}
+
+/* Toggle track enhanced - 增强对比度 */
+.toggle-track-enabled {
+  background: linear-gradient(135deg, var(--color-emerald-500), var(--color-teal-400)) !important;
+  box-shadow:
+    0 0 16px rgba(16, 185, 129, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.toggle-track-disabled {
+  background-color: var(--color-zinc-700) !important;
+  border-color: var(--color-zinc-600) !important;
+  opacity: 0.7 !important;
+}
+
+/* Status indicator - 状态指示器 */
+.status-indicator-enabled {
+  background: linear-gradient(135deg, var(--color-emerald-400), var(--color-emerald-500)) !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6) !important;
+}
+
+.status-indicator-disabled {
+  background: var(--color-zinc-700) !important;
+  border: 2px solid var(--color-zinc-600) !important;
+}
+
+/* Active state indicator dot - 激活状态指示点 */
+.active-indicator-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-emerald-400), var(--color-teal-400));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.active-indicator-dot svg {
+  width: 12px;
+  height: 12px;
+  color: var(--color-zinc-900);
+}
+
+/* Top glow bar - 顶部发光条 */
+.active-glow-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-cyan-400), white, var(--color-cyan-400));
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 10px var(--color-cyan-400);
+  }
+}
+
+/* Status badge - 状态标签 */
+.status-badge-enabled {
+  background: linear-gradient(135deg, var(--color-emerald-400), var(--color-teal-400));
+  color: var(--color-zinc-900);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  font-weight: 700;
+}
+
+.status-badge-disabled {
+  background: var(--color-zinc-700);
+  color: var(--color-zinc-500);
+  border: 1px solid var(--color-zinc-600);
+  font-weight: 500;
+}
+
+/* Focus ring for accessibility */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-cyan-400);
+  outline-offset: 2px;
+}
+
+/* Scale on active - 点击缩放效果 */
+.scale-active:active {
+  transform: scale(0.96);
+}
+
+/* Disabled hover state - 禁用悬停 */
+.disabled-hover:hover {
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Smooth transition for all state changes */
+.state-transition {
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+

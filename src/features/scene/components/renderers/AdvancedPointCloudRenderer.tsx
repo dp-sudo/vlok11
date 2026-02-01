@@ -1,8 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { BufferGeometry, Float32BufferAttribute, ShaderMaterial, Vector3 } from 'three';
-
 import type { Points, Texture } from 'three';
+import { BufferGeometry, Float32BufferAttribute, ShaderMaterial, Vector3 } from 'three';
 
 // ============================================
 // Advanced Point Cloud Rendering Configuration
@@ -466,10 +465,5 @@ export function LODPointCloudRenderer({
     enableColorGrading: fullConfig.enableColorGrading,
   };
 
-  return (
-    <AdvancedPointCloudRenderer
-      config={particleConfig}
-      enabled={enabled}
-    />
-  );
+  return <AdvancedPointCloudRenderer config={particleConfig} enabled={enabled} />;
 }

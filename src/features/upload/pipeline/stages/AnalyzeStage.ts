@@ -1,8 +1,7 @@
 import { createLogger } from '@/core/Logger';
-import { SceneType, TechPipeline } from '@/shared/types';
-
-import type { PipelineStage, StageInput, StageOutput } from '../types';
 import type { AIService } from '@/features/ai/services/AIService';
+import { SceneType, TechPipeline } from '@/shared/types';
+import type { PipelineStage, StageInput, StageOutput } from '../types';
 
 export class AnalyzeStage implements PipelineStage {
   readonly name = 'analyze';
@@ -11,7 +10,10 @@ export class AnalyzeStage implements PipelineStage {
   constructor(private aiService: AIService) {}
 
   async execute(input: StageInput): Promise<StageOutput> {
-    logger.info('Starting analysis stage', { hasImageUrl: !!input.imageUrl, hasImageBase64: !!input.imageBase64 });
+    logger.info('Starting analysis stage', {
+      hasImageUrl: !!input.imageUrl,
+      hasImageBase64: !!input.imageBase64,
+    });
 
     try {
       const { imageBase64 } = input;
@@ -44,7 +46,10 @@ export class AnalyzeStage implements PipelineStage {
         analysis,
       };
 
-      logger.info('AnalyzeStage output', { hasImageUrl: !!result.imageUrl, sceneType: analysis.sceneType });
+      logger.info('AnalyzeStage output', {
+        hasImageUrl: !!result.imageUrl,
+        sceneType: analysis.sceneType,
+      });
 
       return result;
     } catch (error) {

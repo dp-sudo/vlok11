@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 import { createLogger } from '@/core/Logger';
-import { useSceneStore } from '@/stores/sharedStore';
 import type { SceneConfig } from '@/shared/types';
+import { useSceneStore } from '@/stores/sharedStore';
 
 const logger = createLogger({ module: 'useWeatherEffect' });
 

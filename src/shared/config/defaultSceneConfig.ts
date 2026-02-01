@@ -1,3 +1,4 @@
+import type { SceneConfig } from '@/shared/types';
 import {
   CameraMode,
   CameraMotionType,
@@ -6,8 +7,6 @@ import {
   ProjectionMode,
   RenderStyle,
 } from '@/shared/types';
-
-import type { SceneConfig } from '@/shared/types';
 
 /**
  * Default scene configuration grouped by functional modules.
@@ -119,16 +118,9 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   aiMotionEnabled: false,
   aiMotionStyle: 'cinematic',
   autoResumeMotion: true,
-  immersiveAudioEnabled: false,
-  audioMood: 'nature',
-  audioVolume: 0.4,
   weatherEnabled: false,
   weatherEffect: 'sunny',
   weatherIntensity: 0.5,
-  emotionalToneEnabled: false,
-  emotionalTone: 'warm',
-  toneIntensity: 0.6,
-  autoSceneAnalysis: false,
 
   recordingQuality: 'medium',
 };

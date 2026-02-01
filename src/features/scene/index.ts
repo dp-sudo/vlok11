@@ -1,6 +1,5 @@
-import { createLogger } from '@/core/Logger';
-
 import type { LifecycleAware } from '@/core/LifecycleManager';
+import { createLogger } from '@/core/Logger';
 
 const logger = createLogger({ module: 'SceneModule' });
 
@@ -35,5 +34,5 @@ class SceneModuleImpl implements LifecycleAware {
   }
 }
 
-export { SceneViewer } from './SceneViewer';
 export type { SceneViewerHandle } from './SceneViewer';
+export { SceneViewer } from './SceneViewer';

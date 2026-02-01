@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
-
-import { getEventBus } from '@/core/EventBus';
 import { CameraMotionType } from '@/core/domain/types';
+import { getEventBus } from '@/core/EventBus';
 import { lightSceneAnalyzer, type SimpleInsight } from '@/features/ai/services/LightSceneAnalyzer';
-import { smartMotionEngine, type MotionPath } from '@/features/ai/services/SmartMotionEngine';
+import { type MotionPath, smartMotionEngine } from '@/features/ai/services/SmartMotionEngine';
 import type { SceneConfig } from '@/shared/types';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 import { useSessionStore } from '@/stores/sharedStore';

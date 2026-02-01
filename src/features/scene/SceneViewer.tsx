@@ -1,18 +1,22 @@
 import { Preload } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { forwardRef, memo, useImperativeHandle, useRef } from 'react';
-
+import type { Group, VideoTexture } from 'three';
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import type { CameraPresetType } from '@/features/scene/services/camera';
 import {
+  CoreControllerProvider,
   calculateDistance,
   calculatePresetPoseForProjection,
-  CoreControllerProvider,
 } from '@/features/scene/services/camera';
 import { PerformanceOverlay } from '@/shared/components';
 import { RENDERER, SCENE_CONFIG } from '@/shared/constants';
 import { VIGNETTE } from '@/shared/constants/image';
+import type { CameraViewPreset } from '@/shared/types';
 import { RenderStyle } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
 
+import type { ExporterRef, RecordingRef } from './components';
 import { CameraRig, SceneExporter, SceneRecorder } from './components';
 import {
   CoordinateDebug,
@@ -23,12 +27,6 @@ import {
 } from './components/effects';
 import { SceneContent } from './components/SceneContent';
 import { useColorGrade, useVideoControl } from './hooks';
-
-import type { ExporterRef, RecordingRef } from './components';
-import type { CameraPresetType } from '@/features/scene/services/camera';
-import type { CameraViewPreset } from '@/shared/types';
-import type { Group, VideoTexture } from 'three';
-import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 
 export interface SceneViewerHandle {
   captureVideoFrame: () => void;

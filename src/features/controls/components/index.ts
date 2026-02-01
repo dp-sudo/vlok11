@@ -1,4 +1,5 @@
 export { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from './ControlComponents';
+export { RecordingSettings } from './RecordingSettings';
 export {
   AnimeStyleControls,
   CelStyleControls,
@@ -8,5 +9,4 @@ export {
   MatrixStyleControls,
   RetroPixelStyleControls,
 } from './RenderStyleControls';
-export { RecordingSettings } from './RecordingSettings';
 export { VideoControls } from './VideoControls';

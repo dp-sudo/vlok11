@@ -1,8 +1,8 @@
 import { Camera, Eye, Focus, Grid3X3, Move3D, Sliders } from 'lucide-react';
-import React, { memo } from 'react';
-
+import type React from 'react';
+import { memo } from 'react';
+import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { CameraMode, CameraMotionType } from '@/shared/types';
-
 import {
   CAMERA_MODE_LABELS,
   CAMERA_VIEWS,
@@ -17,8 +17,6 @@ import {
 } from './CameraTab.constants';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from './components';
 import { FOV_PRESETS, getCameraViewLabel, MOTIONS } from './constants';
-
-import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 
 interface CameraTabProps {
   activeCameraView?: CameraViewPreset | null;

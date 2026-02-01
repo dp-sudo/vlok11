@@ -51,8 +51,7 @@ export function calculateImageContrast(imageData: ImageData): number {
   }
 
   const mean = luminances.reduce((a, b) => a + b, 0) / luminances.length;
-  const variance =
-    luminances.reduce((sum, l) => sum + Math.pow(l - mean, 2), 0) / luminances.length;
+  const variance = luminances.reduce((sum, l) => sum + (l - mean) ** 2, 0) / luminances.length;
 
   return Math.sqrt(variance) / IMAGE_ANALYSIS.CONTRAST_DIVISOR;
 }

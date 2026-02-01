@@ -1,6 +1,12 @@
 import type { CameraPose, Vec3 } from '@/shared/types';
 
-import { lightSceneAnalyzer, type SimpleInsight, type MotionStyle, type SimpleSceneType, type SceneMood } from './LightSceneAnalyzer';
+import {
+  lightSceneAnalyzer,
+  type MotionStyle,
+  type SceneMood,
+  type SimpleInsight,
+  type SimpleSceneType,
+} from './LightSceneAnalyzer';
 
 export interface MotionWaypoint {
   position: Vec3;
@@ -107,12 +113,14 @@ export class SmartMotionEngine {
     const sceneType = insight.type ?? 'indoor';
     const sceneMood = insight.mood as SceneMood;
 
-    const params = this.cachedParams ?? this.computeSmartParams({
-      type: sceneType,
-      mood: sceneMood,
-      suggestedMotion: style,
-      confidence: 0.5,
-    });
+    const params =
+      this.cachedParams ??
+      this.computeSmartParams({
+        type: sceneType,
+        mood: sceneMood,
+        suggestedMotion: style,
+        confidence: 0.5,
+      });
 
     const distance = this.calcDistance(currentPose.position, currentPose.target);
     const adjustedDistance = Math.max(3, Math.min(8, distance * params.orbitRadius * 2 + 4));

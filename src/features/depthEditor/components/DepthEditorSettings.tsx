@@ -18,17 +18,18 @@ interface SliderRowProps {
   value: number;
 }
 
-const SliderRow = memo<SliderRowProps>(({ label, value, min, max, step = 1, unit = '', onChange }) => (
-  <div className="flex flex-col gap-1">
-    <div className="flex justify-between text-xs">
-      <span className="text-zinc-400">{label}</span>
-      <span className="text-zinc-300 font-mono">
-        {step < 1 ? value.toFixed(2) : value}
-        {unit}
-      </span>
-    </div>
-    <input
-      className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer
+const SliderRow = memo<SliderRowProps>(
+  ({ label, value, min, max, step = 1, unit = '', onChange }) => (
+    <div className="flex flex-col gap-1">
+      <div className="flex justify-between text-xs">
+        <span className="text-zinc-400">{label}</span>
+        <span className="text-zinc-300 font-mono">
+          {step < 1 ? value.toFixed(2) : value}
+          {unit}
+        </span>
+      </div>
+      <input
+        className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer
         [&::-webkit-slider-thumb]:appearance-none
         [&::-webkit-slider-thumb]:w-3
         [&::-webkit-slider-thumb]:h-3
@@ -37,15 +38,16 @@ const SliderRow = memo<SliderRowProps>(({ label, value, min, max, step = 1, unit
         [&::-webkit-slider-thumb]:shadow-lg
         [&::-webkit-slider-thumb]:transition-transform
         [&::-webkit-slider-thumb]:hover:scale-125"
-      max={max}
-      min={min}
-      onChange={(e) => onChange(Number(e.target.value))}
-      step={step}
-      type="range"
-      value={value}
-    />
-  </div>
-));
+        max={max}
+        min={min}
+        onChange={(e) => onChange(Number(e.target.value))}
+        step={step}
+        type="range"
+        value={value}
+      />
+    </div>
+  )
+);
 
 SliderRow.displayName = 'SliderRow';
 
@@ -107,7 +109,9 @@ export const DepthEditorSettings = memo<DepthEditorSettingsProps>(
               />
               <div
                 className="w-6 h-6 rounded border border-zinc-600"
-                style={{ backgroundColor: `rgb(${settings.depthValue}, ${settings.depthValue}, ${settings.depthValue})` }}
+                style={{
+                  backgroundColor: `rgb(${settings.depthValue}, ${settings.depthValue}, ${settings.depthValue})`,
+                }}
               />
             </div>
           </div>

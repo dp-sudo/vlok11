@@ -1,17 +1,19 @@
+export { getEventBus, resetEventBus } from '@/core/EventBus';
+export type { EventBus } from '@/core/EventTypes';
 export { AnimationScheduler, getAnimationScheduler, getEasingFunction } from './AnimationScheduler';
 export { CameraAnimator, getCameraAnimator } from './CameraAnimator';
+export type { CameraPresetType, PresetConfig } from './CameraPresets';
 export {
+  CAMERA_PRESETS,
   calculateDistance,
   calculatePresetPose,
   calculatePresetPoseForProjection,
-  CAMERA_PRESETS,
   getDistanceFromPose,
   scaleVec3,
 } from './CameraPresets';
-export type { CameraPresetType, PresetConfig } from './CameraPresets';
 export { CameraService, getCameraService } from './CameraService';
-export { getCameraStateAccessor, resetCameraStateAccessor } from './CameraStateBridge';
 export type { CameraStateAccessor } from './CameraStateBridge';
+export { getCameraStateAccessor, resetCameraStateAccessor } from './CameraStateBridge';
 export {
   captureSnapshot,
   clearSnapshots,
@@ -21,10 +23,8 @@ export {
   interpolateSnapshots,
 } from './CameraStateSnapshot';
 export { CameraTransitionService, getCameraTransitionService } from './CameraTransitionService';
-export { getConfigService } from './ConfigService';
 export type { ConfigPreset, ConfigService } from './ConfigService';
-export { getPrecisionConfigService, PrecisionConfigService, resetPrecisionConfigService } from './PrecisionConfigService';
-export type { PrecisionConfigServiceInterface, PrecisionControlConfig } from './PrecisionConfigService';
+export { getConfigService } from './ConfigService';
 export { CoreController, getCoreController } from './CoreController';
 export {
   CoreControllerContext,
@@ -37,6 +37,7 @@ export {
 } from './CoreControllerProvider';
 export { getInputService, InputService } from './InputService';
 export { getMotionService, MotionService } from './MotionService';
+export type { CameraSyncResult } from './PerspectiveOrthoBridge';
 export {
   calculateCameraSync,
   calculateEquivalence,
@@ -45,7 +46,15 @@ export {
   syncPerspectiveFovFromOrtho,
   zoomToFov,
 } from './PerspectiveOrthoBridge';
-export type { CameraSyncResult } from './PerspectiveOrthoBridge';
+export type {
+  PrecisionConfigServiceInterface,
+  PrecisionControlConfig,
+} from './PrecisionConfigService';
+export {
+  getPrecisionConfigService,
+  PrecisionConfigService,
+  resetPrecisionConfigService,
+} from './PrecisionConfigService';
 export {
   DEFAULT_TRANSITION_CONFIG,
   getPresetForProjection,
@@ -53,5 +62,3 @@ export {
   PROJECTION_CAMERA_PRESETS,
   QUICK_TRANSITION_CONFIG,
 } from './ProjectionCameraPresets';
-export { getEventBus, resetEventBus } from '@/core/EventBus';
-export type { EventBus } from '@/core/EventTypes';

@@ -1,9 +1,8 @@
-import { getPrecisionConfigService } from '@/features/scene/services/camera/PrecisionConfigService';
-import { useCameraStore, useSessionStore } from '@/stores';
 import { createLogger } from '@/core/Logger';
-import type { Disposable } from '@/shared/types';
-
 import type { ProjectData, SceneState } from '@/core/types/project';
+import { getPrecisionConfigService } from '@/features/scene/services/camera/PrecisionConfigService';
+import type { Disposable } from '@/shared/types';
+import { useCameraStore, useSessionStore } from '@/stores';
 
 const logger = createLogger({ module: 'ProjectService' });
 

@@ -1,3 +1,6 @@
+import type { MeshStandardMaterial, ShaderMaterial, Texture } from 'three';
+
+import type { SceneConfig } from '@/shared/types';
 import {
   ANIME,
   CEL,
@@ -9,9 +12,6 @@ import {
   RETRO_PIXEL,
   TEXTURE as TEXTURE_CONSTANTS,
 } from './useSceneMaterials.constants';
-
-import type { SceneConfig } from '@/shared/types';
-import type { MeshStandardMaterial, ShaderMaterial, Texture } from 'three';
 
 export function getTexelSize(texture: Texture | null): [number, number] {
   if (!texture?.image)

@@ -7,10 +7,6 @@ import {
   type MotionType as MotionLogicType,
 } from '@/features/camera/logic/motion';
 import { CAMERA, DEFAULT_FOV } from '@/shared/constants';
-import { CameraMotionType } from '@/shared/types';
-import { useCameraPoseStore } from '@/stores/cameraStore';
-import { useSceneStore } from '@/stores/sharedStore';
-
 import type {
   BlendMode,
   CameraPose,
@@ -19,6 +15,9 @@ import type {
   MotionType,
   SceneConfig,
 } from '@/shared/types';
+import { CameraMotionType } from '@/shared/types';
+import { useCameraPoseStore } from '@/stores/cameraStore';
+import { useSceneStore } from '@/stores/sharedStore';
 
 const MOTION_PREVIEW = {
   DEFAULT_DURATION: 10,

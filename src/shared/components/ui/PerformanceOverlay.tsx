@@ -1,10 +1,8 @@
 import { Activity } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-
+import type { PerformanceMetrics } from '@/core/PerformanceMonitor';
 import { getPerformanceMonitor } from '@/core/PerformanceMonitor';
 import { BYTES_PER_KB } from '@/shared/constants';
-
-import type { PerformanceMetrics } from '@/core/PerformanceMonitor';
 
 interface PerformanceOverlayProps {
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';

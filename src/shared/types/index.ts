@@ -1,6 +1,6 @@
-import type { CameraMode, ProjectionMode } from '@/core/domain/types';
 import type { Camera } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import type { CameraMode, ProjectionMode } from '@/core/domain/types';
 
 export type BlendMode = 'override' | 'additive' | 'manual-priority';
 export interface Disposable {

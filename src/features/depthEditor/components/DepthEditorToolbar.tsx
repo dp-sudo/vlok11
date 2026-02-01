@@ -1,8 +1,6 @@
 import { memo } from 'react';
-
-import { TOOL_ICONS, TOOL_LABELS } from '../types';
-
 import type { ToolType } from '../types';
+import { TOOL_ICONS, TOOL_LABELS } from '../types';
 
 const TOOLS: ToolType[] = ['brush', 'eraser', 'blur', 'sharpen', 'fill', 'eyedropper'];
 

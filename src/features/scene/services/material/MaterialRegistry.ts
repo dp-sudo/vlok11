@@ -1,8 +1,7 @@
+import type { Material } from 'three';
 import { getEventBus } from '@/core/EventBus';
 import { createLogger } from '@/core/Logger';
-
 import type { RenderStyle } from '@/shared/types';
-import type { Material } from 'three';
 
 interface MaterialEntry {
   createdAt: number;

@@ -53,7 +53,7 @@ export const ModelManager = memo(() => {
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(BYTES_PER_KB));
 
-    return `${Math.round((bytes / Math.pow(BYTES_PER_KB, i)) * BYTES_DISPLAY_PRECISION) / BYTES_DISPLAY_PRECISION} ${sizes[i]}`;
+    return `${Math.round((bytes / BYTES_PER_KB ** i) * BYTES_DISPLAY_PRECISION) / BYTES_DISPLAY_PRECISION} ${sizes[i]}`;
   }, []);
 
   const formatTime = useCallback((ms: number): string => {

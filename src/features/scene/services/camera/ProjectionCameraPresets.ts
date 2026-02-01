@@ -1,6 +1,5 @@
-import { ProjectionMode } from '@/shared/types';
-
 import type { CameraTransitionConfig, ProjectionCameraPreset } from '@/shared/types';
+import { ProjectionMode } from '@/shared/types';
 
 export function getPresetForProjection(mode: ProjectionMode): ProjectionCameraPreset {
   return PROJECTION_CAMERA_PRESETS[mode];

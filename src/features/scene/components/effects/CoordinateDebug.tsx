@@ -1,6 +1,6 @@
 import { useThree } from '@react-three/fiber';
 import { memo, useEffect, useRef } from 'react';
-
+import type { Group } from 'three';
 import { getEventBus } from '@/core/EventBus';
 import { createLogger } from '@/core/Logger';
 import { THROTTLE } from '@/shared/constants';
@@ -12,8 +12,6 @@ import {
   uvToPlaneLocal,
 } from '@/shared/utils';
 import { useSceneStore } from '@/stores/sharedStore';
-
-import type { Group } from 'three';
 
 interface CoordinateDebugProps {
   depthUrl: string;

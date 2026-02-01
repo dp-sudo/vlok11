@@ -2,9 +2,8 @@ import { useEffect } from 'react';
 
 import { getEventBus } from '@/core/EventBus';
 import { SessionEvents } from '@/core/EventTypes';
-import { useSceneStore } from '@/stores/sharedStore';
-
 import type { SceneConfig } from '@/shared/types';
+import { useSceneStore } from '@/stores/sharedStore';
 
 export function useSceneConfigSubscriber(): void {
   useEffect(() => {

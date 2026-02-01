@@ -1,13 +1,11 @@
 import { getEventBus } from '@/core/EventBus';
+import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import {
   DOUBLE_TAP_THRESHOLD,
   LONG_PRESS_THRESHOLD,
   SWIPE_VELOCITY_THRESHOLD,
 } from '@/shared/constants';
-import { clientPointToElementPoint } from '@/shared/utils';
-
-import type { LifecycleAware } from '@/core/LifecycleManager';
 import type {
   GestureEvent,
   InputSensitivity,
@@ -16,6 +14,7 @@ import type {
   InteractionType,
   Point2D,
 } from '@/shared/types';
+import { clientPointToElementPoint } from '@/shared/utils';
 
 type EndCallback = () => void;
 type GestureCallback = (gesture: GestureEvent) => void;

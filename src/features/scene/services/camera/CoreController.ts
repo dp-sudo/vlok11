@@ -1,12 +1,10 @@
 import { getEventBus } from '@/core/EventBus';
 import { getLifecycleManager, type LifecycleAware, LifecycleState } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
+import type { AnimationService, CameraPose, CoreController } from '@/shared/types';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 import { useSceneStore } from '@/stores/sharedStore';
-
 import { getAnimationScheduler } from './AnimationScheduler';
-
-import type { AnimationService, CameraPose, CoreController } from '@/shared/types';
 
 type PoseChangedPayload = { pose: CameraPose; source?: string };
 type SystemErrorPayload = { error: Error; recoverable?: boolean };

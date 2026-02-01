@@ -1,14 +1,11 @@
 import { useFrame } from '@react-three/fiber';
+import type { ReactNode } from 'react';
 import { memo, useEffect, useRef } from 'react';
+import type { Group } from 'three';
 import { Vector3 } from 'three';
-
 import { getEventBus } from '@/core/EventBus';
 import { TrackingEvents } from '@/core/EventTypes';
-
 import { PARALLAX } from './constants';
-
-import type { ReactNode } from 'react';
-import type { Group } from 'three';
 
 interface ParallaxRigProps {
   children?: ReactNode;

@@ -5,7 +5,9 @@ import { MirrorMode, ProjectionMode } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
 
 import { useActiveMaterial, useSceneTextures } from '../hooks/useActiveMaterial';
+import type { ParticleType } from './effects';
 
+import { AtmosphereParticles, ParallaxRig, SceneGeometry, VideoManager } from './index';
 import {
   AXES_HELPER_SIZE,
   BACKGROUND_SPHERE_SCALE,
@@ -19,10 +21,6 @@ import {
   SCENE_BASE_WIDTH,
   WRAPPED_PROJECTION_ANGLE_THRESHOLD,
 } from './SceneContent.constants';
-
-import { AtmosphereParticles, ParallaxRig, SceneGeometry, VideoManager } from './index';
-
-import type { ParticleType } from './effects';
 
 interface SceneContentProps {
   aspectRatio: number;

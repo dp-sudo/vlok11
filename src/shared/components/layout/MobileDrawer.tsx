@@ -1,7 +1,6 @@
 import { Settings, X } from 'lucide-react';
-import { memo } from 'react';
-
 import type { ReactNode } from 'react';
+import { memo } from 'react';
 
 interface MobileDrawerProps {
   children: ReactNode;

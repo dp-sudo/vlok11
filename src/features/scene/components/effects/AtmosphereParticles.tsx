@@ -1,10 +1,8 @@
 import { useFrame } from '@react-three/fiber';
 import { memo, useMemo, useRef } from 'react';
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, PointsMaterial } from 'three';
-
-import { ANIMATION, PARTICLE, PARTICLE_COLORS, STAR } from './constants';
-
 import type { Points } from 'three';
+import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, PointsMaterial } from 'three';
+import { ANIMATION, PARTICLE, PARTICLE_COLORS, STAR } from './constants';
 
 export type ParticleType = 'dust' | 'snow' | 'stars' | 'firefly' | 'rain' | 'leaves';
 

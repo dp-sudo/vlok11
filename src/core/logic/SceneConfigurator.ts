@@ -1,7 +1,6 @@
+import type { AnalysisResult, AssetType, RecommendedConfig } from '@/core/domain/types';
 import { DEFAULT_FOV, SCENE_CONFIG } from '@/shared/constants';
 import { CameraMotionType, ColorGradePreset, SceneType } from '@/shared/types';
-
-import type { AnalysisResult, AssetType, RecommendedConfig } from '@/core/domain/types';
 
 export class SceneConfigurator {
   static deriveConfig(context: ConfigContext): RecommendedConfig {
@@ -41,7 +40,7 @@ export class SceneConfigurator {
       config.videoLoop = true;
     }
 
-    config.colorGrade = this.recommendColorGrade(analysis.keywords ?? []);
+    config.colorGrade = SceneConfigurator.recommendColorGrade(analysis.keywords ?? []);
 
     return config;
   }

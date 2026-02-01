@@ -1,8 +1,7 @@
 import { CAMERA } from '@/shared/constants';
+import type { CameraPose, Vec3 } from '@/shared/types';
 import { ProjectionMode } from '@/shared/types';
 import { calculateDistance } from '@/shared/utils';
-
-import type { CameraPose, Vec3 } from '@/shared/types';
 
 export function calculatePresetPose(
   presetId: CameraPresetType,

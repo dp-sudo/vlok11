@@ -1,14 +1,9 @@
 import { getEventBus } from '@/core/EventBus';
 import { TrackingEvents } from '@/core/EventTypes';
+import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import { DEFAULT_FOV } from '@/shared/constants';
 import { MOTION_CALC, MS_PER_SECOND } from '@/shared/constants/motion';
-import { degToRad, lerp, lerpVec3, radToDeg } from '@/shared/utils';
-import { useCameraStore } from '@/stores/index';
-
-import { getPrecisionConfigService } from './PrecisionConfigService';
-
-import type { LifecycleAware } from '@/core/LifecycleManager';
 import type {
   BlendMode,
   CameraPose,
@@ -22,7 +17,10 @@ import type {
   TrackedPoint3D,
   Vec3,
 } from '@/shared/types';
+import { degToRad, lerp, lerpVec3, radToDeg } from '@/shared/utils';
 import type { CameraPose as StoreCameraPose } from '@/stores/cameraStore';
+import { useCameraStore } from '@/stores/index';
+import { getPrecisionConfigService } from './PrecisionConfigService';
 
 const BASE_RATE = 0.5;
 const DEFAULT_PARAMS: MotionParams = {
@@ -233,7 +231,7 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
   }
 
   private easeInOutCubic(t: number): number {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
   }
   /** @deprecated 内部方法，仅用于 generatePreview()。运行时请使用 motion.ts 的 calculateOrbit */
   private calculateOrbit(progress: number, base: CameraPose): MotionResult {

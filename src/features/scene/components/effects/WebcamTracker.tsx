@@ -1,5 +1,5 @@
-import * as faceDetection from '@tensorflow-models/face-detection';
 import * as tf from '@tensorflow/tfjs';
+import * as faceDetection from '@tensorflow-models/face-detection';
 import { useEffect, useRef, useState } from 'react';
 
 import { getEventBus } from '@/core/EventBus';
@@ -77,12 +77,17 @@ const useWebcamStream = (videoRef: React.RefObject<HTMLVideoElement | null>) => 
             setIsTracking(true);
           };
         } catch (error) {
-           // Provide a cleaner warning for common "Device not found" vs generic errors
-           if ((error as Error).name === 'NotFoundError' || (error as Error).name === 'NotAllowedError') {
-              logger.warn('Webcam access failed (Device not found or denied)', { reason: (error as Error).message });
-           } else {
-              logger.error('Failed to access webcam', { error });
-           }
+          // Provide a cleaner warning for common "Device not found" vs generic errors
+          if (
+            (error as Error).name === 'NotFoundError' ||
+            (error as Error).name === 'NotAllowedError'
+          ) {
+            logger.warn('Webcam access failed (Device not found or denied)', {
+              reason: (error as Error).message,
+            });
+          } else {
+            logger.error('Failed to access webcam', { error });
+          }
         }
       }
     };

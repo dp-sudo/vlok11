@@ -1,8 +1,8 @@
+import type { StateCreator } from 'zustand';
 import { DEFAULT_SCENE_CONFIG } from '@/shared/config/defaultSceneConfig';
-import { CameraMode, CameraMotionType, ProjectionMode } from '@/shared/types';
 
 import type { SceneConfig } from '@/shared/types';
-import type { StateCreator } from 'zustand';
+import { CameraMode, CameraMotionType, ProjectionMode } from '@/shared/types';
 
 export interface SceneState {
   config: SceneConfig;

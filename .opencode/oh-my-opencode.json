@@ -35,7 +35,13 @@
   },
   "lsp": {
     "enabled": true,
-    "note": "7 LSP servers configured for complete IDE experience. Note: Windows + Bun v1.3.5 may cause segfault - use fallback commands if needed.",
+    "note": "LSP via CLI fallback due to Windows+Bun segfault issue. Using tsc and eslint CLI for diagnostics.",
+    "cliFallback": {
+      "enabled": true,
+      "typescript": "npx tsc --noEmit",
+      "eslint": "npm run lint",
+      "biome": "npm run biome:check"
+    },
     "servers": {
       "typescript": {
         "enabled": true,
@@ -87,6 +93,16 @@
         "args": ["--stdio"],
         "extensions": [".json", ".jsonc", ".code-workspace"],
         "fallbackCommand": "echo 'JSON validation not configured'"
+      },
+      "biome": {
+        "enabled": true,
+        "priority": 15,
+        "command": "biome",
+        "args": ["lsp-proxy"],
+        "config": "biome.json",
+        "extensions": [".ts", ".tsx", ".js", ".jsx", ".json", ".css"],
+        "rootPatterns": ["biome.json", "package.json"],
+        "fallbackCommand": "biome check"
       },
       "markdown": {
         "enabled": true,

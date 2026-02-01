@@ -1,13 +1,11 @@
 import { useThree } from '@react-three/fiber';
+import type { RefObject } from 'react';
 import { forwardRef, memo, useImperativeHandle } from 'react';
+import type { Group } from 'three';
 import { GLTFExporter } from 'three-stdlib';
-
 import { createLogger } from '@/core/Logger';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import { downloadBlob, downloadDataUrl, downloadText } from '@/shared/utils';
-
-import type { RefObject } from 'react';
-import type { Group } from 'three';
 
 export interface ExporterRef {
   downloadSnapshot: () => void;

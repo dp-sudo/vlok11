@@ -1,10 +1,9 @@
 import { Info, Layers, Maximize2, Sliders, Sun } from 'lucide-react';
-import React, { memo } from 'react';
-
+import type React from 'react';
+import { memo } from 'react';
+import type { SceneConfig } from '@/shared/types';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from '../components';
 import { DEPTH_PRESETS, MIRROR_MODES, PROJECTIONS } from '../constants';
-
-import type { SceneConfig } from '@/shared/types';
 
 interface SceneTabProps {
   activeProjection: (typeof PROJECTIONS)[number] | undefined;
@@ -128,11 +127,7 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
 
       <CollapsibleSection icon={<Sun className="w-3.5 h-3.5" />} title="环境设置">
         <div className="space-y-1">
-          <Toggle
-            checked={config.showGrid}
-            label="显示网格"
-            onChange={(v) => set('showGrid', v)}
-          />
+          <Toggle checked={config.showGrid} label="显示网格" onChange={(v) => set('showGrid', v)} />
           <Toggle
             checked={config.showAxes}
             label="显示坐标轴"

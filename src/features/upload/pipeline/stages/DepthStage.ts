@@ -1,7 +1,6 @@
 import { createLogger } from '@/core/Logger';
-
-import type { PipelineStage, StageInput, StageOutput } from '../types';
 import type { AIService } from '@/features/ai/services/AIService';
+import type { PipelineStage, StageInput, StageOutput } from '../types';
 
 const logger = createLogger({ module: 'DepthStage' });
 
@@ -20,30 +19,30 @@ export class DepthStage implements PipelineStage {
   canSkip(input: StageInput): boolean {
     return input.depthUrl !== undefined;
   }
-  
+
   async execute(input: StageInput): Promise<StageOutput> {
     try {
       throwIfAborted(input.signal);
-      
-      logger.info('DepthStage input', { 
-        hasImageUrl: !!input.imageUrl, 
-        hasImageBase64: !!input.imageBase64, 
-        hasFile: !!input.file, 
-        hasUrl: !!input.url 
+
+      logger.info('DepthStage input', {
+        hasImageUrl: !!input.imageUrl,
+        hasImageBase64: !!input.imageBase64,
+        hasFile: !!input.file,
+        hasUrl: !!input.url,
       });
-      
+
       if (!input.imageUrl) {
         logger.error('Missing imageUrl in input', { input: Object.keys(input) });
         throwIfAborted(input.signal);
-        
+
         const testMode = (window as { __TEST_MODE__?: boolean }).__TEST_MODE__;
-        
+
         if (typeof window !== 'undefined' && testMode === true) {
           if (!input.imageUrl && input.file) {
             input.imageUrl = URL.createObjectURL(input.file);
           }
         }
-        
+
         if (!input.imageUrl) {
           throw new Error('No image URL available for depth estimation');
         }
@@ -52,9 +51,9 @@ export class DepthStage implements PipelineStage {
       if (!this.aiService.isAvailable()) {
         await this.aiService.initialize();
       }
-      
+
       throwIfAborted(input.signal);
-      
+
       const depthResult = await this.aiService.estimateDepth(input.imageUrl);
 
       throwIfAborted(input.signal);

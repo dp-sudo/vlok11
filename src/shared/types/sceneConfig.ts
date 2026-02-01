@@ -1,4 +1,3 @@
-import type { BlendMode } from './index';
 import type {
   CameraMode,
   CameraMotionType,
@@ -7,6 +6,7 @@ import type {
   ProjectionMode,
   RenderStyle,
 } from '@/core/domain/types';
+import type { BlendMode } from './index';
 
 export interface CameraControlConfig {
   autoRotate: boolean;
@@ -163,20 +163,10 @@ export interface AIImmersiveConfig {
   aiMotionEnabled: boolean;
   aiMotionStyle: 'cinematic' | 'dynamic' | 'focus' | 'exploration';
   autoResumeMotion: boolean;
-  // 沉浸音效
-  immersiveAudioEnabled: boolean;
-  audioMood: 'nature' | 'urban' | 'indoor' | 'space';
-  audioVolume: number;
   // 天气氛围
   weatherEnabled: boolean;
   weatherEffect: 'sunny' | 'rain' | 'fog' | 'snow';
   weatherIntensity: number;
-  // 情感色调
-  emotionalToneEnabled: boolean;
-  emotionalTone: 'warm' | 'cool' | 'vintage' | 'dramatic' | 'ethereal' | 'natural';
-  toneIntensity: number;
-  // 自动场景分析
-  autoSceneAnalysis: boolean;
 }
 
 // 录制配置

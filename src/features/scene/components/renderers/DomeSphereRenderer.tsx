@@ -1,8 +1,6 @@
-import React from 'react';
-
-import { DOME_PHI_LENGTH } from '../SceneGeometry.constants';
-
+import type React from 'react';
 import type { Material, Mesh, Points } from 'three';
+import { DOME_PHI_LENGTH } from '../SceneGeometry.constants';
 
 interface DomeSphereProps {
   density: number;

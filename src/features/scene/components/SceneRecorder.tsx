@@ -1,13 +1,11 @@
 import { useThree } from '@react-three/fiber';
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from 'react';
-
+import type { VideoTexture } from 'three';
 import { createLogger } from '@/core/Logger';
 import {
   downloadBlob as sharedDownloadBlob,
   downloadDataUrl as sharedDownloadDataUrl,
 } from '@/shared/utils';
-
-import type { VideoTexture } from 'three';
 
 export interface RecordingRef {
   captureVideoFrame: () => void;

@@ -11,12 +11,12 @@ const EASING_CONSTANTS = {
 
 export const easings: Record<string, EasingFunction> = {
   linear: (t) => t,
-  'ease-out-cubic': (t) => 1 - Math.pow(1 - t, EASING_CONSTANTS.CUBIC_POWER),
+  'ease-out-cubic': (t) => 1 - (1 - t) ** EASING_CONSTANTS.CUBIC_POWER,
   'ease-in-cubic': (t) => t * t * t,
   'ease-in-out-cubic': (t) =>
     t < EASING_CONSTANTS.THRESHOLD
       ? EASING_CONSTANTS.CUBIC_FACTOR * t * t * t
-      : 1 - Math.pow(EASING_CONSTANTS.OFFSET_MULTIPLIER * t + 2, EASING_CONSTANTS.CUBIC_POWER) / 2,
+      : 1 - (EASING_CONSTANTS.OFFSET_MULTIPLIER * t + 2) ** EASING_CONSTANTS.CUBIC_POWER / 2,
   'ease-out-quad': (t) => 1 - (1 - t) * (1 - t),
   'ease-in-quad': (t) => t * t,
 };

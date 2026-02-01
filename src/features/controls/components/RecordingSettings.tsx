@@ -1,8 +1,7 @@
-import React, { memo } from 'react';
-
-import { RECORDING_QUALITIES } from '../constants';
-
+import type React from 'react';
+import { memo } from 'react';
 import type { SceneConfig } from '@/shared/types';
+import { RECORDING_QUALITIES } from '../constants';
 
 interface RecordingSettingsProps {
   config: SceneConfig;

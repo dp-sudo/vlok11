@@ -1,10 +1,9 @@
 import { useCallback, useRef } from 'react';
 
 import { getEventBus } from '@/core/EventBus';
+import type { SceneConfig } from '@/shared/types';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 import { useSceneStore } from '@/stores/sharedStore';
-
-import type { SceneConfig } from '@/shared/types';
 
 /**
  * Hook for handling automatic motion resumption after user interaction.

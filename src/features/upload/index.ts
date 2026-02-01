@@ -1,7 +1,7 @@
-import { createUploadPipeline } from './pipeline';
+import type { AIService } from '@/features/ai/services/AIService';
 
 import type { ProcessedResult } from './pipeline';
-import type { AIService } from '@/features/ai/services/AIService';
+import { createUploadPipeline } from './pipeline';
 
 export interface ProcessPipelineOptions {
   aiService: AIService;

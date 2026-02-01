@@ -1,14 +1,14 @@
-import { createUploadPipeline, type UploadPipeline } from '@/features/upload/pipeline';
+import type { StateCreator } from 'zustand';
 
 import { isValidStatusTransition } from '@/core/domain/types';
 import type { AIService } from '@/features/ai/services/AIService';
+import { createUploadPipeline, type UploadPipeline } from '@/features/upload/pipeline';
 import type {
   Asset,
   ExportStateInfo,
   ProcessingResult,
   ProcessingStatus,
 } from '@/shared/domain/types';
-import type { StateCreator } from 'zustand';
 
 /**
  * 类型守卫函数：验证是否为有效的 ProcessingResult

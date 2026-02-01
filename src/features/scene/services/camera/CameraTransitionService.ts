@@ -1,17 +1,9 @@
 import { Vector3 } from 'three';
 
 import { getEventBus } from '@/core/EventBus';
+import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import { CAMERA_TRANSITION, PERSPECTIVE_ORTHO } from '@/shared/constants/camera';
-import { CameraMode, ProjectionMode } from '@/shared/types';
-import { useCameraStore, useSceneStore } from '@/stores/index';
-
-import { getAnimationScheduler } from './AnimationScheduler';
-import { captureSnapshot, createSnapshot, interpolateSnapshots } from './CameraStateSnapshot';
-import { calculateCameraSync } from './PerspectiveOrthoBridge';
-import { getPresetForProjection, getTransitionConfig } from './ProjectionCameraPresets';
-
-import type { LifecycleAware } from '@/core/LifecycleManager';
 import type {
   AnimationHandle,
   CameraStateSnapshot,
@@ -19,6 +11,12 @@ import type {
   ProjectionCameraPreset,
   Vec3,
 } from '@/shared/types';
+import { CameraMode, ProjectionMode } from '@/shared/types';
+import { useCameraStore, useSceneStore } from '@/stores/index';
+import { getAnimationScheduler } from './AnimationScheduler';
+import { captureSnapshot, createSnapshot, interpolateSnapshots } from './CameraStateSnapshot';
+import { calculateCameraSync } from './PerspectiveOrthoBridge';
+import { getPresetForProjection, getTransitionConfig } from './ProjectionCameraPresets';
 
 export interface TransitionCallbacks {
   onComplete?: () => void;

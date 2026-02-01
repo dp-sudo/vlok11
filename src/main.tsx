@@ -21,7 +21,7 @@ if (!rootElement) {
 
 const initAndRender = async () => {
   let aiService;
-  
+
   try {
     aiService = await bootstrap();
   } catch (error) {
@@ -29,7 +29,7 @@ const initAndRender = async () => {
   }
 
   if (!aiService) {
-      console.warn('Bootstrap returned no service (or failed). Rendering in degraded mode.');
+    console.warn('Bootstrap returned no service (or failed). Rendering in degraded mode.');
   }
 
   const root = ReactDOM.createRoot(rootElement);

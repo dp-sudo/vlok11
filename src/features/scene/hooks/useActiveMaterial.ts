@@ -1,15 +1,12 @@
 import { useLoader } from '@react-three/fiber';
 import { useEffect, useMemo, useState } from 'react';
+import type { Material, ShaderMaterial, Texture, VideoTexture } from 'three';
 import { TextureLoader } from 'three';
-
+import type { SceneConfig } from '@/shared/types';
 import { ProjectionMode } from '@/shared/types';
-
 import { useMaterialUpdater } from './useMaterialUpdater';
 import { usePointCloudMaterial } from './usePointCloudMaterial';
 import { useSceneMaterials } from './useSceneMaterials';
-
-import type { SceneConfig } from '@/shared/types';
-import type { Material, ShaderMaterial, Texture, VideoTexture } from 'three';
 
 interface UseActiveMaterialOptions {
   activeMap: Texture | null;

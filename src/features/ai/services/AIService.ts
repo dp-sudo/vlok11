@@ -1,13 +1,12 @@
 import { getEventBus } from '@/core/EventBus';
 import { AIEvents } from '@/core/EventTypes';
+import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import { SceneType, TechPipeline } from '@/shared/types';
-
 import { CACHE_DEFAULTS, HASH_CALC, PROGRESS } from './AIService.constants';
 import { FallbackProvider } from './providers/FallbackProvider';
 import { GeminiProvider } from './providers/GeminiProvider';
 import { TensorFlowProvider } from './providers/TensorFlowProvider';
-
 import type {
   AICacheConfig,
   AIProgressCallback,
@@ -17,7 +16,6 @@ import type {
   DepthResult,
   ImageAnalysis,
 } from './types';
-import type { LifecycleAware } from '@/core/LifecycleManager';
 
 const logger = createLogger({ module: 'AIService' });
 

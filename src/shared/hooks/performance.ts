@@ -1,8 +1,6 @@
 import { useCallback, useMemo, useRef } from 'react';
-
-import { CameraMotionType, MirrorMode, ProjectionMode, RenderStyle } from '@/shared/types';
-
 import type { SceneConfig } from '@/shared/types';
+import { CameraMotionType, MirrorMode, ProjectionMode, RenderStyle } from '@/shared/types';
 
 export function useDebounce<T extends (...args: Parameters<T>) => void>(
   callback: T,

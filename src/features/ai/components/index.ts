@@ -1,5 +1,5 @@
-export { AIProviderPanel } from './AIProviderPanel';
 export { AIProgressPanel } from './AIProgressPanel';
+export { AIProviderPanel } from './AIProviderPanel';
 export { ApiKeySettings } from './ApiKeySettings';
 export { CacheManager } from './CacheManager';
 export { ModelCard } from './ModelCard';

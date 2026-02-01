@@ -1,5 +1,6 @@
 import { Circle, Download, Image as ImageIcon, RotateCcw, Square } from 'lucide-react';
-import React, { memo } from 'react';
+import type React from 'react';
+import { memo } from 'react';
 
 interface ControlPanelHeaderProps {
   isExporting: boolean;

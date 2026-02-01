@@ -1,19 +1,17 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { PerspectiveCamera, Vector3 } from 'three';
-
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import { getEventBus } from '@/core/EventBus';
 import {
+  type CameraPresetType,
   calculateDistance,
   calculatePresetPose,
-  type CameraPresetType,
   getCameraAnimator,
 } from '@/features/scene/services/camera';
+import type { CameraPose, Vec3 } from '@/shared/types';
 import { fromVector3 } from '@/shared/utils';
 import { useCameraPoseStore } from '@/stores/cameraStore';
-
-import type { CameraPose, Vec3 } from '@/shared/types';
-import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 
 export function useCameraController(options: CameraControllerOptions): CameraControllerReturn {
   const { controlsRef, enableSync = true, syncInterval = CAMERA_DEFAULTS.SYNC_INTERVAL } = options;

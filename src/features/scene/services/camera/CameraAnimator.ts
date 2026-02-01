@@ -1,17 +1,13 @@
+import type { Camera, PerspectiveCamera } from 'three';
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import { getEventBus } from '@/core/EventBus';
+import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import {
   calculateMotion,
   calculateProgress,
   type MotionType,
 } from '@/features/camera/logic/motion';
-import { lerp, lerpVec3, fromVector3 as vec3FromThree } from '@/shared/utils';
-import { useCameraPoseStore } from '@/stores/cameraStore';
-import { useSceneStore } from '@/stores/sharedStore';
-
-import { getAnimationScheduler } from './AnimationScheduler';
-
-import type { LifecycleAware } from '@/core/LifecycleManager';
 import type {
   AnimationHandle,
   BlendMode,
@@ -19,8 +15,10 @@ import type {
   TransitionOptions,
   Vec3,
 } from '@/shared/types';
-import type { Camera, PerspectiveCamera } from 'three';
-import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import { lerp, lerpVec3, fromVector3 as vec3FromThree } from '@/shared/utils';
+import { useCameraPoseStore } from '@/stores/cameraStore';
+import { useSceneStore } from '@/stores/sharedStore';
+import { getAnimationScheduler } from './AnimationScheduler';
 
 interface CameraAnimatorState {
   activeHandles: Map<string, AnimationHandle>;
@@ -247,7 +245,7 @@ class CameraAnimatorImpl implements LifecycleAware {
       const progress = Math.min(elapsed / t.duration, 1);
 
       if (progress < 1) {
-        const eased = 1 - Math.pow(1 - progress, DEFAULTS.EASING_POWER);
+        const eased = 1 - (1 - progress) ** DEFAULTS.EASING_POWER;
 
         finalPosition = lerpVec3(t.startPosition, finalPosition, eased);
         finalTarget = lerpVec3(t.startTarget, finalTarget, eased);
@@ -302,15 +300,13 @@ class CameraAnimatorImpl implements LifecycleAware {
 
   private calculateProgress(start: Vec3, end: Vec3, current: Vec3): number {
     const totalDist = Math.sqrt(
-      Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2) + Math.pow(end.z - start.z, 2)
+      (end.x - start.x) ** 2 + (end.y - start.y) ** 2 + (end.z - start.z) ** 2
     );
 
     if (totalDist < DEFAULTS.EPSILON) return 1;
 
     const currentDist = Math.sqrt(
-      Math.pow(current.x - start.x, 2) +
-        Math.pow(current.y - start.y, 2) +
-        Math.pow(current.z - start.z, 2)
+      (current.x - start.x) ** 2 + (current.y - start.y) ** 2 + (current.z - start.z) ** 2
     );
 
     return Math.min(currentDist / totalDist, 1);

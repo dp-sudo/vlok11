@@ -1,6 +1,5 @@
-import { useCameraStore } from '@/stores/index';
-
 import type { CameraPose, InteractionType } from '@/shared/types';
+import { useCameraStore } from '@/stores/index';
 
 export function createCameraStateAccessor(): CameraStateAccessor {
   return {
@@ -32,7 +31,7 @@ export function createCameraStateAccessor(): CameraStateAccessor {
       useCameraStore.getState().endInteraction();
     },
     getBasePose(): CameraPose | null {
-      const {basePose} = useCameraStore.getState();
+      const { basePose } = useCameraStore.getState();
 
       if (!basePose) return null;
 

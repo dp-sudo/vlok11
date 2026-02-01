@@ -1,8 +1,8 @@
 import { Layers, Moon, Palette, Sparkles, Sun } from 'lucide-react';
-import React, { memo } from 'react';
-
+import type React from 'react';
+import { memo } from 'react';
+import type { SceneConfig } from '@/shared/types';
 import { RenderStyle } from '@/shared/types';
-
 import {
   AnimeStyleControls,
   Btn,
@@ -27,8 +27,6 @@ import {
   MATERIAL,
   SATURATION,
 } from './EffectsTab.constants';
-
-import type { SceneConfig } from '@/shared/types';
 
 interface EffectsTabProps {
   activeStyle: (typeof RENDER_STYLES)[number] | undefined;

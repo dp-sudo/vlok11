@@ -1,6 +1,5 @@
-import { createLogger } from '@/core/Logger';
-
 import type { LifecycleAware } from '@/core/LifecycleManager';
+import { createLogger } from '@/core/Logger';
 
 const logger = createLogger({ module: 'ShaderService' });
 

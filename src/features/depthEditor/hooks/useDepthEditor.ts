@@ -1,9 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { DepthEditorEngine } from '../DepthEditorEngine';
-import { DEFAULT_TOOL_SETTINGS } from '../types';
-
 import type { ToolSettings, ToolType } from '../types';
+import { DEFAULT_TOOL_SETTINGS } from '../types';
 
 const DEFAULT_DEPTH_VALUE = 128;
 
@@ -99,9 +98,12 @@ export function useDepthEditor(): UseDepthEditorReturn {
     return engineRef.current.getDepthValue(x, y);
   }, []);
 
-  const setToolSetting = useCallback(<K extends keyof ToolSettings>(key: K, value: ToolSettings[K]) => {
-    setToolSettings((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  const setToolSetting = useCallback(
+    <K extends keyof ToolSettings>(key: K, value: ToolSettings[K]) => {
+      setToolSettings((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
   return {
     applyTool,

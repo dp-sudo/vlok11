@@ -1,10 +1,7 @@
-import { ProjectionMode } from '@/shared/types';
-
-import { PROJECTION_CAMERA_PRESETS } from '../camera/ProjectionCameraPresets';
-
-import { ASPECT_RATIO_THRESHOLD, TRANSITION_DURATION } from './ProjectionPreviewService.constants';
-
 import type { ProjectionCameraPreset, SceneConfig } from '@/shared/types';
+import { ProjectionMode } from '@/shared/types';
+import { PROJECTION_CAMERA_PRESETS } from '../camera/ProjectionCameraPresets';
+import { ASPECT_RATIO_THRESHOLD, TRANSITION_DURATION } from './ProjectionPreviewService.constants';
 
 export interface ProjectionPreview {
   cameraPreset: ProjectionCameraPreset;

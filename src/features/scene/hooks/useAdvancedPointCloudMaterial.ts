@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import { ShaderMaterial, Uniform, Vector3 } from 'three';
-
 import type { Texture } from 'three';
+import { ShaderMaterial, Uniform, Vector3 } from 'three';
 
 // ============================================
 // Advanced Point Cloud Material

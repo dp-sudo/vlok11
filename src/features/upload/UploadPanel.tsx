@@ -1,5 +1,6 @@
 import { ArrowRight, Image as ImageIcon, Link as LinkIcon, Upload, X } from 'lucide-react';
-import React, { memo } from 'react';
+import type React from 'react';
+import { memo } from 'react';
 
 import { HexIcon } from '@/shared/components/ui/HexIcon';
 import { TechCard } from '@/shared/components/ui/TechCard';
@@ -40,13 +41,13 @@ export const UploadPanel = memo(
               </h2>
               <div className="flex flex-col gap-1">
                 <p className="text-amber-500 font-tech text-xs tracking-[0.3em] uppercase opacity-90">
-                SYSTEM READY FOR INGESTION
+                  SYSTEM READY FOR INGESTION
                 </p>
                 <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent mx-auto mt-2" />
               </div>
 
               <div className="pt-4 space-y-2">
-                 <p className="text-zinc-300 text-base font-medium max-w-xs mx-auto leading-relaxed">
+                <p className="text-zinc-300 text-base font-medium max-w-xs mx-auto leading-relaxed">
                   支持 4K 超清视频与全景照片
                 </p>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto font-mono">
@@ -58,25 +59,29 @@ export const UploadPanel = memo(
             <div className="relative group w-full max-w-sm pt-4">
               <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 via-cyan-500/20 to-amber-500/20 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
               <div className="relative">
-                 {/* Border Effect */}
-                 <div className="absolute inset-0 border-2 border-dashed border-zinc-700 rounded-lg group-hover:border-amber-500/50 group-hover:bg-amber-500/5 transition-all duration-300 pointer-events-none" />
+                {/* Border Effect */}
+                <div className="absolute inset-0 border-2 border-dashed border-zinc-700 rounded-lg group-hover:border-amber-500/50 group-hover:bg-amber-500/5 transition-all duration-300 pointer-events-none" />
 
-                  <input
-                    accept={acceptedFormats}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                    onChange={onFileUpload}
-                    type="file"
-                  />
+                <input
+                  accept={acceptedFormats}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                  onChange={onFileUpload}
+                  type="file"
+                />
 
-                  <div className="w-full py-10 px-6 bg-zinc-900/50 backdrop-blur-sm rounded-lg flex flex-col items-center justify-center gap-4 transition-all z-10">
-                    <div className="p-4 rounded-full bg-zinc-800/50 group-hover:bg-amber-500/20 group-hover:text-amber-400 text-zinc-400 transition-all duration-300 ring-1 ring-white/5 group-hover:ring-amber-500/30">
-                       <Upload className="w-8 h-8" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="tracking-[0.2em] uppercase font-orbitron text-sm text-white group-hover:text-amber-400 transition-colors">INITIALIZE UPLOAD</span>
-                      <span className="text-[10px] font-mono text-zinc-500 group-hover:text-zinc-400">DROP FILE OR CLICK TO SCAN</span>
-                    </div>
+                <div className="w-full py-10 px-6 bg-zinc-900/50 backdrop-blur-sm rounded-lg flex flex-col items-center justify-center gap-4 transition-all z-10">
+                  <div className="p-4 rounded-full bg-zinc-800/50 group-hover:bg-amber-500/20 group-hover:text-amber-400 text-zinc-400 transition-all duration-300 ring-1 ring-white/5 group-hover:ring-amber-500/30">
+                    <Upload className="w-8 h-8" />
                   </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="tracking-[0.2em] uppercase font-orbitron text-sm text-white group-hover:text-amber-400 transition-colors">
+                      INITIALIZE UPLOAD
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-500 group-hover:text-zinc-400">
+                      DROP FILE OR CLICK TO SCAN
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -88,7 +93,9 @@ export const UploadPanel = memo(
                 }}
               >
                 <LinkIcon className="w-3 h-3 text-cyan-400 group-hover:text-cyan-300" />
-                <span className="font-mono text-[10px] tracking-widest text-zinc-400 group-hover:text-cyan-200">LOAD FROM URL</span>
+                <span className="font-mono text-[10px] tracking-widest text-zinc-400 group-hover:text-cyan-200">
+                  LOAD FROM URL
+                </span>
               </button>
             </div>
           </>

@@ -10,15 +10,11 @@ import { AppHeader, MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
 
 import { useAIMotion } from '@/shared/hooks/useAIMotion';
-import { useAutoSceneAnalysis } from '@/shared/hooks/useAutoSceneAnalysis';
-import { useEmotionalTone } from '@/shared/hooks/useEmotionalTone';
-import { useImmersiveAudio } from '@/shared/hooks/useImmersiveAudio';
 import { useProjectShortcuts } from '@/shared/hooks/useProjectShortcuts';
 import { useSceneConfigSubscriber } from '@/shared/hooks/useSceneConfigSubscriber';
 import { useWeatherEffect } from '@/shared/hooks/useWeatherEffect';
-import { useSceneStore } from '@/stores/sharedStore';
-
 import type { CameraViewPreset, ProcessingState } from '@/shared/types';
+import { useSceneStore } from '@/stores/sharedStore';
 
 type AppCameraView = CameraViewPreset | 'default';
 
@@ -27,14 +23,11 @@ const App = memo(() => {
 
   useProjectShortcuts();
 
-  // 沉浸音频控制
+  // 场景配置
   const sceneConfig = useSceneStore((s) => s.config);
 
-  useImmersiveAudio(sceneConfig);
   useAIMotion(sceneConfig);
   useWeatherEffect(sceneConfig);
-  useEmotionalTone(sceneConfig);
-  useAutoSceneAnalysis(sceneConfig);
 
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlInput, setUrlInput] = useState('');

@@ -186,7 +186,7 @@ export class DepthEditorEngine {
         if (px < 0 || px >= this.canvas.width || py < 0 || py >= this.canvas.height) continue;
 
         const idx = (py * this.canvas.width + px) * 4;
-        const falloff = Math.pow(1 - distance / radius, hardness * 2);
+        const falloff = (1 - distance / radius) ** (hardness * 2);
         const alpha = opacity * falloff * pressure;
 
         const currentDepth = data[idx] ?? 0;

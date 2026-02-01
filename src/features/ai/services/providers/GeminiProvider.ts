@@ -1,8 +1,7 @@
 import { createLogger } from '@/core/Logger';
 import { getSettingsService } from '@/core/services/SettingsService';
-
-import type { AIProvider, DepthResult } from '../types';
 import type { AnalysisResult, SceneType, TechPipeline } from '@/shared/types';
+import type { AIProvider, DepthResult } from '../types';
 
 export class GeminiProvider implements AIProvider {
   private _isAvailable = false;

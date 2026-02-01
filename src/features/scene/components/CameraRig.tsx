@@ -5,18 +5,16 @@ import {
 } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { memo, useCallback, useEffect, useRef } from 'react';
-
-import { calculateCameraSync } from '@/features/scene/services/camera';
-import { CameraMode, CameraMotionType, ProjectionMode } from '@/shared/types';
-
-import { CameraMotionLogic } from './CameraMotionLogic';
-
-import type { SceneConfig } from '@/shared/types';
 import type {
   OrthographicCamera as ThreeOrthographicCamera,
   PerspectiveCamera as ThreePerspectiveCamera,
 } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import { calculateCameraSync } from '@/features/scene/services/camera';
+
+import type { SceneConfig } from '@/shared/types';
+import { CameraMode, CameraMotionType, ProjectionMode } from '@/shared/types';
+import { CameraMotionLogic } from './CameraMotionLogic';
 
 interface CameraRigProps {
   children?: React.ReactNode;

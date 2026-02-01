@@ -1,8 +1,7 @@
 import { getEventBus } from '@/core/EventBus';
 import { createLogger } from '@/core/Logger';
-import { generateId } from '@/shared/utils';
-
 import type { SceneConfig } from '@/shared/types';
+import { generateId } from '@/shared/utils';
 
 export interface ConfigPreset {
   config: Partial<SceneConfig>;

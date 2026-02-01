@@ -1,14 +1,13 @@
+import type { StateCreator } from 'zustand';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-
 import { getEventBus } from '@/core/EventBus';
 import {
+  type CameraPresetType,
   calculateDistance,
   calculatePresetPose,
-  type CameraPresetType,
 } from '@/features/scene/services/camera/CameraPresets';
 import { CAMERA } from '@/shared/constants';
-import { generateId, isCameraPoseEqual } from '@/shared/utils';
 
 import type {
   InteractionType,
@@ -16,7 +15,7 @@ import type {
   CameraPose as SharedCameraPose,
   Vec3,
 } from '@/shared/types';
-import type { StateCreator } from 'zustand';
+import { generateId, isCameraPoseEqual } from '@/shared/utils';
 
 export type { InteractionType };
 
@@ -286,9 +285,7 @@ export const useBasePose = () => useCameraPoseStore((s) => s.basePose);
 export const useCameraBookmarks = () => useCameraPoseStore((s) => s.bookmarks);
 export const useCameraFov = () => useCameraPoseStore((s) => s.pose.fov);
 
-export const useCameraPoseStore = create<CameraSlice>()(
-  subscribeWithSelector(createCameraSlice)
-);
+export const useCameraPoseStore = create<CameraSlice>()(subscribeWithSelector(createCameraSlice));
 
 export const useCameraPosition = () => useCameraPoseStore((s) => s.pose.position);
 export const useCameraTarget = () => useCameraPoseStore((s) => s.pose.target);

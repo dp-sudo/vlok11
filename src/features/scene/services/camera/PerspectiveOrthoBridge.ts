@@ -1,7 +1,6 @@
 import { PERSPECTIVE_ORTHO } from '@/shared/constants/camera';
-import { degToRad } from '@/shared/utils';
-
 import type { FovZoomEquivalence } from '@/shared/types';
+import { degToRad } from '@/shared/utils';
 
 export function calculateCameraSync(
   currentMode: 'perspective' | 'orthographic',

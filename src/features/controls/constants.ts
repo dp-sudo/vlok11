@@ -1,4 +1,4 @@
-import { Box, Camera, Grid3X3, Palette, Sparkles, Zap, Brain } from 'lucide-react';
+import { Box, Brain, Camera, Grid3X3, Palette, Sparkles, Zap } from 'lucide-react';
 import React from 'react';
 
 import {
@@ -149,30 +149,12 @@ export const AI_MOTION_STYLES = [
   { style: 'exploration', label: '探索', icon: '🔭', desc: '360度探索全景' },
 ] as const;
 
-// 沉浸音效氛围
-export const AUDIO_MOODS = [
-  { mood: 'nature', label: '自然', icon: '🌿', desc: '森林鸟鸣流水' },
-  { mood: 'urban', label: '城市', icon: '🏙️', desc: '都市车流人声' },
-  { mood: 'indoor', label: '室内', icon: '🏠', desc: '室内环境白噪' },
-  { mood: 'space', label: '太空', icon: '🌌', desc: '空灵太空氛围' },
-] as const;
-
 // 天气效果
 export const WEATHER_EFFECTS = [
   { effect: 'sunny', label: '晴朗', icon: '☀️', desc: '阳光明媚氛围' },
   { effect: 'rain', label: '下雨', icon: '🌧️', desc: '细雨朦胧效果' },
   { effect: 'fog', label: '雾霾', icon: '🌫️', desc: '雾气弥漫效果' },
   { effect: 'snow', label: '下雪', icon: '❄️', desc: '飘雪浪漫效果' },
-] as const;
-
-// 情感色调
-export const EMOTIONAL_TONES = [
-  { tone: 'warm', label: '温暖', icon: '🔥', desc: '暖色温馨氛围', color: '#ff7f50' },
-  { tone: 'cool', label: '冷色调', icon: '❄️', desc: '清冷宁静氛围', color: '#87ceeb' },
-  { tone: 'vintage', label: '复古', icon: '📷', desc: '怀旧胶片质感', color: '#daa520' },
-  { tone: 'dramatic', label: '戏剧', icon: '🎭', desc: '强烈对比张力', color: '#4a4a4a' },
-  { tone: 'ethereal', label: '空灵', icon: '✨', desc: '梦幻飘渺感', color: '#dda0dd' },
-  { tone: 'natural', label: '自然', icon: '🌿', desc: '真实自然色彩', color: '#90ee90' },
 ] as const;
 
 // 录制质量选项

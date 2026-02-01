@@ -353,7 +353,7 @@ function processPixel(params: PixelProcessParams): void {
   const normalizedLum = ((rawLum - minLum) / lumRange) * maxColorValue;
   const boostedLum = Math.min(maxColorValue, normalizedLum * Math.sqrt(contrastFactor));
   const yNorm = y / height;
-  const gradient = Math.pow(yNorm, IMAGE_PROCESSING.DEPTH_GRADIENT_POWER) * maxColorValue;
+  const gradient = yNorm ** IMAGE_PROCESSING.DEPTH_GRADIENT_POWER * maxColorValue;
 
   const { gx, gy } = applySobelOperator(x, y, width, getLum);
   const edgeMagnitude = Math.sqrt(gx * gx + gy * gy);

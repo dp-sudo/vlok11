@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-
+import type { Material, ShaderMaterial, Texture } from 'three';
 import { RenderStyle, type SceneConfig } from '@/shared/types';
-
 import { getMaterialFactory } from '../services/material/MaterialFactory';
-
 import {
   buildAnimeUniforms,
   buildCelUniforms,
@@ -17,8 +15,6 @@ import {
   updateShaderMaterial,
   updateStandardMaterial,
 } from './useSceneMaterials.helpers';
-
-import type { Material, ShaderMaterial, Texture } from 'three';
 
 type ShaderMaterialCache = Map<RenderStyle, ShaderMaterial>;
 

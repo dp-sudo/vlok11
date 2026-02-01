@@ -1,5 +1,5 @@
 import { memo } from 'react';
-
+import type { SceneConfig } from '@/shared/types';
 import {
   ANIME,
   CEL,
@@ -10,10 +10,7 @@ import {
   PALETTE_MODES,
   RETRO_PIXEL,
 } from '../EffectsTab.constants';
-
 import { Btn, Slider } from './index';
-
-import type { SceneConfig } from '@/shared/types';
 
 type SetConfig = <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
 

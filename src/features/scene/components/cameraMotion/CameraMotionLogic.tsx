@@ -1,18 +1,15 @@
 import { useFrame, useThree } from '@react-three/fiber';
+import type { RefObject } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { PerspectiveCamera } from 'three';
-
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import { getEventBus } from '@/core/EventBus';
 import { getCameraAnimator, getCameraTransitionService } from '@/features/scene/services/camera';
 import { CameraMotionType, type ProjectionMode, type SceneConfig, type Vec3 } from '@/shared/types';
 import { useCameraPoseStore } from '@/stores/cameraStore';
-
 import { CAMERA_DEFAULTS, MOTION_SCALE_BY_PROJECTION, toMotionType } from './constants';
-import { useUserInteraction } from './useUserInteraction';
 import { useMotionAutoResume } from './useMotionAutoResume';
-
-import type { RefObject } from 'react';
-import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import { useUserInteraction } from './useUserInteraction';
 
 interface CameraMotionLogicProps {
   config: SceneConfig;

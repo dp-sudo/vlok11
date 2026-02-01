@@ -1,13 +1,13 @@
 export { CameraMotionLogic, useUserInteraction } from './CameraMotionLogic';
-export { default as CameraRig } from './CameraRig';
 export type { CameraRigProps } from './CameraRig';
+export { default as CameraRig } from './CameraRig';
 export { AtmosphereParticles, ParallaxRig } from './effects';
 export { SceneCanvas } from './SceneCanvas';
 export { SceneContent } from './SceneContent';
-export { SceneExporter } from './SceneExporter';
 export type { ExporterRef } from './SceneExporter';
-export { default as SceneGeometry } from './SceneGeometry';
+export { SceneExporter } from './SceneExporter';
 export type { SceneGeometryProps } from './SceneGeometry';
-export { SceneRecorder } from './SceneRecorder';
+export { default as SceneGeometry } from './SceneGeometry';
 export type { RecordingRef } from './SceneRecorder';
+export { SceneRecorder } from './SceneRecorder';
 export { VideoManager } from './VideoManager';

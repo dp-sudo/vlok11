@@ -1,15 +1,11 @@
+import type { Camera } from 'three';
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import { getEventBus } from '@/core/EventBus';
+import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import { getAnimationScheduler } from '@/features/scene/services/camera/AnimationScheduler';
 import { ANIMATION_DURATION, DEFAULT_ANIMATION_DURATION } from '@/shared/constants';
 import { CAMERA_ANIMATION, CAMERA_LIMITS } from '@/shared/constants/camera';
-import { lerpVec3 } from '@/shared/utils';
-import { useCameraStore } from '@/stores/index';
-
-import { calculateDistance, calculatePresetPose, type CameraPresetType } from './CameraPresets';
-import { getPrecisionConfigService, type PrecisionControlConfig } from './PrecisionConfigService';
-
-import type { LifecycleAware } from '@/core/LifecycleManager';
 import type {
   AnimationHandle,
   CameraBookmark,
@@ -20,8 +16,10 @@ import type {
   TransitionOptions,
   Vec3,
 } from '@/shared/types';
-import type { Camera } from 'three';
-import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import { lerpVec3 } from '@/shared/utils';
+import { useCameraStore } from '@/stores/index';
+import { type CameraPresetType, calculateDistance, calculatePresetPose } from './CameraPresets';
+import { getPrecisionConfigService, type PrecisionControlConfig } from './PrecisionConfigService';
 
 const logger = createLogger({ module: 'CameraService' });
 
@@ -234,13 +232,13 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
 
   async setFov(fov: number, duration = ANIMATION_DURATION.FOV): Promise<void> {
     const precisionConfig = this.getPrecisionConfig();
-    
+
     // 应用FOV范围限制
     const clampedFov = Math.max(
-      precisionConfig.fovRange.min, 
+      precisionConfig.fovRange.min,
       Math.min(precisionConfig.fovRange.max, fov)
     );
-    
+
     // 应用细粒度步进
     const steppedFov = Math.round(clampedFov / precisionConfig.fovStep) * precisionConfig.fovStep;
 

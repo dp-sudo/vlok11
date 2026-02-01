@@ -64,7 +64,7 @@ const MOTION_CONSTANTS = {
 
 // Easing functions for smooth motion
 function easeInOutCubic(t: number): number {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
 
 export function calculateMotion(

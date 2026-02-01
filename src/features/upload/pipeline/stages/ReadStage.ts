@@ -80,7 +80,10 @@ export class ReadStage implements PipelineStage {
           success: true,
         };
 
-        logger.info('ReadStage output (file)', { hasImageUrl: !!result.imageUrl, imageUrl: result.imageUrl?.substring(0, 50) });
+        logger.info('ReadStage output (file)', {
+          hasImageUrl: !!result.imageUrl,
+          imageUrl: result.imageUrl?.substring(0, 50),
+        });
 
         return result;
       } else if (input.url) {
@@ -123,7 +126,10 @@ export class ReadStage implements PipelineStage {
           success: true,
         };
 
-        logger.info('ReadStage output (url)', { hasImageUrl: !!result.imageUrl, imageUrl: result.imageUrl?.substring(0, 50) });
+        logger.info('ReadStage output (url)', {
+          hasImageUrl: !!result.imageUrl,
+          imageUrl: result.imageUrl?.substring(0, 50),
+        });
 
         return result;
       }

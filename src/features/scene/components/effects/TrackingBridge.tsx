@@ -1,12 +1,10 @@
 import { memo, useEffect, useRef } from 'react';
-
+import type { Group } from 'three';
 import { getEventBus } from '@/core/EventBus';
 import { TrackingEvents } from '@/core/EventTypes';
 import { createLogger } from '@/core/Logger';
 import { loadImageDataFromUrl, mapMediaPixelToDisplacedWorldPoint } from '@/shared/utils';
 import { useSceneStore } from '@/stores/sharedStore';
-
-import type { Group } from 'three';
 
 interface TrackingBridgeProps {
   depthUrl: string;

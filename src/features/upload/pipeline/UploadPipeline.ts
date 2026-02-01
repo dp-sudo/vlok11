@@ -1,11 +1,15 @@
 import { getEventBus } from '@/core/EventBus';
 import { PipelineEvents } from '@/core/EventTypes';
 import { createLogger } from '@/core/Logger';
+import type { PipelineEngine } from '@/core/pipeline/PipelineEngine';
 import { getPipelineEngine } from '@/core/pipeline/PipelineEngine';
-
+import type {
+  PipelineStage as CorePipelineStage,
+  PipelineConfig,
+  StageContext,
+} from '@/core/pipeline/types';
+import type { AIService } from '@/features/ai/services/AIService';
 import { AnalyzeStage, DepthStage, PrepareStage, ReadStage } from './stages';
-import { ASSET_DEFAULTS, PROGRESS } from './UploadPipeline.constants';
-
 import type {
   CompleteCallback,
   ErrorCallback,
@@ -18,13 +22,7 @@ import type {
   StageOutput,
   UploadPipeline as UploadPipelineInterface,
 } from './types';
-import type { PipelineEngine } from '@/core/pipeline/PipelineEngine';
-import type {
-  PipelineStage as CorePipelineStage,
-  PipelineConfig,
-  StageContext,
-} from '@/core/pipeline/types';
-import type { AIService } from '@/features/ai/services/AIService';
+import { ASSET_DEFAULTS, PROGRESS } from './UploadPipeline.constants';
 
 export interface PipelineEventEmitter {
   emit(event: string, payload: Record<string, unknown>): void;

@@ -1,9 +1,8 @@
+import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import { DEFAULT_SCENE_CONFIG } from '@/shared/config/defaultSceneConfig';
-import { ColorGradePreset, RenderStyle } from '@/shared/types';
-
-import type { LifecycleAware } from '@/core/LifecycleManager';
 import type { SceneConfig } from '@/shared/types';
+import { ColorGradePreset, RenderStyle } from '@/shared/types';
 
 const logger = createLogger({ module: 'ConfigService' });
 

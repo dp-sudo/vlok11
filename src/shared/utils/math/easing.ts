@@ -6,7 +6,7 @@ export const easeInElastic = (t: number): number => {
   if (t === 0 || t === 1) return t;
 
   return (
-    -Math.pow(EASING.ELASTIC_BASE, EASING.ELASTIC_EXPONENT * t - EASING.ELASTIC_OFFSET) *
+    -(EASING.ELASTIC_BASE ** (EASING.ELASTIC_EXPONENT * t - EASING.ELASTIC_OFFSET)) *
     Math.sin(
       (t * EASING.ELASTIC_OFFSET - EASING.ELASTIC_PHASE_OFFSET) *
         ((EASING.QUAD_MULTIPLIER * Math.PI) / EASING.ELASTIC_PERIOD_DIVISOR)
@@ -17,17 +17,14 @@ export const easeInOutCubic = (t: number): number =>
   t < EASING.HALF
     ? EASING.CUBIC_MULTIPLIER * t * t * t
     : 1 -
-      Math.pow(-EASING.CUBIC_DIVISOR * t + EASING.QUAD_MULTIPLIER, EASING.CUBIC_POWER) /
+      (-EASING.CUBIC_DIVISOR * t + EASING.QUAD_MULTIPLIER) ** EASING.CUBIC_POWER /
         EASING.CUBIC_DIVISOR;
 export const easeInOutElastic = (t: number): number => {
   if (t === 0 || t === 1) return t;
   if (t < EASING.HALF) {
     return (
       -(
-        Math.pow(
-          EASING.ELASTIC_BASE,
-          EASING.ELASTIC_IN_OUT_MULTIPLIER * t - EASING.ELASTIC_EXPONENT
-        ) *
+        EASING.ELASTIC_BASE ** (EASING.ELASTIC_IN_OUT_MULTIPLIER * t - EASING.ELASTIC_EXPONENT) *
         Math.sin(
           (EASING.ELASTIC_IN_OUT_MULTIPLIER * t - EASING.ELASTIC_IN_OUT_PHASE_OFFSET) *
             ((EASING.QUAD_MULTIPLIER * Math.PI) / EASING.ELASTIC_IN_OUT_PERIOD_DIVISOR)
@@ -37,10 +34,7 @@ export const easeInOutElastic = (t: number): number => {
   }
 
   return (
-    (Math.pow(
-      EASING.ELASTIC_BASE,
-      -EASING.ELASTIC_IN_OUT_MULTIPLIER * t + EASING.ELASTIC_EXPONENT
-    ) *
+    (EASING.ELASTIC_BASE ** (-EASING.ELASTIC_IN_OUT_MULTIPLIER * t + EASING.ELASTIC_EXPONENT) *
       Math.sin(
         (EASING.ELASTIC_IN_OUT_MULTIPLIER * t - EASING.ELASTIC_IN_OUT_PHASE_OFFSET) *
           ((EASING.QUAD_MULTIPLIER * Math.PI) / EASING.ELASTIC_IN_OUT_PERIOD_DIVISOR)
@@ -76,12 +70,12 @@ export const easeOutBounce = (inputT: number): number => {
 
   return n1 * t * t + EASING.BOUNCE_RESULT_3;
 };
-export const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, EASING.CUBIC_POWER);
+export const easeOutCubic = (t: number): number => 1 - (1 - t) ** EASING.CUBIC_POWER;
 export const easeOutElastic = (t: number): number => {
   if (t === 0 || t === 1) return t;
 
   return (
-    Math.pow(EASING.ELASTIC_BASE, -EASING.ELASTIC_EXPONENT * t) *
+    EASING.ELASTIC_BASE ** (-EASING.ELASTIC_EXPONENT * t) *
       Math.sin(
         (t * EASING.ELASTIC_OFFSET - EASING.BOUNCE_RESULT_1) *
           ((EASING.QUAD_MULTIPLIER * Math.PI) / EASING.ELASTIC_PERIOD_DIVISOR)

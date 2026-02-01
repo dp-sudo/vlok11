@@ -63,8 +63,8 @@ export const DepthEditorCanvas = memo<DepthEditorCanvasProps>(
         if (!canvas) return null;
 
         const rect = canvas.getBoundingClientRect();
-        const clientX = 'touches' in e ? e.touches[0]?.clientX ?? 0 : e.clientX;
-        const clientY = 'touches' in e ? e.touches[0]?.clientY ?? 0 : e.clientY;
+        const clientX = 'touches' in e ? (e.touches[0]?.clientX ?? 0) : e.clientX;
+        const clientY = 'touches' in e ? (e.touches[0]?.clientY ?? 0) : e.clientY;
 
         const x = (clientX - rect.left - pan.x) / zoom;
         const y = (clientY - rect.top - pan.y) / zoom;
@@ -161,11 +161,7 @@ export const DepthEditorCanvas = memo<DepthEditorCanvasProps>(
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           }}
         >
-          <canvas
-            className="block"
-            ref={canvasRef}
-            style={{ imageRendering: 'pixelated' }}
-          />
+          <canvas className="block" ref={canvasRef} style={{ imageRendering: 'pixelated' }} />
         </div>
 
         {cursorPos && currentTool !== 'eyedropper' && currentTool !== 'fill' ? (

@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
-
+import type { InteractionType } from '@/shared/types';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 import { useSceneStore } from '@/stores/sharedStore';
-
-import type { InteractionType } from '@/shared/types';
 
 interface Point2D {
   x: number;

@@ -2,8 +2,8 @@ import { memo, useCallback, useState } from 'react';
 
 import { CameraMode } from '@/core/domain/types';
 import { createLogger } from '@/core/Logger';
-import { getSmartAssistant } from '@/features/ai/services/SmartAssistant';
 import type { SceneAnalysis, SceneOptimization } from '@/features/ai/services/SmartAssistant';
+import { getSmartAssistant } from '@/features/ai/services/SmartAssistant';
 import type { SceneConfig } from '@/shared/types';
 
 const logger = createLogger({ module: 'SmartSuggestions' });

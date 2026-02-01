@@ -1,6 +1,5 @@
-import { useCameraStore } from '@/stores/index';
-
 import type { CameraMode, CameraStateSnapshot, ProjectionMode, Vec3 } from '@/shared/types';
+import { useCameraStore } from '@/stores/index';
 
 export function captureSnapshot(
   overrides?: Partial<Pick<CameraStateSnapshot, 'cameraMode' | 'projectionMode'>>

@@ -1,8 +1,6 @@
-import React from 'react';
-
-import { CORNER_POSITION_OFFSET } from '../SceneGeometry.constants';
-
+import type React from 'react';
 import type { Material, Mesh } from 'three';
+import { CORNER_POSITION_OFFSET } from '../SceneGeometry.constants';
 
 interface CornerSystemProps {
   caveCeilingRef: React.RefObject<Mesh>;

@@ -1,9 +1,6 @@
 import { getEventBus } from '@/core/EventBus';
-import { createLogger } from '@/core/Logger';
-
-import { EASING_BOUNCE, EASING_COMMON, EASING_ELASTIC } from './AnimationScheduler.constants';
-
 import type { LifecycleAware } from '@/core/LifecycleManager';
+import { createLogger } from '@/core/Logger';
 import type {
   AnimationHandle,
   AnimationInfo,
@@ -14,6 +11,7 @@ import type {
   QueuedAnimation,
   Vec3,
 } from '@/shared/types';
+import { EASING_BOUNCE, EASING_COMMON, EASING_ELASTIC } from './AnimationScheduler.constants';
 
 interface ActiveAnimation {
   duration: number;
@@ -37,15 +35,13 @@ const EASING_FUNCTIONS: Record<EasingType, EasingFunction> = {
       ? EASING_COMMON.QUAD_MULTIPLIER * t * t
       : -1 + (EASING_COMMON.CUBIC_MULTIPLIER - EASING_COMMON.QUAD_MULTIPLIER * t) * t,
   'ease-in-cubic': (t) => t * t * t,
-  'ease-out-cubic': (t) => 1 - Math.pow(1 - t, EASING_COMMON.CUBIC_POWER),
+  'ease-out-cubic': (t) => 1 - (1 - t) ** EASING_COMMON.CUBIC_POWER,
   'ease-in-out-cubic': (t) =>
     t < EASING_COMMON.HALF
       ? EASING_COMMON.CUBIC_MULTIPLIER * t * t * t
       : 1 -
-        Math.pow(
-          EASING_COMMON.CUBIC_NEG_MULTIPLIER * t + EASING_COMMON.QUAD_MULTIPLIER,
-          EASING_COMMON.CUBIC_POWER
-        ) /
+        (EASING_COMMON.CUBIC_NEG_MULTIPLIER * t + EASING_COMMON.QUAD_MULTIPLIER) **
+          EASING_COMMON.CUBIC_POWER /
           EASING_COMMON.CUBIC_DIVISOR,
   'ease-in-elastic': (t) => {
     if (t === 0 || t === 1) {
@@ -53,7 +49,7 @@ const EASING_FUNCTIONS: Record<EasingType, EasingFunction> = {
     }
 
     return (
-      -Math.pow(EASING_ELASTIC.BASE, EASING_ELASTIC.EXPONENT * t - EASING_ELASTIC.EXPONENT) *
+      -(EASING_ELASTIC.BASE ** (EASING_ELASTIC.EXPONENT * t - EASING_ELASTIC.EXPONENT)) *
       Math.sin(
         (t * EASING_ELASTIC.EXPONENT - EASING_ELASTIC.PHASE_OFFSET_IN) *
           ((2 * Math.PI) / EASING_ELASTIC.PERIOD_DIVISOR)
@@ -66,7 +62,7 @@ const EASING_FUNCTIONS: Record<EasingType, EasingFunction> = {
     }
 
     return (
-      Math.pow(EASING_ELASTIC.BASE, EASING_ELASTIC.NEG_EXPONENT * t) *
+      EASING_ELASTIC.BASE ** (EASING_ELASTIC.NEG_EXPONENT * t) *
         Math.sin(
           (t * EASING_ELASTIC.EXPONENT - EASING_ELASTIC.PHASE_OFFSET_OUT) *
             ((2 * Math.PI) / EASING_ELASTIC.PERIOD_DIVISOR)
@@ -81,10 +77,7 @@ const EASING_FUNCTIONS: Record<EasingType, EasingFunction> = {
     if (t < EASING_COMMON.HALF) {
       return (
         -(
-          Math.pow(
-            EASING_ELASTIC.BASE,
-            EASING_ELASTIC.IN_OUT_MULTIPLIER * t - EASING_ELASTIC.EXPONENT
-          ) *
+          EASING_ELASTIC.BASE ** (EASING_ELASTIC.IN_OUT_MULTIPLIER * t - EASING_ELASTIC.EXPONENT) *
           Math.sin(
             (EASING_ELASTIC.IN_OUT_MULTIPLIER * t - EASING_ELASTIC.IN_OUT_PHASE_OFFSET) *
               ((2 * Math.PI) / EASING_ELASTIC.IN_OUT_PERIOD_DIVISOR)
@@ -94,10 +87,7 @@ const EASING_FUNCTIONS: Record<EasingType, EasingFunction> = {
     }
 
     return (
-      (Math.pow(
-        EASING_ELASTIC.BASE,
-        EASING_ELASTIC.IN_OUT_NEG_MULTIPLIER * t + EASING_ELASTIC.EXPONENT
-      ) *
+      (EASING_ELASTIC.BASE ** (EASING_ELASTIC.IN_OUT_NEG_MULTIPLIER * t + EASING_ELASTIC.EXPONENT) *
         Math.sin(
           (EASING_ELASTIC.IN_OUT_MULTIPLIER * t - EASING_ELASTIC.IN_OUT_PHASE_OFFSET) *
             ((2 * Math.PI) / EASING_ELASTIC.IN_OUT_PERIOD_DIVISOR)

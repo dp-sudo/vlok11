@@ -1,9 +1,10 @@
 import { Loader2 } from 'lucide-react';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import type React from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
+import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
-
 import { AITab } from './AITab';
 import { CameraTab } from './CameraTab';
 import { VideoControls } from './components';
@@ -11,8 +12,6 @@ import { MOTIONS, PROJECTIONS, RENDER_STYLES, type TabType } from './constants';
 import { EffectsTab } from './EffectsTab';
 import { ImmersiveTab } from './ImmersiveTab';
 import { ControlPanelHeader, ControlPanelTabBar, SceneTab } from './parts';
-
-import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 
 interface ControlPanelNewProps {
   activeCameraView?: CameraViewPreset | null;
@@ -58,9 +57,7 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
       color: true,
       lighting: true,
       aiMotion: true,
-      immersiveAudio: true,
       weather: true,
-      emotionalTone: true,
     });
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 

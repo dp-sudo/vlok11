@@ -1,12 +1,9 @@
-import { createContext, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
-
-import { createLogger } from '@/core/Logger';
-import { useCameraPoseStore } from '@/stores/cameraStore';
-
-import { getCoreController } from './CoreController';
-
-import type { CoreController } from '@/shared/types';
 import type { ReactNode } from 'react';
+import { createContext, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createLogger } from '@/core/Logger';
+import type { CoreController } from '@/shared/types';
+import { useCameraPoseStore } from '@/stores/cameraStore';
+import { getCoreController } from './CoreController';
 
 export function useAnimationService() {
   const { controller, isReady } = useCoreController();

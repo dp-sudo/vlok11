@@ -1,7 +1,6 @@
-import React from 'react';
-import { BufferGeometry, Float32BufferAttribute } from 'three';
-
+import type React from 'react';
 import type { Material, Mesh, Points as PointsType, Texture, Vector3 } from 'three';
+import { BufferGeometry, Float32BufferAttribute } from 'three';
 
 interface GaussianSplatProps {
   density: number;

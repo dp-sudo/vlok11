@@ -1,6 +1,5 @@
-import { CameraMotionType, ProjectionMode } from '@/shared/types';
-
 import type { MotionType } from '@/shared/types';
+import { CameraMotionType, ProjectionMode } from '@/shared/types';
 
 export const ANIMATION = {
   BASE_CAPTURE_DELAY_MS: 50,

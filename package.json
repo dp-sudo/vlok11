@@ -26,6 +26,11 @@
     "verify": "npm run lint:strict && vite build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "biome:check": "biome check src",
+    "biome:fix": "biome check --write src",
+    "biome:organize": "biome organize src",
+    "biome:lint": "biome lint src",
+    "biome:format": "biome format src",
     "clean": "rimraf dist node_modules/.vite",
     "deps:update": "npm update"
   },

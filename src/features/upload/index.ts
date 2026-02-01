@@ -1,13 +1,20 @@
 import { createUploadPipeline } from './pipeline';
 
 import type { ProcessedResult } from './pipeline';
+import type { AIService } from '@/features/ai/services/AIService';
+
+export interface ProcessPipelineOptions {
+  aiService: AIService;
+  input: File | string;
+  onProgress?: ProcessCallback;
+}
 
 export async function processPipeline(
-  input: File | string,
-  onProgress?: ProcessCallback
+  options: ProcessPipelineOptions
 ): Promise<ProcessedResult & { videoUrl?: string }> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pipeline = createUploadPipeline({ aiService: {} as any });
+  const { aiService, input, onProgress } = options;
+
+  const pipeline = createUploadPipeline({ aiService });
 
   if (onProgress) {
     pipeline.onProgress((p) => {

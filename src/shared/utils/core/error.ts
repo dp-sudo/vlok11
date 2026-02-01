@@ -76,7 +76,7 @@ export enum ErrorType {
 const ERROR_MESSAGES: Record<ErrorType, string> = {
   [ErrorType.NETWORK]: '网络连接失败，请检查网络后重试',
   [ErrorType.FILE_TYPE]: '不支持的文件类型，请上传图片或视频文件',
-  [ErrorType.FILE_TOO_LARGE]: '文件过大，请上传小于 100MB 的文件',
+  [ErrorType.FILE_TOO_LARGE]: '文件过大，请上传小于 2048MB 的文件',
   [ErrorType.PROCESSING]: '处理过程中出现错误，请重试',
   [ErrorType.AI_SERVICE]: 'AI 服务暂时不可用，已切换到离线模式',
   [ErrorType.WEBGL]: '您的浏览器不支持 WebGL，请使用现代浏览器',

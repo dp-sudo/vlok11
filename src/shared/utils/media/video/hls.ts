@@ -17,7 +17,9 @@ export function createHlsPlayer(
     hls.attachMedia(videoElement);
 
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      videoElement.play().catch(() => {});
+      videoElement.play().catch((err: Error) => {
+        logger.warn('Auto-play failed, user interaction may be required', { error: err.message });
+      });
       onManifestParsed?.();
     });
 

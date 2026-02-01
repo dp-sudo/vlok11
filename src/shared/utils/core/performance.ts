@@ -103,7 +103,7 @@ export const getMemoryUsage = (): { percentage: number; total: number; used: num
   return null;
 };
 export const getObjectURLManager = (): ObjectURLManager => ObjectURLManager.getInstance();
-const isDevEnv = import.meta.env?.DEV ?? true;
+const isDevEnv = import.meta.env?.DEV ?? false;
 const logger = createLogger({ module: 'Utils' });
 
 export const perfMark = {

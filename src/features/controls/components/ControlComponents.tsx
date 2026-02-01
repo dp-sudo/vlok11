@@ -44,13 +44,15 @@ interface ToggleProps {
 export const Btn: React.FC<BtnProps> = ({ active, onClick, children, small }) => (
   <button
     className={`
-      ${small ? 'py-1 px-2 text-[10px]' : 'py-1.5 px-3 text-[11px]'} 
-      rounded-lg border-2 transition-all duration-200 font-medium
+      ${small ? 'py-1.5 px-2.5 text-[10px]' : 'py-2 px-3 text-xs'}
+      rounded-lg border font-medium transition-all duration-200
       ${
         active
-          ? 'bg-emerald-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/40'
-          : 'bg-zinc-800/50 border-zinc-700/40 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 hover:bg-zinc-700/60'
+          ? 'bg-cyan-600 border-cyan-400 text-white shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+          : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white hover:bg-zinc-700'
       }
+      active:scale-[0.96]
+      disabled:bg-zinc-900 disabled:text-zinc-600 disabled:border-zinc-800 disabled:cursor-not-allowed
     `}
     onClick={onClick}
   >
@@ -68,42 +70,44 @@ export const CardBtn: React.FC<CardBtnProps> = ({
 }) => (
   <button
     className={`
-      ${small ? 'py-1.5 px-1' : 'py-3 px-2.5'} 
-      text-[11px] rounded-xl border-2 transition-all duration-300 
-      flex flex-col items-center justify-center gap-1.5 relative overflow-hidden
-      transform active:scale-[0.96]
+      ${small ? 'py-2.5 px-2 min-h-[4rem]' : 'py-3.5 px-2.5 min-h-[5rem]'}
+      text-xs rounded-xl border-2 transition-all duration-200
+      flex flex-col items-center justify-center gap-2 relative overflow-hidden
       ${
         active
           ? `
-          bg-emerald-600
-          border-emerald-400 
-          text-white 
-          shadow-xl shadow-emerald-500/40
+          bg-cyan-600
+          border-cyan-400
+          text-white
+          shadow-[0_4px_20px_rgba(6,182,212,0.5)]
           scale-[1.02]
         `
           : `
-          bg-zinc-800/50 
-          border-zinc-700/30 
-          text-zinc-400 
-          hover:border-zinc-500 
-          hover:text-zinc-200 
-          hover:bg-zinc-700/60
+          bg-zinc-800
+          border-zinc-700
+          text-zinc-300
+          hover:border-zinc-500
+          hover:text-white
+          hover:bg-zinc-700
         `
       }
+      active:scale-[0.98]
     `}
     onClick={onClick}
     onMouseEnter={onMouseEnter}
     onMouseLeave={onMouseLeave}
   >
-    {active ? (
-      <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
-        <Check className="w-3.5 h-3.5 text-emerald-600" strokeWidth={3} />
+    {active && (
+      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center z-10">
+        <Check className="w-3 h-3 text-cyan-600" strokeWidth={3} />
       </div>
-    ) : null}
+    )}
 
-    <div className={`relative z-10 flex flex-col items-center gap-1 ${active ? 'text-white' : ''}`}>
-      {children}
-    </div>
+    {active && (
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 via-white/50 to-cyan-400" />
+    )}
+
+    <div className="relative z-10 flex flex-col items-center gap-1.5">{children}</div>
   </button>
 );
 
@@ -254,6 +258,16 @@ export const Slider: React.FC<SliderProps> = ({
   );
 };
 
+/**
+ * Toggle Switch Component - Redesigned
+ *
+ * 设计特点：
+ * 1. 启用/关闭状态颜色对比鲜明
+ * 2. 渐变背景和发光效果
+ * 3. 更现代的开关设计
+ * 4. 清晰的状态指示
+ */
+
 export const Toggle: React.FC<ToggleProps> = ({
   label,
   checked,
@@ -261,73 +275,112 @@ export const Toggle: React.FC<ToggleProps> = ({
   compact,
   description,
 }) => {
-  const getTogglePosition = () => {
-    if (!checked) return 'left-0.5';
-
-    return compact ? 'left-[calc(100%-0.75rem)]' : 'left-[calc(100%-1.125rem)]';
-  };
-
   return (
     <button
       className={`
-        flex items-center justify-between ${compact ? 'py-1.5 flex-1' : 'py-2 w-full'} 
-        text-left group rounded-lg px-2 -mx-2
-        transition-all duration-200
-        ${checked ? 'bg-gradient-to-r from-indigo-500/10 to-transparent' : 'hover:bg-zinc-800/30'}
+        flex items-center justify-between ${compact ? 'py-2.5 flex-1' : 'py-3 w-full'}
+        text-left group rounded-xl px-4 -mx-3
+        transition-all duration-300 ease-out
+        ${
+          checked
+            ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.15)]'
+            : 'bg-zinc-800/40 border border-zinc-700/50 hover:bg-zinc-800/60 hover:border-zinc-600/50'
+        }
       `}
       onClick={() => onChange(!checked)}
       type="button"
+      role="switch"
+      aria-checked={checked}
     >
-      <div className="flex flex-col gap-0.5">
-        <div className="flex items-center gap-2">
-          {checked ? (
-            <div className="w-4 h-4 rounded-full bg-green-500/20 flex items-center justify-center">
-              <Check className="w-2.5 h-2.5 text-green-500" />
-            </div>
-          ) : (
-            <div className="w-4 h-4 rounded-full border border-zinc-600" />
-          )}
-          <span
-            className={`
-              ${compact ? 'text-[10px]' : 'text-[11px]'} 
-              transition-colors duration-200
-              ${checked ? 'text-white font-medium' : 'text-zinc-400 group-hover:text-zinc-300'}
-            `}
-          >
-            {label}
-          </span>
-          {checked && !compact ? (
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium animate-in fade-in duration-200">
-              已启用
-            </span>
-          ) : null}
+      <div className="flex items-center gap-3">
+        {/* 状态指示器 - 大圆点设计 */}
+        <div
+          className={`
+            w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0
+            transition-all duration-300
+            ${
+              checked
+                ? 'bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-[0_0_12px_rgba(6,182,212,0.6)]'
+                : 'bg-zinc-700 border-2 border-zinc-600 group-hover:border-zinc-500'
+            }
+          `}
+        >
+          <Check
+            className={`w-4 h-4 transition-all duration-300 ${checked ? 'text-white scale-100' : 'text-zinc-500 scale-0'}`}
+            strokeWidth={3}
+          />
         </div>
-        {description ? <span className="text-[10px] text-zinc-500 ml-6">{description}</span> : null}
+
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <span
+              className={`
+                ${compact ? 'text-xs' : 'text-sm'}
+                font-semibold transition-all duration-300
+                ${checked ? 'text-white' : 'text-zinc-400 group-hover:text-zinc-300'}
+              `}
+            >
+              {label}
+            </span>
+
+            {/* 状态标签 - 更醒目的设计 */}
+            <span
+              className={`
+                text-[10px] px-2 py-0.5 rounded-full font-bold transition-all duration-300
+                ${
+                  checked
+                    ? 'bg-cyan-400 text-zinc-950 shadow-[0_0_8px_rgba(34,211,238,0.4)]'
+                    : 'bg-zinc-700 text-zinc-500 border border-zinc-600'
+                }
+              `}
+            >
+              {checked ? '已启用' : '已关闭'}
+            </span>
+          </div>
+
+          {description && (
+            <span
+              className={`text-xs mt-0.5 transition-colors duration-300 ${checked ? 'text-cyan-300/70' : 'text-zinc-500'}`}
+            >
+              {description}
+            </span>
+          )}
+        </div>
       </div>
 
+      {/* 开关滑块 - 重新设计 */}
       <div
         className={`
-          ${compact ? 'w-8 h-4' : 'w-10 h-5'} 
-          rounded-full transition-all duration-300 relative
+          relative w-12 h-7 rounded-full flex-shrink-0 p-0.5
+          transition-all duration-300
           ${
             checked
-              ? 'bg-gradient-to-r from-indigo-500 to-purple-500 shadow-md shadow-indigo-500/30'
-              : 'bg-zinc-700 hover:bg-zinc-600'
+              ? 'bg-gradient-to-r from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+              : 'bg-zinc-700 border border-zinc-600'
           }
         `}
       >
+        {/* 滑块按钮 */}
         <div
           className={`
-            ${compact ? 'w-3 h-3' : 'w-4 h-4'} 
-            rounded-full bg-white absolute top-0.5 
-            transition-all duration-300 shadow-sm
-            ${getTogglePosition()}
-            ${checked ? 'shadow-indigo-500/50' : ''}
+            relative w-6 h-6 rounded-full shadow-lg
+            transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
+            ${checked ? 'translate-x-5 bg-white' : 'translate-x-0 bg-zinc-400'}
           `}
-        />
-        {checked ? (
-          <div className="absolute inset-0 rounded-full bg-white/10 animate-pulse" />
-        ) : null}
+        >
+          {/* 滑块内部指示 */}
+          <div
+            className={`
+              absolute inset-1 rounded-full transition-all duration-300
+              ${checked ? 'bg-cyan-400/30' : 'bg-zinc-600'}
+            `}
+          />
+        </div>
+
+        {/* 启用时的光效 */}
+        {checked && (
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/20 to-transparent animate-pulse" />
+        )}
       </div>
     </button>
   );

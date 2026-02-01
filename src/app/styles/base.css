@@ -1,0 +1,223 @@
+/**
+ * Base Styles - 基础样式
+ * 全局重置和基础元素样式
+ */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap');
+
+/* Box Model Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+  margin: 0;
+  background-color: var(--color-zinc-950);
+  color: var(--color-zinc-200);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Button Reset */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Select Element Styling */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: var(--color-zinc-800);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-zinc-700);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-zinc-900);
+}
+
+/* Checkbox Styling */
+input[type='checkbox'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #3d3d4f;
+  border-radius: 4px;
+  background-color: #1c1c24;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+input[type='checkbox']:hover {
+  border-color: #4a4a5e;
+  background-color: #252530;
+}
+
+input[type='checkbox']:checked {
+  background-color: var(--color-teal-500);
+  border-color: var(--color-teal-400);
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Color Input Styling */
+input[type='color'] {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  padding: 0;
+}
+
+input[type='color']::-webkit-color-swatch {
+  border: none;
+  border-radius: var(--radius-md);
+}
+
+input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+/* Range Slider Styling */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  height: 6px;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  background: #2d2d3a;
+  height: 6px;
+  border-radius: 3px;
+}
+
+input[type='range']::-moz-range-track {
+  background: #2d2d3a;
+  height: 6px;
+  border-radius: 3px;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-blue-500);
+  border: 2px solid #1c1c24;
+  margin-top: -5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
+}
+
+input[type='range']::-moz-range-thumb {
+  border: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-blue-500);
+  border: 2px solid #1c1c24;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
+}
+
+input[type='range']::-webkit-slider-thumb:hover,
+input[type='range']::-moz-range-thumb:hover {
+  background: var(--color-blue-400);
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+input[type='range']:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Range Slider Accent Colors */
+input[type='range'].accent-amber-500::-webkit-slider-thumb,
+input[type='range'].accent-amber-500::-moz-range-thumb {
+  background: var(--color-amber-500);
+}
+
+input[type='range'].accent-cyan-500::-webkit-slider-thumb,
+input[type='range'].accent-cyan-500::-moz-range-thumb {
+  background: var(--color-cyan-500);
+}
+
+input[type='range'].accent-emerald-500::-webkit-slider-thumb,
+input[type='range'].accent-emerald-500::-moz-range-thumb {
+  background: var(--color-teal-500);
+}
+
+input[type='range'].accent-indigo-500::-webkit-slider-thumb,
+input[type='range'].accent-indigo-500::-moz-range-thumb {
+  background: var(--color-indigo-500);
+}
+
+/* Text Input Styling */
+input[type='text'],
+input[type='number'],
+input[type='url'],
+input[type='email'],
+textarea,
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: 1px solid var(--color-zinc-700);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+  color: var(--color-white);
+  width: 100%;
+}
+
+input[type='text']:focus,
+input[type='number']:focus,
+input[type='url']:focus,
+input[type='email']:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-indigo-500);
+}
+
+/* Custom Scrollbar Utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-zinc-700);
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}

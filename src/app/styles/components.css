@@ -1,0 +1,285 @@
+/**
+ * Component Styles - 组件样式
+ * 自定义组件和UI模式
+ */
+
+/* ========================================
+   BUTTON STYLES - 按钮组件
+   ======================================== */
+
+/* Cyber Button - 科技风格按钮 */
+.btn-cyber {
+  transition: all 75ms ease-out;
+  transform: scale(1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-cyber:active {
+  transform: scale(0.95);
+  filter: brightness(1.3);
+  text-shadow: 0 0 8px currentColor;
+}
+
+.btn-cyber::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgb(255 255 255 / 0.2);
+  opacity: 0;
+  transition: opacity 75ms;
+  pointer-events: none;
+}
+
+.btn-cyber:active::after {
+  opacity: 1;
+}
+
+/* Click Scale - 点击缩放效果 */
+.click-scale {
+  transition:
+    transform 0.08s ease-out,
+    box-shadow 0.08s ease-out;
+  will-change: transform;
+}
+
+.click-scale:active {
+  transform: scale(0.95) translateY(0);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.click-scale:hover {
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   MOBILE COMPONENTS - 移动端组件
+   ======================================== */
+
+/* Mobile Drawer - 移动端抽屉 */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 20rem;
+  z-index: 60;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.mobile-drawer--open {
+  transform: translateX(0);
+}
+
+/* Mobile Backdrop */
+.mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
+}
+
+.mobile-drawer-backdrop--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Mobile Close Button */
+.mobile-drawer-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  background: var(--color-zinc-800);
+  border: 1px solid var(--color-zinc-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-zinc-400);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+
+.mobile-drawer-close:hover {
+  background: var(--color-zinc-700);
+  color: white;
+}
+
+/* Mobile FAB - 浮动操作按钮 */
+.mobile-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-indigo-600) 0%, var(--color-indigo-500) 100%);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(99, 102, 241, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.mobile-fab svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.mobile-fab:active {
+  transform: scale(0.92);
+}
+
+.mobile-fab:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 6px 16px rgba(99, 102, 241, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   DARK THEME SLIDER - 深色主题滑块
+   ======================================== */
+
+.dark-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  height: 6px;
+}
+
+.dark-slider::-webkit-slider-runnable-track {
+  background: #2d2d3a;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.dark-slider::-moz-range-track {
+  background: #2d2d3a;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.dark-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: var(--color-blue-500);
+  border: 2px solid #1c1c24;
+  margin-top: -8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+}
+
+.dark-slider::-moz-range-thumb {
+  border: none;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: var(--color-blue-500);
+  border: 2px solid #1c1c24;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+}
+
+.dark-slider::-webkit-slider-thumb:hover,
+.dark-slider::-moz-range-thumb:hover {
+  background: var(--color-blue-400);
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+}
+
+/* Dark Video Slider */
+.dark-video-slider::-webkit-slider-thumb {
+  height: 18px;
+  width: 18px;
+  margin-top: -6px;
+}
+
+.dark-video-slider::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+}
+
+/* ========================================
+   DARK THEME BUTTONS - 深色主题按钮
+   ======================================== */
+
+.dark-btn,
+.dark-action-btn {
+  min-height: 44px;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-zinc-800);
+  border: 1px solid var(--color-zinc-700);
+  color: var(--color-zinc-300);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dark-btn:hover,
+.dark-action-btn:hover {
+  background: var(--color-zinc-700);
+  border-color: var(--color-zinc-600);
+  color: white;
+}
+
+.dark-btn-compact {
+  min-height: 40px;
+  padding: 0.625rem 0.5rem;
+}
+
+/* Play Button */
+.dark-play-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--color-blue-500);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.dark-play-btn:hover {
+  background: var(--color-blue-400);
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+}
+
+.dark-play-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}

@@ -1,17 +1,19 @@
-import * as depthEstimation from '@tensorflow-models/depth-estimation';
-import * as tf from '@tensorflow/tfjs';
-
 import { createLogger } from '@/core/Logger';
+import { loadDepthEstimationModel, loadTensorFlow } from '../AIModuleLoader';
 
 import type { AIProvider, DepthResult, ImageAnalysis } from '../types';
+
+type DepthEstimationModule = Awaited<ReturnType<typeof loadDepthEstimationModel>>;
 
 export class TensorFlowProvider implements AIProvider {
   private _isAvailable = false;
 
-  private estimator: depthEstimation.DepthEstimator | null = null;
+  private estimator: unknown | null = null;
   private isLoading = false;
   private loadError: Error | null = null;
   readonly providerId = 'tensorflow';
+
+  private depthEstimation: DepthEstimationModule | null = null;
 
   async analyzeScene(_base64Image: string): Promise<ImageAnalysis> {
     throw new Error('TensorFlowProvider does not support scene analysis');
@@ -21,6 +23,7 @@ export class TensorFlowProvider implements AIProvider {
     if (this.estimator) {
       try {
         this.estimator = null;
+        this.depthEstimation = null;
         this.loadError = null;
         this._isAvailable = false;
         logger.info('TensorFlow depth model disposed');
@@ -54,7 +57,8 @@ export class TensorFlowProvider implements AIProvider {
     });
 
     try {
-      const depthMap = await this.estimator.estimateDepth(img, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const depthMap = await (this.estimator as any).estimateDepth(img, {
         flipHorizontal: false,
         minDepth: 0,
         maxDepth: 1,
@@ -111,15 +115,18 @@ export class TensorFlowProvider implements AIProvider {
     this.isLoading = true;
 
     try {
-      await tf.setBackend('webgl');
-      await tf.ready();
-      
-      const modelPromise = depthEstimation.createEstimator(
-        depthEstimation.SupportedModels.ARPortraitDepth,
-        getARPortraitDepthModelConfig()
+      await loadTensorFlow();
+      this.depthEstimation = await loadDepthEstimationModel();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const depthEstimationModule = this.depthEstimation as any;
+      const modelPromise = depthEstimationModule.createEstimator(
+        depthEstimationModule.SupportedModels.ARPortraitDepth,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getARPortraitDepthModelConfig(depthEstimationModule) as any
       );
-      
-      const timeoutPromise = new Promise<never>((_, reject) => 
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('TensorFlow Model Load Timeout (15s)')), 15000)
       );
 
@@ -141,11 +148,11 @@ export class TensorFlowProvider implements AIProvider {
 }
 
 const DEPTH_JPEG_QUALITY = 0.9;
-const getARPortraitDepthModelConfig = (): depthEstimation.ARPortraitDepthModelConfig => {
+
+const getARPortraitDepthModelConfig = (_depthEstimation: DepthEstimationModule): unknown => {
   const depthModelUrl = import.meta.env.VITE_TF_DEPTH_MODEL_URL;
   const segmentationModelUrl = import.meta.env.VITE_TF_SEGMENTATION_MODEL_URL;
-  const config: depthEstimation.ARPortraitDepthModelConfig =
-    {} as depthEstimation.ARPortraitDepthModelConfig;
+  const config: Record<string, string> = {};
 
   if (typeof depthModelUrl === 'string' && depthModelUrl.length > 0) {
     config.depthModelUrl = depthModelUrl;
@@ -157,5 +164,6 @@ const getARPortraitDepthModelConfig = (): depthEstimation.ARPortraitDepthModelCo
 
   return config;
 };
+
 const LOAD_POLL_INTERVAL_MS = 100;
 const logger = createLogger({ module: 'TensorFlowProvider' });

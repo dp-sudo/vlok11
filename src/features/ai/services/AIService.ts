@@ -123,11 +123,11 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
     if (isTestMode) {
       logger.info('Test mode detected, returning mock analysis');
-      
+
       this.emitProgress(PROGRESS.START, 'analyzing');
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.emitProgress(PROGRESS.MIDPOINT, 'analyzing');
-      
+
       return {
         sceneType: SceneType.OUTDOOR,
         description: 'Mocked scene description for testing',
@@ -330,13 +330,13 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
     }
 
     const testMode = (window as { __TEST_MODE__?: boolean }).__TEST_MODE__;
-    
+
     if (typeof window !== 'undefined' && testMode === true) {
       logger.info('Test mode detected, skipping real initialization');
       this.initialized = true;
       this.activeSceneProvider = this.fallbackProvider;
       this.activeDepthProvider = this.fallbackProvider;
-      
+
       return;
     }
 
@@ -369,6 +369,91 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
     this.progressCallbacks.add(callback);
 
     return () => this.progressCallbacks.delete(callback);
+  }
+
+  // Provider 管理方法
+  async switchProvider(type: 'scene' | 'depth', providerId: string): Promise<void> {
+    const provider = this.getProviderById(providerId);
+
+    if (!provider) {
+      throw new Error(`Provider not found: ${providerId}`);
+    }
+
+    if (!provider.isAvailable) {
+      throw new Error(`Provider ${providerId} is not available`);
+    }
+
+    const fromProvider =
+      type === 'scene'
+        ? this.activeSceneProvider?.providerId
+        : this.activeDepthProvider?.providerId;
+
+    if (type === 'scene') {
+      this.activeSceneProvider = provider;
+    } else {
+      this.activeDepthProvider = provider;
+    }
+
+    getEventBus().emit(AIEvents.PROVIDER_CHANGED, {
+      type,
+      from: fromProvider ?? 'unknown',
+      to: providerId,
+    });
+
+    logger.info(`Switched ${type} provider from ${fromProvider} to ${providerId}`);
+  }
+
+  isProviderAvailable(providerId: string): boolean {
+    const provider = this.getProviderById(providerId);
+
+    return provider?.isAvailable ?? false;
+  }
+
+  getActiveProviderId(type: 'scene' | 'depth'): string {
+    const provider = type === 'scene' ? this.activeSceneProvider : this.activeDepthProvider;
+
+    return provider?.providerId ?? 'unknown';
+  }
+
+  private getProviderById(id: string): AIProvider | null {
+    switch (id) {
+      case 'gemini':
+        return this.geminiProvider;
+      case 'tensorflow':
+        return this.tensorflowProvider;
+      case 'fallback':
+        return this.fallbackProvider;
+      default:
+        return null;
+    }
+  }
+
+  // 缓存统计方法
+  getCacheStats(): { analysisCacheSize: number; depthCacheSize: number; totalSize: number } {
+    let totalSize = 0;
+
+    // 估算缓存大小（简化计算）
+    for (const [key, entry] of this.analysisCache.entries()) {
+      totalSize += key.length * 2 + JSON.stringify(entry.value).length * 2;
+    }
+    for (const [key, entry] of this.depthCache.entries()) {
+      totalSize += key.length * 2 + JSON.stringify(entry.value).length * 2;
+    }
+
+    return {
+      analysisCacheSize: this.analysisCache.size,
+      depthCacheSize: this.depthCache.size,
+      totalSize,
+    };
+  }
+
+  getCacheConfig(): AICacheConfig {
+    return { ...this.cacheConfig };
+  }
+
+  updateCacheConfig(config: Partial<AICacheConfig>): void {
+    this.cacheConfig = { ...this.cacheConfig, ...config };
+    logger.info('Cache config updated', { config: this.cacheConfig });
   }
 
   pause(): void {

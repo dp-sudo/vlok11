@@ -17,13 +17,29 @@ export interface AIProvider {
   readonly isAvailable: boolean;
   readonly providerId: string;
 }
+export interface CacheStats {
+  analysisCacheSize: number;
+  depthCacheSize: number;
+  totalSize: number;
+}
+
 export interface AIService {
   analyzeScene(base64Image: string): Promise<ImageAnalysis>;
+  clearCache(): void;
+  configureCaching(config: Partial<AICacheConfig>): void;
+  destroy(): Promise<void>;
   editImage(base64Image: string, prompt: string): Promise<string>;
   estimateDepth(imageUrl: string): Promise<DepthResult>;
   getActiveProvider(): string;
+  getActiveProviderId(type: 'scene' | 'depth'): string;
+  getCacheConfig(): AICacheConfig;
+  getCacheStats(): CacheStats;
+  initialize(): Promise<void>;
   isAvailable(): boolean;
+  isProviderAvailable(providerId: string): boolean;
   onProgress(callback: AIProgressCallback): () => void;
+  switchProvider(type: 'scene' | 'depth', providerId: string): Promise<void>;
+  updateCacheConfig(config: Partial<AICacheConfig>): void;
 }
 export interface CacheEntry<T> {
   hash: string;

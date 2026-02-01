@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import '@/app/styles/index.css';
+import '@/app/styles/global.css';
 import { bootstrap } from '@/app/bootstrap';
 import { ServiceProvider } from '@/core/contexts/ServiceContext';
 import { initializeSentry } from '@/core/monitoring/initSentry';

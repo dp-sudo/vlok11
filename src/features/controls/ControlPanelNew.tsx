@@ -4,10 +4,12 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import { useSceneStore } from '@/stores/sharedStore';
 
+import { AITab } from './AITab';
 import { CameraTab } from './CameraTab';
 import { VideoControls } from './components';
 import { MOTIONS, PROJECTIONS, RENDER_STYLES, type TabType } from './constants';
 import { EffectsTab } from './EffectsTab';
+import { ImmersiveTab } from './ImmersiveTab';
 import { ControlPanelHeader, ControlPanelTabBar, SceneTab } from './parts';
 
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
@@ -55,6 +57,10 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
       style: true,
       color: true,
       lighting: true,
+      aiMotion: true,
+      immersiveAudio: true,
+      weather: true,
+      emotionalTone: true,
     });
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
@@ -175,6 +181,17 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
                 toggleSection={toggleSection}
               />
             )}
+
+            {activeTab === 'immersive' && (
+              <ImmersiveTab
+                config={config}
+                expandedSections={expandedSections}
+                set={set}
+                toggleSection={toggleSection}
+              />
+            )}
+
+            {activeTab === 'ai' && <AITab config={config} set={set} />}
           </div>
         </div>
       </div>

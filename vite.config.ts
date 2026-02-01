@@ -30,10 +30,41 @@ export default defineConfig(({ mode }) => {
       target: 'es2022',
       minify: 'esbuild',
       sourcemap: !isProd,
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 500,
       rollupOptions: {
         output: {
-          // Automatic chunking
+          manualChunks: {
+            // Core React
+            'react-core': ['react', 'react-dom'],
+
+            // 3D Rendering (largest chunk)
+            'three-core': ['three', '@react-three/fiber', '@react-three/drei', 'three-stdlib'],
+
+            // State Management
+            state: ['zustand'],
+
+            // AI/ML Features - TensorFlow
+            'ai-tensorflow': ['@tensorflow/tfjs'],
+            'ai-models': [
+              '@tensorflow-models/depth-estimation',
+              '@tensorflow-models/face-detection',
+            ],
+
+            // Google AI
+            'ai-gemini': ['@google/genai'],
+
+            // Media Processing
+            media: ['hls.js'],
+
+            // Computer Vision
+            vision: ['@mediapipe/face_detection'],
+
+            // UI Components
+            ui: ['lucide-react', 'clsx', 'tailwind-merge'],
+
+            // Monitoring
+            monitoring: ['@sentry/react'],
+          },
         },
       },
     },

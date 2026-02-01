@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import { useCameraPoseStore } from '@/stores/cameraStore';
+import { useSceneStore } from '@/stores/sharedStore';
 
 import type { InteractionType } from '@/shared/types';
 
@@ -11,15 +12,9 @@ interface Point2D {
 
 interface UseCameraInputOptions {
   enabled?: boolean;
-  panSensitivity?: number;
-  rotateSensitivity?: number;
-  zoomSensitivity?: number;
 }
 
 const INPUT_CONSTANTS = {
-  ROTATE_SENSITIVITY: 0.005,
-  PAN_SENSITIVITY: 0.01,
-  ZOOM_SENSITIVITY: 0.001,
   ROTATION_Y_FACTOR: 10,
   Y_MIN: -5,
   Y_MAX: 10,
@@ -33,12 +28,12 @@ export function useCameraInput(
   containerRef: React.RefObject<HTMLElement>,
   options: UseCameraInputOptions = {}
 ) {
-  const {
-    enabled = true,
-    rotateSensitivity = INPUT_CONSTANTS.ROTATE_SENSITIVITY,
-    panSensitivity = INPUT_CONSTANTS.PAN_SENSITIVITY,
-    zoomSensitivity = INPUT_CONSTANTS.ZOOM_SENSITIVITY,
-  } = options;
+  const { enabled = true } = options;
+
+  // Get sensitivities from config
+  const rotateSpeed = useSceneStore((s) => s.config.rotateSpeed);
+  const zoomSpeed = useSceneStore((s) => s.config.zoomSpeed);
+  const panSpeed = useSceneStore((s) => s.config.panSpeed);
 
   const isInteracting = useRef(false);
   const interactionType = useRef<InteractionType>('none');
@@ -74,8 +69,8 @@ export function useCameraInput(
       const radius = Math.sqrt(dx * dx + dz * dz);
 
       const currentAngle = Math.atan2(dx, dz);
-      const newAngle = currentAngle + deltaX * rotateSensitivity;
-      const newY = pose.position.y - deltaY * rotateSensitivity * INPUT_CONSTANTS.ROTATION_Y_FACTOR;
+      const newAngle = currentAngle + deltaX * rotateSpeed;
+      const newY = pose.position.y - deltaY * rotateSpeed * INPUT_CONSTANTS.ROTATION_Y_FACTOR;
 
       setPose(
         {
@@ -88,14 +83,14 @@ export function useCameraInput(
         'user'
       );
     },
-    [store, rotateSensitivity]
+    [store, rotateSpeed]
   );
 
   const updatePan = useCallback(
     (deltaX: number, deltaY: number) => {
       const { pose, setPose } = store.getState();
-      const panX = -deltaX * panSensitivity;
-      const panY = deltaY * panSensitivity;
+      const panX = -deltaX * panSpeed;
+      const panY = deltaY * panSpeed;
 
       setPose(
         {
@@ -113,7 +108,7 @@ export function useCameraInput(
         'user'
       );
     },
-    [store, panSensitivity]
+    [store, panSpeed]
   );
 
   const updateZoom = useCallback(
@@ -128,7 +123,7 @@ export function useCameraInput(
         direction.x * direction.x + direction.y * direction.y + direction.z * direction.z
       );
 
-      const zoomChange = delta * zoomSensitivity * INPUT_CONSTANTS.ZOOM_FACTOR;
+      const zoomChange = delta * zoomSpeed * INPUT_CONSTANTS.ZOOM_FACTOR;
       const newDistance = Math.max(
         INPUT_CONSTANTS.ZOOM_MIN,
         Math.min(INPUT_CONSTANTS.ZOOM_MAX, distance + zoomChange)
@@ -146,7 +141,7 @@ export function useCameraInput(
         'user'
       );
     },
-    [store, zoomSensitivity]
+    [store, zoomSpeed]
   );
 
   useInputEventListeners({

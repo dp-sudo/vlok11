@@ -1,13 +1,15 @@
 import { useFrame, useThree } from '@react-three/fiber';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { PerspectiveCamera } from 'three';
 
+import { getEventBus } from '@/core/EventBus';
 import { getCameraAnimator, getCameraTransitionService } from '@/features/scene/services/camera';
 import { CameraMotionType, type ProjectionMode, type SceneConfig, type Vec3 } from '@/shared/types';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 
 import { CAMERA_DEFAULTS, MOTION_SCALE_BY_PROJECTION, toMotionType } from './constants';
 import { useUserInteraction } from './useUserInteraction';
+import { useMotionAutoResume } from './useMotionAutoResume';
 
 import type { RefObject } from 'react';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
@@ -27,6 +29,30 @@ export const CameraMotionLogic = memo(({ config, controlsRef }: CameraMotionLogi
   const lastMotionType = useRef<CameraMotionType>(CameraMotionType.STATIC);
   const lastProjectionMode = useRef<ProjectionMode>(config.projectionMode);
   const lastIsImmersive = useRef<boolean>(config.isImmersive);
+
+  // Auto-resume logic hook
+  const { handleInteractionEnd } = useMotionAutoResume(config);
+
+  // Handle user interaction start - pause AI motion
+  const handleInteractionStart = useCallback(() => {
+    const motionState = cameraStore.getState().motion;
+
+    if (motionState.isActive && !motionState.isPaused) {
+      cameraStore.getState().pauseMotion();
+    }
+  }, [cameraStore]);
+
+  // Listen for interaction events
+  useEffect(() => {
+    const bus = getEventBus();
+    const unsubStart = bus.on('input:interaction-start', handleInteractionStart);
+    const unsubEnd = bus.on('input:interaction-end', handleInteractionEnd);
+
+    return () => {
+      unsubStart();
+      unsubEnd();
+    };
+  }, [handleInteractionStart, handleInteractionEnd]);
 
   useEffect(() => {
     if (controlsRef.current) {

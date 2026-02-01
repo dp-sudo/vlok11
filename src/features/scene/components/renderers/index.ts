@@ -7,6 +7,15 @@ export type { DomeSphereProps } from './DomeSphereRenderer';
 
 export { renderGaussianSplat } from './GaussianSplatRenderer';
 export type { GaussianSplatProps } from './GaussianSplatRenderer';
+export {
+  AdvancedPointCloudRenderer,
+  LODPointCloudRenderer,
+} from './AdvancedPointCloudRenderer';
+export type {
+  PointCloudConfig,
+  LODPointCloudConfig,
+} from './AdvancedPointCloudRenderer';
+
 export { renderPanoramaSphere } from './PanoramaSphereRenderer';
 export type { PanoramaSphereProps } from './PanoramaSphereRenderer';
 export { renderSphere } from './SphereRenderer';

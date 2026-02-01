@@ -1,10 +1,9 @@
 import { useFrame } from '@react-three/fiber';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
 
 import { getEventBus } from '@/core/EventBus';
 import { TrackingEvents } from '@/core/EventTypes';
-import { useSceneStore } from '@/stores/sharedStore';
 
 import { PARALLAX } from './constants';
 
@@ -37,9 +36,6 @@ const ParallaxRigComponent = ({ children, enabled = true }: ParallaxRigProps) =>
   const lastTrackingPoint = useRef<TrackingPoint | null>(null);
   const mousePosition = useRef({ x: 0, y: 0 });
 
-  const parallaxScale = useSceneStore((s) => s.config.parallaxScale);
-  const effectiveScale = useMemo(() => parallaxScale ?? 1, [parallaxScale]);
-
   useEffect(() => {
     if (!enabled) return;
 
@@ -49,8 +45,8 @@ const ParallaxRigComponent = ({ children, enabled = true }: ParallaxRigProps) =>
 
       mousePosition.current = { x, y };
 
-      const translationScale = PARALLAX_DEFAULTS.TRANSLATION_SCALE * effectiveScale;
-      const rotationScale = PARALLAX_DEFAULTS.ROTATION_SCALE * effectiveScale;
+      const translationScale = PARALLAX_DEFAULTS.TRANSLATION_SCALE;
+      const rotationScale = PARALLAX_DEFAULTS.ROTATION_SCALE;
 
       targetPosition.current.set(-x * translationScale, -y * translationScale, 0);
 
@@ -70,8 +66,8 @@ const ParallaxRigComponent = ({ children, enabled = true }: ParallaxRigProps) =>
 
       lastTrackingPoint.current = p;
 
-      const translationScale = PARALLAX_DEFAULTS.TRANSLATION_SCALE * effectiveScale;
-      const rotationScale = PARALLAX_DEFAULTS.ROTATION_SCALE * effectiveScale;
+      const translationScale = PARALLAX_DEFAULTS.TRANSLATION_SCALE;
+      const rotationScale = PARALLAX_DEFAULTS.ROTATION_SCALE;
 
       targetPosition.current.set(
         -p.x * translationScale,
@@ -91,7 +87,7 @@ const ParallaxRigComponent = ({ children, enabled = true }: ParallaxRigProps) =>
       window.removeEventListener('mousemove', handleMouseMove);
       off();
     };
-  }, [enabled, effectiveScale]);
+  }, [enabled]);
 
   useFrame(() => {
     if (!enabled || !groupRef.current) return;

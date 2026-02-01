@@ -131,7 +131,8 @@ const EASING_FUNCTIONS: Record<EasingType, EasingFunction> = {
   },
 };
 
-export const getAnimationScheduler = (): AnimationService => AnimationSchedulerImpl.getInstance();
+export const getAnimationScheduler = (): AnimationService & LifecycleAware =>
+  AnimationSchedulerImpl.getInstance();
 export const getEasingFunction = (type: EasingType): EasingFunction =>
   EASING_FUNCTIONS[type] || EASING_FUNCTIONS.linear;
 const logger = createLogger({ module: 'AnimationScheduler' });

@@ -6,3 +6,8 @@ export type { MaterialUpdaterOptions } from './useMaterialUpdater';
 export { useSceneMaterials } from './useSceneMaterials';
 export { useVideoControl } from './useVideoControl';
 export type { VideoControlOptions, VideoControlReturn } from './useVideoControl';
+export {
+  useAdvancedPointCloudMaterial,
+  updatePointCloudMaterial,
+} from './useAdvancedPointCloudMaterial';
+export type { PointCloudMaterialConfig } from './useAdvancedPointCloudMaterial';

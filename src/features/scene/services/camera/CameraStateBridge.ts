@@ -1,7 +1,6 @@
 import { useCameraStore } from '@/stores/index';
 
 import type { CameraPose, InteractionType } from '@/shared/types';
-import type { CameraPose as StoreCameraPose } from '@/stores/cameraStore';
 
 export function createCameraStateAccessor(): CameraStateAccessor {
   return {
@@ -27,20 +26,27 @@ export function createCameraStateAccessor(): CameraStateAccessor {
     startInteraction(type: 'rotate' | 'pan' | 'zoom' | 'touch'): void {
       const currentPose = useCameraStore.getState().pose;
 
-      useCameraStore
-        .getState()
-        .startInteraction(type as InteractionType, currentPose as unknown as StoreCameraPose);
+      useCameraStore.getState().startInteraction(type as InteractionType, currentPose);
     },
     endInteraction(): void {
       useCameraStore.getState().endInteraction();
     },
     getBasePose(): CameraPose | null {
-      return useCameraStore.getState().basePose as unknown as CameraPose;
+      const {basePose} = useCameraStore.getState();
+
+      if (!basePose) return null;
+
+      return {
+        position: basePose.position,
+        target: basePose.target,
+        up: basePose.up,
+        fov: basePose.fov,
+      };
     },
     captureBasePose(): void {
       const currentPose = useCameraStore.getState().pose;
 
-      useCameraStore.getState().captureBasePose(currentPose as unknown as StoreCameraPose);
+      useCameraStore.getState().captureBasePose(currentPose);
     },
     clearBasePose(): void {
       useCameraStore.getState().clearBasePose();

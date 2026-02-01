@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { VideoTexture } from 'three';
 
@@ -16,6 +16,8 @@ export function useVideoControl({
   const lastTimeRef = useRef<number | null>(null);
   const boundVideoRef = useRef<HTMLVideoElement | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
+  const [seekError, setSeekError] = useState<string | null>(null);
+  const [isSeekable, setIsSeekable] = useState(false);
 
   useEffect(() => {
     callbacksRef.current = { onTimeUpdate, onDurationChange, onEnded };
@@ -24,7 +26,13 @@ export function useVideoControl({
   useEffect(() => {
     const video = videoTextureRef.current?.image;
 
-    if (!video) return;
+    if (!video) {
+      setIsSeekable(false);
+
+      return;
+    }
+
+    setIsSeekable(true);
 
     // Apply Playback State
     if (isPlaying && video.paused) {
@@ -35,7 +43,7 @@ export function useVideoControl({
 
     // Apply Attributes
     video.loop = !!isLooping;
-    
+
     // Safety check for playbackRate to prevent "non-finite" errors from persisted state
     if (Number.isFinite(playbackRate) && playbackRate > 0) {
       video.playbackRate = playbackRate;
@@ -48,7 +56,14 @@ export function useVideoControl({
     const attachIfNeeded = (): void => {
       const video = videoTextureRef.current?.image;
 
-      if (!video) return;
+      if (!video) {
+        setIsSeekable(false);
+
+        return;
+      }
+
+      setIsSeekable(true);
+
       if (boundVideoRef.current === video) return;
 
       cleanupRef.current?.();
@@ -68,7 +83,13 @@ export function useVideoControl({
       const handleDurationChange = () => {
         const d = video.duration;
 
-        if (!d || isNaN(d)) return;
+        if (!d || isNaN(d)) {
+          setIsSeekable(false);
+
+          return;
+        }
+
+        setIsSeekable(true);
         if (lastDurationRef.current !== d) {
           lastDurationRef.current = d;
           callbacksRef.current.onDurationChange?.(d);
@@ -79,16 +100,23 @@ export function useVideoControl({
         callbacksRef.current.onEnded?.();
       };
 
+      const handleCanSeek = () => {
+        setIsSeekable(video.duration > 0);
+      };
+
       video.addEventListener('timeupdate', handleTimeUpdate);
       video.addEventListener('durationchange', handleDurationChange);
       video.addEventListener('ended', handleEnded);
+      video.addEventListener('canplay', handleCanSeek);
 
       handleDurationChange();
+      handleCanSeek();
 
       cleanupRef.current = () => {
         video.removeEventListener('timeupdate', handleTimeUpdate);
         video.removeEventListener('durationchange', handleDurationChange);
         video.removeEventListener('ended', handleEnded);
+        video.removeEventListener('canplay', handleCanSeek);
       };
     };
 
@@ -107,14 +135,35 @@ export function useVideoControl({
     (time: number) => {
       const video = videoTextureRef.current?.image;
 
-      if (video) {
-        video.currentTime = time;
+      if (!video) {
+        setSeekError('Video not loaded');
+
+        return false;
+      }
+
+      if (!Number.isFinite(time) || time < 0) {
+        setSeekError('Invalid seek time');
+
+        return false;
+      }
+
+      try {
+        const clampedTime = Math.max(0, Math.min(time, video.duration || 0));
+
+        video.currentTime = clampedTime;
+        setSeekError(null);
+
+        return true;
+      } catch (_err) {
+        setSeekError('Seek failed');
+
+        return false;
       }
     },
     [videoTextureRef]
   );
 
-  return { seek };
+  return { seek, isSeekable, seekError };
 }
 
 export interface VideoControlOptions {
@@ -127,7 +176,9 @@ export interface VideoControlOptions {
   videoTextureRef: React.RefObject<VideoTexture | null>;
 }
 export interface VideoControlReturn {
-  seek: (time: number) => void;
+  seek: (time: number) => boolean;
+  isSeekable: boolean;
+  seekError: string | null;
 }
 
 const VIDEO_ATTACH_CHECK_INTERVAL_MS = 300;

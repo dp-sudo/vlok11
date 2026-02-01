@@ -34,7 +34,7 @@ export interface SceneViewerHandle {
   captureVideoFrame: () => void;
   downloadSnapshot: () => void;
   exportScene: () => void;
-  seekVideo: (time: number) => void;
+  seekVideo: (time: number) => boolean;
   setCameraView: (view: CameraViewPreset) => void;
   startRecording: (withAudio?: boolean) => void;
   stopRecording: () => void;
@@ -119,7 +119,7 @@ export const SceneViewer = memo(
     if (!imageUrl || !depthUrl) return null;
     const planeWidth = SCENE_CONFIG.PLANE_BASE_WIDTH;
     const planeHeight = planeWidth / aspectRatio;
-    const {enableFaceTracking} = config;
+    const { enableFaceTracking } = config;
 
     return (
       <div

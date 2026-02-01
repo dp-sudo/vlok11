@@ -37,8 +37,8 @@ export const DEFAULT_MOTION_PARAMS: MotionParams = {
   arcRhythm: 1,
   dollyIntensity: 0.8,
   dollyRange: 10,
-  flyByHeight: 2,
-  flyBySwing: 8,
+  flyByHeight: 5,
+  flyBySwing: 20,
   orbitRadius: 9,
   orbitTilt: 15,
   scale: 1.0,
@@ -53,7 +53,6 @@ const MOTION_CONSTANTS = {
   EPSILON: 0.0001,
   MIN_DISTANCE: 0.5,
   DEFAULT_FOV: 50,
-  FLY_BY_Z_BASE: 9,
   PI2: Math.PI * 2,
   SPIRAL_CENTER: 0.5,
   FOV_MIN: 10,
@@ -62,6 +61,11 @@ const MOTION_CONSTANTS = {
   DEG_TO_RAD_FACTOR: 180,
   BASE_RATE: 0.5,
 } as const;
+
+// Easing functions for smooth motion
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
 
 export function calculateMotion(
   type: MotionType,
@@ -120,17 +124,58 @@ export function calculateFlyBy(
   base: CameraPose,
   params: MotionParams
 ): MotionResult {
-  const t = (progress * 2 - 1) * params.flyBySwing;
+  const swing = params.flyBySwing;
   const height = params.flyByHeight;
 
+  // Apply easing for smooth acceleration/deceleration
+  const easedProgress = easeInOutCubic(progress);
+
+  // Calculate base distance from camera to target
+  const dx = base.position.x - base.target.x;
+  const dy = base.position.y - base.target.y;
+  const dz = base.position.z - base.target.z;
+  const baseDist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+  const zBase = Math.max(MOTION_CONSTANTS.MIN_DISTANCE, baseDist);
+
+  // Create an arc motion path using sine curves
+  // Camera moves in an arc: starts from one side, sweeps across, ends on other side
+  const angle = (easedProgress - 0.5) * Math.PI; // -π/2 to π/2
+  const sinAngle = Math.sin(angle);
+  const cosAngle = Math.cos(angle);
+
+  // X position: arc trajectory with entry and exit
+  const x = base.target.x + sinAngle * swing;
+
+  // Z position: depth varies to create "approach and leave" feeling
+  // Camera comes closer at middle of motion, starts/ends further away
+  const zDepthVariation = cosAngle * (swing * 0.3);
+  const z = base.target.z + zBase + zDepthVariation;
+
+  // Y position: height with slight arc for natural flight path
+  // Add slight rise in middle of motion
+  const heightArc = Math.sin(easedProgress * Math.PI) * (height * 0.2);
+  const y = base.target.y + height + heightArc;
+
+  // Dynamic target point for "sweeping past" effect
+  // Target moves slightly ahead of camera to create parallax
+  const targetLead = sinAngle * swing * 0.4;
+  const targetX = base.target.x + targetLead;
+
+  // Add slight FOV variation for dramatic effect (zoom in when closest)
+  const fovVariation = cosAngle * 2; // ±2 degrees
+  const finalFov = Math.max(
+    MOTION_CONSTANTS.FOV_MIN,
+    Math.min(MOTION_CONSTANTS.FOV_MAX, base.fov + fovVariation)
+  );
+
   return {
-    position: {
-      x: base.target.x + t,
-      y: base.target.y + height,
-      z: base.target.z + MOTION_CONSTANTS.FLY_BY_Z_BASE,
+    position: { x, y, z },
+    target: {
+      x: targetX,
+      y: base.target.y,
+      z: base.target.z,
     },
-    target: base.target,
-    fov: base.fov,
+    fov: finalFov,
   };
 }
 

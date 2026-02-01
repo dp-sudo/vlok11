@@ -30,8 +30,8 @@ const DEFAULT_PARAMS: MotionParams = {
   scale: 1.0,
   orbitRadius: 9,
   orbitTilt: 15,
-  flyByHeight: 2,
-  flyBySwing: 8,
+  flyByHeight: 5,
+  flyBySwing: 20,
   spiralLoops: 2,
   spiralHeight: 5,
   arcAngle: 90,
@@ -79,6 +79,10 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
     }
     MotionServiceImpl.instance = null;
   }
+  /**
+   * @deprecated 运动计算已移至 motion.ts，此方法仅用于 generatePreview()。
+   * 运行时请使用 CameraAnimator + motion.ts 的组合。
+   */
   calculate(time: number, basePose?: CameraPose): MotionResult | null {
     if (!this.state.isActive || this.state.isPaused || this.state.type === 'STATIC') {
       return null;
@@ -126,6 +130,7 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
 
     return result;
   }
+  /** @deprecated 内部方法，仅用于 generatePreview()。运行时请使用 motion.ts 的 calculateArc */
   private calculateArc(progress: number, base: CameraPose): MotionResult {
     const t = Math.sin(progress * Math.PI * 2);
     const maxAngle = degToRad(this.params.arcAngle ?? MOTION_CALC.ARC_DEFAULT_ANGLE);
@@ -144,6 +149,7 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
       fov: base.fov,
     };
   }
+  /** @deprecated 内部方法，仅用于 generatePreview()。运行时请使用 motion.ts 的 calculateDollyZoom */
   private calculateDollyZoom(progress: number, base: CameraPose): MotionResult {
     const t = Math.sin(progress * Math.PI * 2);
     const range = this.params.dollyRange ?? MOTION_CALC.DOLLY_MIN_DISTANCE;
@@ -176,20 +182,60 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
       fov: finalFov,
     };
   }
+  /** @deprecated 内部方法，仅用于 generatePreview()。运行时请使用 motion.ts 的 calculateFlyBy */
   private calculateFlyBy(progress: number, base: CameraPose): MotionResult {
-    const t = (progress * 2 - 1) * (this.params.flyBySwing ?? MOTION_CALC.FLY_BY_SWING);
-    const height = this.params.flyByHeight ?? 2;
+    const swing = this.params.flyBySwing ?? MOTION_CALC.FLY_BY_SWING;
+    const height = this.params.flyByHeight ?? MOTION_CALC.FLY_BY_HEIGHT;
+
+    // Apply easing for smooth acceleration/deceleration
+    const easedProgress = this.easeInOutCubic(progress);
+
+    // Calculate base distance from camera to target
+    const dx = base.position.x - base.target.x;
+    const dy = base.position.y - base.target.y;
+    const dz = base.position.z - base.target.z;
+    const baseDist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    const zBase = Math.max(MOTION_CALC.MIN_DISTANCE, baseDist);
+
+    // Create an arc motion path using sine curves
+    const angle = (easedProgress - 0.5) * Math.PI;
+    const sinAngle = Math.sin(angle);
+    const cosAngle = Math.cos(angle);
+
+    // X position: arc trajectory
+    const x = base.target.x + sinAngle * swing;
+
+    // Z position: depth varies for "approach and leave" feeling
+    const zDepthVariation = cosAngle * (swing * 0.3);
+    const z = base.target.z + zBase + zDepthVariation;
+
+    // Y position: height with slight arc
+    const heightArc = Math.sin(easedProgress * Math.PI) * (height * 0.2);
+    const y = base.target.y + height + heightArc;
+
+    // Dynamic target point for "sweeping past" effect
+    const targetLead = sinAngle * swing * 0.4;
+    const targetX = base.target.x + targetLead;
+
+    // FOV variation for dramatic effect
+    const fovVariation = cosAngle * 2;
+    const finalFov = Math.max(10, Math.min(120, base.fov + fovVariation));
 
     return {
-      position: {
-        x: base.target.x + t,
-        y: base.target.y + height,
-        z: base.target.z + MOTION_CALC.DOLLY_MIN_DISTANCE,
+      position: { x, y, z },
+      target: {
+        x: targetX,
+        y: base.target.y,
+        z: base.target.z,
       },
-      target: base.target,
-      fov: base.fov,
+      fov: finalFov,
     };
   }
+
+  private easeInOutCubic(t: number): number {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+  /** @deprecated 内部方法，仅用于 generatePreview()。运行时请使用 motion.ts 的 calculateOrbit */
   private calculateOrbit(progress: number, base: CameraPose): MotionResult {
     const angle = progress * Math.PI * 2;
     const radius = this.params.orbitRadius ?? MOTION_CALC.FLY_BY_Z_BASE;
@@ -208,6 +254,7 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
       fov: base.fov,
     };
   }
+  /** @deprecated 内部方法，仅用于 generatePreview()。运行时请使用 motion.ts 的 calculateSpiral */
   private calculateSpiral(progress: number, base: CameraPose): MotionResult {
     const loops = this.params.spiralLoops ?? 2;
     const heightTotal = this.params.spiralHeight ?? MOTION_CALC.SPIRAL_HEIGHT;
@@ -227,6 +274,7 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
       fov: base.fov,
     };
   }
+  /** @deprecated 内部方法，仅用于 generatePreview()。运行时请使用 motion.ts 的 calculateTracking */
   private calculateTracking(deltaTime: number, base: CameraPose): MotionResult {
     if (!this.isTrackingValid() || !this.trackingRawTarget) {
       return {
@@ -382,18 +430,30 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
     this.params[key] = value;
   }
   private setupStoreSync(): void {
+    // Clean up any existing subscription first to prevent memory leaks
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+    }
+
     this.unsubscribe = useCameraStore.subscribe(
       (state) => state.interaction.isInteracting,
       (isInteracting, wasInteracting) => {
         if (wasInteracting && !isInteracting && this.blendMode === 'additive') {
           const { pose } = useCameraStore.getState();
 
-          useCameraStore.getState().captureBasePose(pose as unknown as StoreCameraPose);
+          useCameraStore.getState().captureBasePose(pose);
         }
       }
     );
   }
   private setupTrackingSync(): void {
+    // Clean up any existing subscription first to prevent memory leaks
+    if (this.trackingOff) {
+      this.trackingOff();
+      this.trackingOff = null;
+    }
+
     this.trackingOff = getEventBus().on(TrackingEvents.POINT_3D, (p: TrackedPoint3D) => {
       this.trackingRawTarget = { ...p.world };
       this.trackingLastSeenPerfMs = performance.now();
@@ -431,13 +491,13 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
   // 应用精度配置
   applyPrecisionConfig(): void {
     const precisionConfig = getPrecisionConfigService().getConfig();
-    
+
     // 应用灵敏度到运动参数
     this.params.speed = this.params.speed * precisionConfig.moveSensitivity;
-    
-    logger.info('Applied precision config to motion', { 
+
+    logger.info('Applied precision config to motion', {
       speedMultiplier: precisionConfig.moveSensitivity,
-      damping: precisionConfig.dampingFactor 
+      damping: precisionConfig.dampingFactor,
     });
   }
 

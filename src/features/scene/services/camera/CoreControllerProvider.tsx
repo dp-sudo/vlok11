@@ -28,10 +28,32 @@ export function useCoreController(): CoreControllerContextValue {
   return context;
 }
 
+/**
+ * 获取相机状态 store（用于输入/交互状态）
+ * @returns useCameraPoseStore - zustand store hook，不是 service 实例
+ */
+export function useCameraInputStore() {
+  return useCameraPoseStore;
+}
+
+/**
+ * 获取相机状态 store（用于运动状态）
+ * @returns useCameraPoseStore - zustand store hook，不是 service 实例
+ */
+export function useCameraMotionStore() {
+  return useCameraPoseStore;
+}
+
+/**
+ * @deprecated 请使用 useCameraInputStore()，命名更准确
+ */
 export function useInputService() {
   return useCameraPoseStore;
 }
 
+/**
+ * @deprecated 请使用 useCameraMotionStore()，命名更准确
+ */
 export function useMotionService() {
   return useCameraPoseStore;
 }

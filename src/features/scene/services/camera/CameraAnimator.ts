@@ -7,6 +7,7 @@ import {
 } from '@/features/camera/logic/motion';
 import { lerp, lerpVec3, fromVector3 as vec3FromThree } from '@/shared/utils';
 import { useCameraPoseStore } from '@/stores/cameraStore';
+import { useSceneStore } from '@/stores/sharedStore';
 
 import { getAnimationScheduler } from './AnimationScheduler';
 
@@ -33,15 +34,22 @@ interface CameraAnimatorState {
     startTarget: Vec3;
     startTime: number;
   };
-  userBasePosition: Vec3;
-  userBaseTarget: Vec3;
+  // Base pose for additive blending (captured when motion starts)
+  additiveBasePose: {
+    position: Vec3;
+    target: Vec3;
+    fov: number;
+  } | null;
+  // User's manual pose for manual-priority mode
+  userManualPose: {
+    position: Vec3;
+    target: Vec3;
+  } | null;
 }
 
 const createDefaultState = (): CameraAnimatorState => ({
   isAnimating: false,
   activeHandles: new Map(),
-  userBasePosition: { x: 0, y: 0, z: DEFAULTS.POSITION_Z },
-  userBaseTarget: { x: 0, y: 0, z: 0 },
   isUserInteracting: false,
   blendMode: 'additive',
   resumeTransition: {
@@ -51,7 +59,10 @@ const createDefaultState = (): CameraAnimatorState => ({
     startPosition: { x: 0, y: 0, z: DEFAULTS.POSITION_Z },
     startTarget: { x: 0, y: 0, z: 0 },
   },
+  additiveBasePose: null,
+  userManualPose: null,
 });
+
 const DEFAULTS = {
   FOV: 55,
   POSITION_Z: 9,
@@ -62,7 +73,8 @@ const DEFAULTS = {
   FOV_LERP_FACTOR: 0.15,
   FOV_THRESHOLD: 0.01,
   RESUME_TRANSITION_MS: 400,
-  BLEND_FACTOR: 0.35,
+  ADDITIVE_BLEND_FACTOR: 1.0,
+  MANUAL_PRIORITY_FACTOR: 0.5,
   EASING_POWER: 2.5,
   DELTA_MULTIPLIER: 6,
   EPSILON: 0.0001,
@@ -110,6 +122,14 @@ class CameraAnimatorImpl implements LifecycleAware {
     }
   }
 
+  /**
+   * Apply motion result based on blend mode
+   *
+   * - OVERRIDE: Motion completely controls the camera position
+   * - ADDITIVE: Motion is added as offset to the captured base pose
+   * - MANUAL-PRIORITY: Motion only affects camera when user is not interacting,
+   *                    blending between manual pose and motion
+   */
   private applyMotionResult(
     result: { fov: number; position: Vec3; target: Vec3 },
     blendMode: BlendMode,
@@ -117,29 +137,109 @@ class CameraAnimatorImpl implements LifecycleAware {
   ): void {
     if (!this.threeCamera || !this.threeControls) return;
 
-    let targetPos = result.position;
-    let targetLook = result.target;
+    let finalPosition: Vec3;
+    let finalTarget: Vec3;
+    let finalFov: number;
 
-    if (blendMode === 'manual-priority') {
-      const defaultPos = { x: 0, y: 0, z: DEFAULTS.POSITION_Z };
-      const offset = {
-        x: (result.position.x - defaultPos.x) * DEFAULTS.BLEND_FACTOR,
-        y: (result.position.y - defaultPos.y) * DEFAULTS.BLEND_FACTOR,
-        z: (result.position.z - defaultPos.z) * DEFAULTS.BLEND_FACTOR,
-      };
+    const currentPose = useCameraPoseStore.getState().pose;
 
-      targetPos = {
-        x: this.state.userBasePosition.x + offset.x,
-        y: this.state.userBasePosition.y + offset.y,
-        z: this.state.userBasePosition.z + offset.z,
-      };
-      targetLook = {
-        x: this.state.userBaseTarget.x + result.target.x * DEFAULTS.BLEND_FACTOR,
-        y: this.state.userBaseTarget.y + result.target.y * DEFAULTS.BLEND_FACTOR,
-        z: this.state.userBaseTarget.z + result.target.z * DEFAULTS.BLEND_FACTOR,
-      };
+    switch (blendMode) {
+      case 'override': {
+        // OVERRIDE: Motion completely takes over camera control
+        // Use motion result directly as the target
+        finalPosition = result.position;
+        finalTarget = result.target;
+        finalFov = result.fov;
+        break;
+      }
+
+      case 'additive': {
+        // ADDITIVE: Motion is applied as offset from captured base pose
+        // This ensures motion is consistent and doesn't drift
+        const base = this.state.additiveBasePose;
+
+        if (!base) {
+          // No base captured yet, capture current as base
+          this.captureAdditiveBasePose();
+          finalPosition = result.position;
+          finalTarget = result.target;
+          finalFov = result.fov;
+        } else {
+          // Calculate offset from motion result relative to identity pose
+          // Then apply that offset to the captured base pose
+          const identityPos = { x: 0, y: 0, z: DEFAULTS.POSITION_Z };
+          const identityTarget = { x: 0, y: 0, z: 0 };
+
+          const posOffset = {
+            x: (result.position.x - identityPos.x) * DEFAULTS.ADDITIVE_BLEND_FACTOR,
+            y: (result.position.y - identityPos.y) * DEFAULTS.ADDITIVE_BLEND_FACTOR,
+            z: (result.position.z - identityPos.z) * DEFAULTS.ADDITIVE_BLEND_FACTOR,
+          };
+
+          const targetOffset = {
+            x: (result.target.x - identityTarget.x) * DEFAULTS.ADDITIVE_BLEND_FACTOR,
+            y: (result.target.y - identityTarget.y) * DEFAULTS.ADDITIVE_BLEND_FACTOR,
+            z: (result.target.z - identityTarget.z) * DEFAULTS.ADDITIVE_BLEND_FACTOR,
+          };
+
+          finalPosition = {
+            x: base.position.x + posOffset.x,
+            y: base.position.y + posOffset.y,
+            z: base.position.z + posOffset.z,
+          };
+
+          finalTarget = {
+            x: base.target.x + targetOffset.x,
+            y: base.target.y + targetOffset.y,
+            z: base.target.z + targetOffset.z,
+          };
+
+          finalFov = base.fov + (result.fov - DEFAULTS.FOV) * 0.5;
+        }
+        break;
+      }
+
+      case 'manual-priority': {
+        // MANUAL-PRIORITY: Blend between user's manual position and motion
+        // When user is interacting, we use their pose
+        // When motion is active, we blend towards motion
+        const manual = this.state.userManualPose;
+
+        if (!manual || this.state.isUserInteracting) {
+          // User is controlling, capture their pose
+          this.captureManualPose();
+          finalPosition = vec3FromThree(this.threeCamera.position);
+          finalTarget = vec3FromThree(this.threeControls.target);
+          finalFov = currentPose.fov;
+        } else {
+          // Blend from manual pose towards motion result
+          const blendFactor = DEFAULTS.MANUAL_PRIORITY_FACTOR;
+
+          finalPosition = {
+            x: manual.position.x + (result.position.x - manual.position.x) * blendFactor,
+            y: manual.position.y + (result.position.y - manual.position.y) * blendFactor,
+            z: manual.position.z + (result.position.z - manual.position.z) * blendFactor,
+          };
+
+          finalTarget = {
+            x: manual.target.x + (result.target.x - manual.target.x) * blendFactor,
+            y: manual.target.y + (result.target.y - manual.target.y) * blendFactor,
+            z: manual.target.z + (result.target.z - manual.target.z) * blendFactor,
+          };
+
+          finalFov = currentPose.fov + (result.fov - currentPose.fov) * 0.3;
+        }
+        break;
+      }
+
+      default: {
+        finalPosition = result.position;
+        finalTarget = result.target;
+        finalFov = result.fov;
+      }
     }
 
+    // Apply resume transition smoothing if active
     const { resumeTransition: t } = this.state;
 
     if (t.isActive) {
@@ -149,26 +249,34 @@ class CameraAnimatorImpl implements LifecycleAware {
       if (progress < 1) {
         const eased = 1 - Math.pow(1 - progress, DEFAULTS.EASING_POWER);
 
-        targetPos = lerpVec3(t.startPosition, targetPos, eased);
-
-        targetLook = lerpVec3(t.startTarget, targetLook, eased);
+        finalPosition = lerpVec3(t.startPosition, finalPosition, eased);
+        finalTarget = lerpVec3(t.startTarget, finalTarget, eased);
       } else {
         this.state.resumeTransition.isActive = false;
       }
     }
 
+    // Smooth interpolation to final values
     const lerpFactor = Math.min(DEFAULTS.LERP_FACTOR, deltaTime * DEFAULTS.DELTA_MULTIPLIER);
     const currentPos = vec3FromThree(this.threeCamera.position);
     const currentTarget = vec3FromThree(this.threeControls.target);
 
-    const newPos = lerpVec3(currentPos, targetPos, lerpFactor);
-    const newTarget = lerpVec3(currentTarget, targetLook, lerpFactor);
+    const newPos = lerpVec3(currentPos, finalPosition, lerpFactor);
+    const newTarget = lerpVec3(currentTarget, finalTarget, lerpFactor);
 
     this.threeCamera.position.set(newPos.x, newPos.y, newPos.z);
     this.threeControls.target.set(newTarget.x, newTarget.y, newTarget.z);
     this.threeControls.update();
 
-    useCameraPoseStore.getState().setPose({ position: newPos, target: newTarget }, 'motion');
+    // Update store with new pose
+    useCameraPoseStore.getState().setPose(
+      {
+        position: newPos,
+        target: newTarget,
+        fov: finalFov,
+      },
+      blendMode === 'manual-priority' && this.state.isUserInteracting ? 'user' : 'motion'
+    );
   }
 
   private applyPositionImmediate(position: Vec3): void {
@@ -213,11 +321,32 @@ class CameraAnimatorImpl implements LifecycleAware {
     this.state.activeHandles.clear();
   }
 
-  private captureUserBase(): void {
+  /**
+   * Capture the current pose as base for additive blending
+   */
+  private captureAdditiveBasePose(): void {
     if (!this.threeCamera || !this.threeControls) return;
 
-    this.state.userBasePosition = vec3FromThree(this.threeCamera.position);
-    this.state.userBaseTarget = vec3FromThree(this.threeControls.target);
+    const store = useCameraPoseStore.getState();
+
+    this.state.additiveBasePose = {
+      position: vec3FromThree(this.threeCamera.position),
+      target: vec3FromThree(this.threeControls.target),
+      fov: store.pose.fov,
+    };
+    logger.info('Captured additive base pose');
+  }
+
+  /**
+   * Capture the current pose as manual pose for manual-priority mode
+   */
+  private captureManualPose(): void {
+    if (!this.threeCamera || !this.threeControls) return;
+
+    this.state.userManualPose = {
+      position: vec3FromThree(this.threeCamera.position),
+      target: vec3FromThree(this.threeControls.target),
+    };
   }
 
   async destroy(): Promise<void> {
@@ -314,7 +443,21 @@ class CameraAnimatorImpl implements LifecycleAware {
   }
 
   setBlendMode(mode: BlendMode): void {
+    const previousMode = this.state.blendMode;
+
     this.state.blendMode = mode;
+
+    // When switching to additive mode, capture the current pose as base
+    if (mode === 'additive' && previousMode !== 'additive') {
+      this.captureAdditiveBasePose();
+    }
+
+    // When switching to manual-priority, capture current manual pose
+    if (mode === 'manual-priority' && previousMode !== 'manual-priority') {
+      this.captureManualPose();
+    }
+
+    logger.info(`Blend mode changed: ${previousMode} -> ${mode}`);
   }
 
   setFov(fov: number, options?: TransitionOptions): AnimationHandle | null {
@@ -361,10 +504,12 @@ class CameraAnimatorImpl implements LifecycleAware {
     const unsubResumed = bus.on('motion:resumed', () => {
       if (!this.threeCamera || !this.threeControls) return;
 
+      const resumeTransitionMs = useSceneStore.getState().config.motionResumeTransitionMs;
+
       this.state.resumeTransition = {
         isActive: true,
         startTime: performance.now(),
-        duration: DEFAULTS.RESUME_TRANSITION_MS,
+        duration: resumeTransitionMs,
         startPosition: vec3FromThree(this.threeCamera.position),
         startTarget: vec3FromThree(this.threeControls.target),
       };
@@ -372,11 +517,21 @@ class CameraAnimatorImpl implements LifecycleAware {
 
     this.unsubscribers.push(unsubResumed);
 
-    const unsubInteractionEnd = bus.on('input:interaction-end', () => {
-      this.captureUserBase();
+    const unsubResumeRequested = bus.on('motion:resume-requested', () => {
+      if (!this.threeCamera || !this.threeControls) return;
+
+      const resumeTransitionMs = useSceneStore.getState().config.motionResumeTransitionMs;
+
+      this.state.resumeTransition = {
+        isActive: true,
+        startTime: performance.now(),
+        duration: resumeTransitionMs,
+        startPosition: vec3FromThree(this.threeCamera.position),
+        startTarget: vec3FromThree(this.threeControls.target),
+      };
     });
 
-    this.unsubscribers.push(unsubInteractionEnd);
+    this.unsubscribers.push(unsubResumeRequested);
   }
 
   setUserInteracting(isInteracting: boolean): void {
@@ -385,7 +540,15 @@ class CameraAnimatorImpl implements LifecycleAware {
     this.state.isUserInteracting = isInteracting;
 
     if (wasInteracting && !isInteracting) {
-      this.captureUserBase();
+      // User just stopped interacting
+      // For manual-priority mode, update the manual pose
+      if (this.state.blendMode === 'manual-priority') {
+        this.captureManualPose();
+      }
+      // For additive mode, we might want to rebase
+      if (this.state.blendMode === 'additive') {
+        this.captureAdditiveBasePose();
+      }
       getEventBus().emit('input:interaction-end', undefined);
     } else if (!wasInteracting && isInteracting) {
       getEventBus().emit('input:interaction-start', { type: 'user' });
@@ -401,8 +564,10 @@ class CameraAnimatorImpl implements LifecycleAware {
       'fov' in this.threeCamera ? (this.threeCamera as { fov: number }).fov : DEFAULTS.FOV;
 
     useCameraPoseStore.getState().setPose({ position, target, fov }, 'user');
-    this.state.userBasePosition = position;
-    this.state.userBaseTarget = target;
+
+    // Also sync to internal state
+    this.state.additiveBasePose ??= { position, target, fov };
+    this.state.userManualPose ??= { position, target };
   }
 
   transitionTo(pose: Partial<CameraPose>, options?: TransitionOptions): void {
@@ -448,21 +613,43 @@ class CameraAnimatorImpl implements LifecycleAware {
     const motionState = useCameraPoseStore.getState().motion;
     const { blendMode } = this.state;
 
-    if (blendMode === 'manual-priority' && (this.state.isUserInteracting || motionState.isPaused)) {
+    // MANUAL-PRIORITY: When user is interacting, only update FOV smoothly
+    // Don't apply motion when user is controlling the camera
+    if (blendMode === 'manual-priority' && this.state.isUserInteracting) {
       this.updateFovSmooth(deltaTime);
 
       return;
     }
 
+    // For active motion (not static and not paused)
     if (motionState.isActive && !motionState.isPaused && motionState.type !== 'STATIC') {
-      const basePose: CameraPose = {
-        position: this.state.userBasePosition,
-        target: this.state.userBaseTarget,
-        up: { x: 0, y: 1, z: 0 },
-        fov: useCameraPoseStore.getState().pose.fov,
-      };
+      // Ensure we have base poses captured
+      if (blendMode === 'additive' && !this.state.additiveBasePose) {
+        this.captureAdditiveBasePose();
+      }
+      if (blendMode === 'manual-priority' && !this.state.userManualPose) {
+        this.captureManualPose();
+      }
 
-      const progress = calculateProgress(time, motionState.startTime, 1);
+      // For additive mode, use the captured base pose
+      // For other modes, use current camera position as base
+      const basePose: CameraPose =
+        blendMode === 'additive' && this.state.additiveBasePose
+          ? {
+              position: this.state.additiveBasePose.position,
+              target: this.state.additiveBasePose.target,
+              up: { x: 0, y: 1, z: 0 },
+              fov: this.state.additiveBasePose.fov,
+            }
+          : {
+              position: vec3FromThree(this.threeCamera.position),
+              target: vec3FromThree(this.threeControls.target),
+              up: { x: 0, y: 1, z: 0 },
+              fov: useCameraPoseStore.getState().pose.fov,
+            };
+
+      const motionSpeed = useSceneStore.getState().config.cameraMotionSpeed;
+      const progress = calculateProgress(time, motionState.startTime, motionSpeed);
       const motionResult = calculateMotion(motionState.type as MotionType, progress, basePose);
 
       if (motionResult) {

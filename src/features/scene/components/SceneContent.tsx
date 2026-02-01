@@ -132,10 +132,8 @@ export const SceneContent = memo((props: SceneContentProps) => {
           <meshBasicMaterial
             depthWrite={false}
             map={backgroundTexture}
-            opacity={config.backgroundIntensity}
             side={BackSide}
             toneMapped
-            transparent
           />
         </mesh>
       ) : null}

@@ -12,6 +12,12 @@ export const CONTROL_PARAMS = {
   ROTATE_SPEED_MIN: 0.2,
   ROTATE_SPEED_MAX: 2,
   ROTATE_SPEED_STEP: 0.1,
+  ZOOM_SPEED_MIN: 0.5,
+  ZOOM_SPEED_MAX: 3,
+  ZOOM_SPEED_STEP: 0.1,
+  PAN_SPEED_MIN: 0.2,
+  PAN_SPEED_MAX: 2,
+  PAN_SPEED_STEP: 0.1,
 } as const;
 export const FOV = {
   MIN: 35,

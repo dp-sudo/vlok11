@@ -8,4 +8,5 @@ export {
   MatrixStyleControls,
   RetroPixelStyleControls,
 } from './RenderStyleControls';
+export { RecordingSettings } from './RecordingSettings';
 export { VideoControls } from './VideoControls';

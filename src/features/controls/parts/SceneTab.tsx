@@ -127,38 +127,19 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
       </CollapsibleSection>
 
       <CollapsibleSection icon={<Sun className="w-3.5 h-3.5" />} title="环境设置">
-        <Slider
-          label="背景强度"
-          max={1}
-          min={0}
-          onChange={(v) => set('backgroundIntensity', v)}
-          step={0.05}
-          value={config.backgroundIntensity}
-        />
-        <Slider
-          label="视差强度"
-          max={1}
-          min={0}
-          onChange={(v) => set('parallaxScale', v)}
-          step={0.05}
-          value={config.parallaxScale}
-        />
-        <div className="flex gap-2 mt-2">
+        <div className="space-y-1">
           <Toggle
             checked={config.showGrid}
-            compact
             label="显示网格"
             onChange={(v) => set('showGrid', v)}
           />
           <Toggle
             checked={config.showAxes}
-            compact
             label="显示坐标轴"
             onChange={(v) => set('showAxes', v)}
           />
           <Toggle
             checked={config.enableFaceTracking}
-            compact
             label="人脸追踪"
             onChange={(v) => set('enableFaceTracking', v)}
           />

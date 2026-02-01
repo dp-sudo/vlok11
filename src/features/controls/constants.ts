@@ -1,4 +1,4 @@
-import { Box, Camera, Grid3X3, Palette, Sparkles, Zap } from 'lucide-react';
+import { Box, Camera, Grid3X3, Palette, Sparkles, Zap, Brain } from 'lucide-react';
 import React from 'react';
 
 import {
@@ -9,7 +9,7 @@ import {
   RenderStyle,
 } from '@/shared/types';
 
-export type TabType = 'scene' | 'camera' | 'effects';
+export type TabType = 'scene' | 'camera' | 'effects' | 'immersive' | 'ai';
 
 export const CAMERA_VIEW_LABELS: Record<string, string> = {
   FRONT: '正',
@@ -132,9 +132,52 @@ export const TABS: { icon: React.ReactNode; key: TabType; label: string }[] = [
   { key: 'scene', label: '场景', icon: React.createElement(Box, { className: 'w-4 h-4' }) },
   { key: 'camera', label: '相机', icon: React.createElement(Camera, { className: 'w-4 h-4' }) },
   { key: 'effects', label: '效果', icon: React.createElement(Sparkles, { className: 'w-4 h-4' }) },
+  { key: 'immersive', label: '沉浸', icon: React.createElement(Brain, { className: 'w-4 h-4' }) },
+  { key: 'ai', label: 'AI', icon: React.createElement(Zap, { className: 'w-4 h-4' }) },
 ];
 export const TIME_FORMAT = {
   SECONDS_PER_MINUTE: 60,
   PAD_LENGTH: 2,
   PAD_CHAR: '0',
 } as const;
+
+// AI智能运镜风格
+export const AI_MOTION_STYLES = [
+  { style: 'cinematic', label: '电影感', icon: '🎬', desc: '缓慢环绕电影运镜' },
+  { style: 'dynamic', label: '动感', icon: '⚡', desc: '快速平移切换' },
+  { style: 'focus', label: '聚焦', icon: '🎯', desc: '聚焦主体中心' },
+  { style: 'exploration', label: '探索', icon: '🔭', desc: '360度探索全景' },
+] as const;
+
+// 沉浸音效氛围
+export const AUDIO_MOODS = [
+  { mood: 'nature', label: '自然', icon: '🌿', desc: '森林鸟鸣流水' },
+  { mood: 'urban', label: '城市', icon: '🏙️', desc: '都市车流人声' },
+  { mood: 'indoor', label: '室内', icon: '🏠', desc: '室内环境白噪' },
+  { mood: 'space', label: '太空', icon: '🌌', desc: '空灵太空氛围' },
+] as const;
+
+// 天气效果
+export const WEATHER_EFFECTS = [
+  { effect: 'sunny', label: '晴朗', icon: '☀️', desc: '阳光明媚氛围' },
+  { effect: 'rain', label: '下雨', icon: '🌧️', desc: '细雨朦胧效果' },
+  { effect: 'fog', label: '雾霾', icon: '🌫️', desc: '雾气弥漫效果' },
+  { effect: 'snow', label: '下雪', icon: '❄️', desc: '飘雪浪漫效果' },
+] as const;
+
+// 情感色调
+export const EMOTIONAL_TONES = [
+  { tone: 'warm', label: '温暖', icon: '🔥', desc: '暖色温馨氛围', color: '#ff7f50' },
+  { tone: 'cool', label: '冷色调', icon: '❄️', desc: '清冷宁静氛围', color: '#87ceeb' },
+  { tone: 'vintage', label: '复古', icon: '📷', desc: '怀旧胶片质感', color: '#daa520' },
+  { tone: 'dramatic', label: '戏剧', icon: '🎭', desc: '强烈对比张力', color: '#4a4a4a' },
+  { tone: 'ethereal', label: '空灵', icon: '✨', desc: '梦幻飘渺感', color: '#dda0dd' },
+  { tone: 'natural', label: '自然', icon: '🌿', desc: '真实自然色彩', color: '#90ee90' },
+] as const;
+
+// 录制质量选项
+export const RECORDING_QUALITIES = [
+  { quality: 'high', label: '高质量', desc: '8Mbps, 60fps', icon: '🎬' },
+  { quality: 'medium', label: '标准', desc: '4Mbps, 30fps', icon: '📹' },
+  { quality: 'low', label: '压缩', desc: '2Mbps, 30fps', icon: '📀' },
+] as const;

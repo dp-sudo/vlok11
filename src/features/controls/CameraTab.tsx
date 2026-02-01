@@ -170,6 +170,22 @@ const ControlParamsSection = memo<{
       step={CONTROL_PARAMS.ROTATE_SPEED_STEP}
       value={config.rotateSpeed}
     />
+    <Slider
+      label="缩放速度"
+      max={CONTROL_PARAMS.ZOOM_SPEED_MAX}
+      min={CONTROL_PARAMS.ZOOM_SPEED_MIN}
+      onChange={(v) => set('zoomSpeed', v)}
+      step={CONTROL_PARAMS.ZOOM_SPEED_STEP}
+      value={config.zoomSpeed}
+    />
+    <Slider
+      label="平移速度"
+      max={CONTROL_PARAMS.PAN_SPEED_MAX}
+      min={CONTROL_PARAMS.PAN_SPEED_MIN}
+      onChange={(v) => set('panSpeed', v)}
+      step={CONTROL_PARAMS.PAN_SPEED_STEP}
+      value={config.panSpeed}
+    />
     <Toggle checked={config.enablePan} label="启用平移" onChange={(v) => set('enablePan', v)} />
   </CollapsibleSection>
 ));

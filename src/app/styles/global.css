@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap');
 
 :root {
-  /* CYBERPUNK HUD PALETTE - TECH NOIR */
+  /* BLUE-PURPLE TECH PALETTE */
 
   /* Deep Space Backbone */
   --color-black: #000000;
@@ -12,46 +12,65 @@
   --color-zinc-100: #f1f5f9;
   --color-zinc-200: #e2e8f0;
   --color-zinc-300: #cbd5e1;
-  --color-zinc-400: #94a3b8; /* Metallic Slate */
+  --color-zinc-400: #94a3b8;
   --color-zinc-500: #64748b;
   --color-zinc-600: #475569;
   --color-zinc-700: #334155;
-  --color-zinc-800: #1e293b; 
-  --color-zinc-900: #0f172a; 
-  --color-zinc-950: #0b0b10; /* Deep Space Black */
+  --color-zinc-800: #1e293b;
+  --color-zinc-900: #0f172a;
+  --color-zinc-950: #0b0b10;
 
-  /* Primary Accent: NEON AMBER (Command) */
-  --color-amber-400: #fbbf24;
-  --color-amber-500: #f59e0b; /* Primary Neon */
-  --color-amber-600: #d97706;
+  /* Primary Accent: TECH BLUE (Command) */
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
 
-  /* Secondary Accent: HOLOGRAPHIC BLUE (Data) */
+  /* Secondary Accent: NEON PURPLE (Data) */
+  --color-purple-400: #c084fc;
+  --color-purple-500: #a855f7;
+  --color-purple-600: #9333ea;
+
+  /* Tertiary Accent: CYAN (Tech Highlight) */
   --color-cyan-300: #67e8f9;
   --color-cyan-400: #22d3ee;
   --color-cyan-500: #06b6d4;
-  
-  /* --- COMPATIBILITY LAYER (Legacy -> Cyberpunk Mappings) --- */
-  
-  /* Map Indigo (Buttons) to Amber (Command) or Cyan (Data) */
-  --color-indigo-200: var(--color-amber-400);
-  --color-indigo-300: var(--color-amber-500); 
-  --color-indigo-400: var(--color-amber-500);
-  --color-indigo-500: var(--color-amber-600); /* Darker for hover */
-  --color-indigo-600: var(--color-amber-500); /* Main Button */
-  --color-indigo-700: var(--color-amber-600);
 
-  /* Map Purple (Accents) to HOLOGRAPHIC CYAN */
-  --color-purple-400: var(--color-cyan-400); 
-  --color-purple-500: var(--color-cyan-500);
-  
-  /* Map Green/Emerald to Success/Data */
-  --color-emerald-300: #86efac;
-  --color-emerald-400: #4ade80;
-  --color-emerald-500: #22c55e;
-  --color-emerald-600: #16a34a;
+  /* Success: Teal */
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
 
-  --color-green-500: var(--color-emerald-500);
-  --color-green-600: var(--color-emerald-600);
+  /* --- COMPATIBILITY LAYER (Legacy -> Blue-Purple Mappings) --- */
+
+  /* Map Indigo to Tech Blue */
+  --color-indigo-200: var(--color-blue-400);
+  --color-indigo-300: var(--color-blue-500);
+  --color-indigo-400: var(--color-blue-500);
+  --color-indigo-500: var(--color-blue-600);
+  --color-indigo-600: var(--color-blue-500);
+  --color-indigo-700: var(--color-blue-600);
+
+  /* Tech Cyan - Primary Accent */
+  --color-cyan-200: #a5f3fc;
+  --color-cyan-300: #67e8f9;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+  --color-cyan-950: #083344;
+
+  /* Keep Purple as accent */
+  --color-purple-300: var(--color-purple-400);
+  --color-purple-950: #2e1065;
+
+  /* Teal for success states */
+  --color-emerald-300: var(--color-teal-400);
+  --color-emerald-400: var(--color-teal-500);
+  --color-emerald-500: var(--color-teal-500);
+  --color-emerald-600: var(--color-teal-600);
+
+  /* Success Green - Teal aligned */
+  --color-green-400: var(--color-teal-400);
+  --color-green-500: var(--color-teal-500);
+  --color-green-600: var(--color-teal-600);
 
   /* Map Red to Danger (Keep as Red) */
   --color-red-400: #f87171;
@@ -59,17 +78,17 @@
   --color-red-600: #dc2626;
 
   /* UI SEMANTICS RE-MAPPING */
-  --color-panel-bg: rgba(11, 11, 16, 0.85); /* Glass Black */
+  --color-panel-bg: rgba(11, 11, 16, 0.85);
   --color-section-bg: rgba(15, 23, 42, 0.6);
   --color-control-bg: rgba(30, 41, 59, 0.5);
 
   --color-border-dark: var(--color-zinc-900);
   --color-border-subtle: var(--color-zinc-800);
-  --color-border-neon: var(--color-amber-500);
+  --color-border-neon: var(--color-blue-500);
 
-  --color-accent-primary: var(--color-amber-500);
-  --color-accent-secondary: var(--color-cyan-500);
-  
+  --color-accent-primary: var(--color-blue-500);
+  --color-accent-secondary: var(--color-purple-500);
+
   /* Fonts */
   --font-sans: 'Exo 2', system-ui, sans-serif; /* Tech Body */
   --font-tech: 'Orbitron', sans-serif; /* HUD Headers */
@@ -101,7 +120,7 @@
 
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
-  --shadow-glow: 0 0 15px rgba(245, 158, 11, 0.3); /* Neon Amber Glow */
+  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.4); /* Neon Blue Glow */
 
   --duration-150: 150ms;
   --duration-200: 200ms;
@@ -218,8 +237,28 @@ select {
   background-color: var(--color-black);
 }
 
+.bg-cyan-200 {
+  background-color: var(--color-cyan-200);
+}
+
+.bg-cyan-300 {
+  background-color: var(--color-cyan-300);
+}
+
+.bg-cyan-400 {
+  background-color: var(--color-cyan-400);
+}
+
 .bg-cyan-500 {
   background-color: var(--color-cyan-500);
+}
+
+.bg-cyan-600 {
+  background-color: var(--color-cyan-600);
+}
+
+.bg-cyan-950\/30 {
+  background-color: rgb(8 51 68 / 0.3);
 }
 
 .bg-cyan-900\/30 {
@@ -446,33 +485,33 @@ select {
   text-transform: capitalize;
 }
 
-  /* Tactile Cyber-Feedback Utilities */
-  .btn-cyber {
-    transition: all 75ms ease-out;
-    transform: scale(1);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-cyber:active {
-    transform: scale(0.95);
-    filter: brightness(1.3);
-    text-shadow: 0 0 8px currentColor;
-  }
-  
-  .btn-cyber::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgb(255 255 255 / 0.2);
-    opacity: 0;
-    transition: opacity 75ms;
-    pointer-events: none;
-  }
-  
-  .btn-cyber:active::after {
-    opacity: 1;
-  }
+/* Tactile Cyber-Feedback Utilities */
+.btn-cyber {
+  transition: all 75ms ease-out;
+  transform: scale(1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-cyber:active {
+  transform: scale(0.95);
+  filter: brightness(1.3);
+  text-shadow: 0 0 8px currentColor;
+}
+
+.btn-cyber::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgb(255 255 255 / 0.2);
+  opacity: 0;
+  transition: opacity 75ms;
+  pointer-events: none;
+}
+
+.btn-cyber:active::after {
+  opacity: 1;
+}
 
 .click-scale {
   transition:
@@ -794,8 +833,24 @@ select {
   background-color: var(--color-zinc-800);
 }
 
+.hover\:border-cyan-500:hover {
+  border-color: var(--color-cyan-500);
+}
+
+.hover\:border-cyan-500\/30:hover {
+  border-color: rgb(6 182 212 / 0.3);
+}
+
 .hover\:border-indigo-500:hover {
   border-color: var(--color-indigo-500);
+}
+
+.hover\:border-purple-500:hover {
+  border-color: var(--color-purple-500);
+}
+
+.hover\:border-purple-500\/30:hover {
+  border-color: rgb(168 85 247 / 0.3);
 }
 
 .hover\:border-zinc-600:hover {
@@ -1780,20 +1835,29 @@ select {
   animation-name: zoomIn95;
 }
 
+/* 复选框样式优化 - 提高对比度和可视性 */
 input[type='checkbox'] {
   -webkit-appearance: none;
   appearance: none;
-  width: 0.875rem;
-  height: 0.875rem;
-  border: 1px solid var(--color-zinc-600);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-zinc-700);
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #3d3d4f;
+  border-radius: 4px;
+  background-color: #1c1c24;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+input[type='checkbox']:hover {
+  border-color: #4a4a5e;
+  background-color: #252530;
 }
 
 input[type='checkbox']:checked {
-  background-color: var(--color-indigo-500);
+  background-color: #10b981; /* emerald-500 */
+  border-color: #34d399; /* emerald-400 */
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 input[type='color'] {
@@ -1812,43 +1876,66 @@ input[type='color']::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
+/* 滑块样式优化 - 提高可视性和交互反馈 */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
   cursor: pointer;
   width: 100%;
-  height: 4px;
+  height: 6px;
 }
 
 input[type='range']::-moz-range-thumb {
   border: none;
-  height: 12px;
-  width: 12px;
+  height: 16px;
+  width: 16px;
   border-radius: 50%;
-  background: var(--color-indigo-500);
+  background: #3b82f6;
+  border: 2px solid #1c1c24;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
+}
+
+input[type='range']::-moz-range-thumb:hover {
+  background: #60a5fa;
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
 }
 
 input[type='range']::-moz-range-track {
-  background: var(--color-zinc-700);
-  height: 4px;
-  border-radius: 2px;
+  background: #2d2d3a;
+  height: 6px;
+  border-radius: 3px;
 }
 
 input[type='range']::-webkit-slider-runnable-track {
-  background: var(--color-zinc-700);
-  height: 4px;
-  border-radius: 2px;
+  background: #2d2d3a;
+  height: 6px;
+  border-radius: 3px;
 }
 
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  height: 12px;
-  width: 12px;
+  height: 16px;
+  width: 16px;
   border-radius: 50%;
-  background: var(--color-indigo-500);
-  margin-top: -4px;
+  background: #3b82f6;
+  border: 2px solid #1c1c24;
+  margin-top: -5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  background: #60a5fa;
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+input[type='range']:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 input[type='range'].accent-amber-500::-moz-range-thumb {
@@ -2273,7 +2360,196 @@ select:focus {
 }
 
 .glow-text {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 
-               0 0 20px rgba(255, 255, 255, 0.5), 
-               0 0 30px rgba(245, 158, 11, 0.3);
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.7),
+    0 0 20px rgba(255, 255, 255, 0.5),
+    0 0 30px rgba(59, 130, 246, 0.3);
+}
+
+/* ==========================================================================
+   TOGGLE SWITCH ANIMATIONS - Best Practices
+   ========================================================================== */
+
+/* 开关轨道样式 - 使用data-state属性选择器 */
+.switch-track[data-state='checked'],
+.switch-track[data-state='on'] {
+  background: linear-gradient(to right, var(--color-blue-500), var(--color-purple-500));
+  box-shadow:
+    0 0 12px rgba(59, 130, 246, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.switch-track[data-state='unchecked'],
+.switch-track[data-state='off'] {
+  background-color: var(--color-zinc-700);
+  transition: background-color 150ms ease;
+}
+
+.switch-track[data-state='unchecked']:hover,
+.switch-track[data-state='off']:hover {
+  background-color: var(--color-zinc-600);
+}
+
+/* 开关滑块样式 */
+.switch-thumb {
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.switch-thumb[data-state='checked'],
+.switch-thumb[data-state='on'] {
+  transform: translateX(100%);
+  box-shadow:
+    0 0 8px rgba(59, 130, 246, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch-thumb[data-state='unchecked'],
+.switch-thumb[data-state='off'] {
+  transform: translateX(0);
+}
+
+/* 机械手感 - 缩放效果 */
+.switch-thumb.scale-on:checked {
+  transform: translateX(100%) scale(1.1);
+}
+
+/* 选中状态的光晕脉冲 */
+.switch-track[data-state='checked']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), transparent);
+  pointer-events: none;
+}
+
+/* 禁用状态 */
+.switch-track:disabled,
+.switch-track[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.switch-track:disabled .switch-thumb,
+.switch-track[data-disabled] .switch-thumb {
+  cursor: not-allowed;
+}
+
+/* 焦点状态 - 键盘导航可访问性 */
+.switch-track:focus-visible,
+.switch-track[data-state='focus'] {
+  outline: 2px solid var(--color-blue-500);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   EASING FUNCTIONS - 机械手感缓动
+   ========================================================================== */
+
+/* 标准Material Design缓动 - 平滑但有机械感 */
+.ease-material {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 弹性效果 - 轻微的回弹 */
+.ease-spring {
+  transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 快速响应 - 机械式 */
+.ease-mechanical {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 缓入缓出 - 平滑 */
+.ease-smooth {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   ANIMATION KEYFRAMES
+   ========================================================================== */
+
+/* 滑块滑动动画 */
+@keyframes slideRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* 脉冲光晕动画 */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* 勾号显示动画 */
+@keyframes check-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 开关启用时的弹跳效果 */
+@keyframes bounce-in {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  75% {
+    transform: scale(0.99);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-slide-right {
+  animation: slideRight 150ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-left {
+  animation: slideLeft 150ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-check-appear {
+  animation: check-appear 150ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }

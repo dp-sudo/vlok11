@@ -9,8 +9,14 @@ import { StatusDisplay, UploadPanel } from '@/features/upload';
 import { AppHeader, MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
 
+import { useAIMotion } from '@/shared/hooks/useAIMotion';
+import { useAutoSceneAnalysis } from '@/shared/hooks/useAutoSceneAnalysis';
+import { useEmotionalTone } from '@/shared/hooks/useEmotionalTone';
+import { useImmersiveAudio } from '@/shared/hooks/useImmersiveAudio';
 import { useProjectShortcuts } from '@/shared/hooks/useProjectShortcuts';
 import { useSceneConfigSubscriber } from '@/shared/hooks/useSceneConfigSubscriber';
+import { useWeatherEffect } from '@/shared/hooks/useWeatherEffect';
+import { useSceneStore } from '@/stores/sharedStore';
 
 import type { CameraViewPreset, ProcessingState } from '@/shared/types';
 
@@ -20,6 +26,15 @@ const App = memo(() => {
   const vm = useAppViewModel();
 
   useProjectShortcuts();
+
+  // 沉浸音频控制
+  const sceneConfig = useSceneStore((s) => s.config);
+
+  useImmersiveAudio(sceneConfig);
+  useAIMotion(sceneConfig);
+  useWeatherEffect(sceneConfig);
+  useEmotionalTone(sceneConfig);
+  useAutoSceneAnalysis(sceneConfig);
 
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlInput, setUrlInput] = useState('');
@@ -53,8 +68,17 @@ const App = memo(() => {
   };
 
   const handleVideoSeek = (time: number) => {
-    sceneRef.current?.seekVideo?.(time);
-    setVideoTime(time);
+    if (!sceneRef.current?.seekVideo) {
+      console.warn('Video seek not available');
+
+      return;
+    }
+
+    const success = sceneRef.current.seekVideo(time);
+
+    if (success) {
+      setVideoTime(time);
+    }
   };
 
   const controlPanelProps = {
@@ -86,66 +110,66 @@ const App = memo(() => {
 
         <main className="flex-1 flex overflow-hidden">
           {/* ... main content */}
-        {vm.showUpload ? (
-          <div className="flex-1 flex items-center justify-center">
-            <UploadPanel
-              acceptedFormats=".jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov"
-              onFileUpload={handleFileUpload}
-              onUrlSubmit={handleUrlSubmit}
-              setShowUrlInput={setShowUrlInput}
-              setUrlInput={setUrlInput}
-              showUrlInput={showUrlInput}
-              urlInput={urlInput}
-            />
-          </div>
-        ) : null}
-
-        {vm.showProcessing ? (
-          <div className="flex-1 flex items-center justify-center">
-            <StatusDisplay
-              onRetry={vm.resetSession}
-              processingState={{
-                status: vm.status as ProcessingState['status'],
-                progress: vm.progress,
-                message: vm.statusMessage ?? '',
-              }}
-            />
-          </div>
-        ) : null}
-
-        {vm.showScene && vm.result ? (
-          <>
-            {/* Scene Container */}
-            <div className="flex-1 relative bg-zinc-950">
-              <SceneViewer
-                aspectRatio={vm.result.asset.aspectRatio}
-                backgroundUrl={vm.result.backgroundUrl ?? null}
-                depthUrl={vm.result.depthMapUrl}
-                imageUrl={vm.result.imageUrl}
-                isLooping={vm.videoState.isLooping}
-                isVideoPlaying={vm.videoState.isPlaying}
-                onVideoDurationChange={setVideoDuration}
-                onVideoEnded={() => toggleVideoPlay()}
-                onVideoTimeUpdate={setVideoTime}
-                playbackRate={vm.videoState.playbackRate}
-                ref={sceneRef}
-                videoUrl={vm.result.asset.type === 'video' ? vm.result.asset.sourceUrl : null}
-              />
-              
-              {/* INDUSTRIAL HUD OVERLAY */}
-              <FloatingControls 
-                activeCameraView={activeCameraView}
-                onSetCameraView={handleSetCameraView}
+          {vm.showUpload ? (
+            <div className="flex-1 flex items-center justify-center">
+              <UploadPanel
+                acceptedFormats=".jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov"
+                onFileUpload={handleFileUpload}
+                onUrlSubmit={handleUrlSubmit}
+                setShowUrlInput={setShowUrlInput}
+                setUrlInput={setUrlInput}
+                showUrlInput={showUrlInput}
+                urlInput={urlInput}
               />
             </div>
+          ) : null}
 
-            {/* Side Panel - Glassmorphism */}
-            <div className="w-80 border-l border-zinc-800/50 bg-zinc-950/80 backdrop-blur-md overflow-y-auto z-10 shadow-xl">
-              <ControlPanel {...controlPanelProps} />
+          {vm.showProcessing ? (
+            <div className="flex-1 flex items-center justify-center">
+              <StatusDisplay
+                onRetry={vm.resetSession}
+                processingState={{
+                  status: vm.status as ProcessingState['status'],
+                  progress: vm.progress,
+                  message: vm.statusMessage ?? '',
+                }}
+              />
             </div>
-          </>
-        ) : null}
-      </main>
+          ) : null}
+
+          {vm.showScene && vm.result ? (
+            <>
+              {/* Scene Container */}
+              <div className="flex-1 relative bg-zinc-950">
+                <SceneViewer
+                  aspectRatio={vm.result.asset.aspectRatio}
+                  backgroundUrl={vm.result.backgroundUrl ?? null}
+                  depthUrl={vm.result.depthMapUrl}
+                  imageUrl={vm.result.imageUrl}
+                  isLooping={vm.videoState.isLooping}
+                  isVideoPlaying={vm.videoState.isPlaying}
+                  onVideoDurationChange={setVideoDuration}
+                  onVideoEnded={() => toggleVideoPlay()}
+                  onVideoTimeUpdate={setVideoTime}
+                  playbackRate={vm.videoState.playbackRate}
+                  ref={sceneRef}
+                  videoUrl={vm.result.asset.type === 'video' ? vm.result.asset.sourceUrl : null}
+                />
+
+                {/* INDUSTRIAL HUD OVERLAY */}
+                <FloatingControls
+                  activeCameraView={activeCameraView}
+                  onSetCameraView={handleSetCameraView}
+                />
+              </div>
+
+              {/* Side Panel - Glassmorphism */}
+              <div className="w-80 border-l border-zinc-800/50 bg-zinc-950/80 backdrop-blur-md overflow-y-auto z-10 shadow-xl">
+                <ControlPanel {...controlPanelProps} />
+              </div>
+            </>
+          ) : null}
+        </main>
       </div>
 
       <MobileDrawer

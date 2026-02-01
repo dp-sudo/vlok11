@@ -1,7 +1,6 @@
 import { getEventBus, resetEventBus } from '@/core/EventBus';
 import {
   getLifecycleManager,
-  type LifecycleAware,
   LifecycleState,
   resetLifecycleManager,
 } from '@/core/LifecycleManager';
@@ -54,7 +53,7 @@ export async function bootstrap(config: BootstrapConfig = {}): Promise<AIService
 
   logger.info('Starting...');
   onProgress?.('initializing', BOOTSTRAP_PROGRESS.INIT);
-  
+
   logger.info('Creating AIService...');
   const aiService = new AIService();
 
@@ -81,15 +80,17 @@ export async function bootstrap(config: BootstrapConfig = {}): Promise<AIService
     }
 
     onProgress?.('registering-camera-services', BOOTSTRAP_PROGRESS.MODULES);
-    lifecycleManager.register(getAnimationScheduler() as unknown as LifecycleAware);
-    lifecycleManager.register(getCoreController() as unknown as LifecycleAware);
+    lifecycleManager.register(getAnimationScheduler());
+    lifecycleManager.register(getCoreController());
 
     onProgress?.('initializing-services', BOOTSTRAP_PROGRESS.SERVICES);
     logger.info('Starting lifecycleManager.initializeAll()...');
-    
+
     const initPromise = lifecycleManager.initializeAll();
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Initialization Timeout')), 30000));
-    
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Initialization Timeout')), 30000)
+    );
+
     await Promise.race([initPromise, timeoutPromise]);
     logger.info('lifecycleManager.initializeAll() complete.');
 

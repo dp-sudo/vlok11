@@ -23,7 +23,11 @@ export class PipelineEngine implements PipelineEngineInterface {
     return pipelineEngineInstance;
   }
 
-  async dispose(): Promise<void> {}
+  async dispose(): Promise<void> {
+    // Clear pipeline instance reference to allow garbage collection
+    pipelineEngineInstance = null;
+    logger.info('PipelineEngine disposed');
+  }
 
   async execute<T>(initialInput: T, config: PipelineConfig, signal?: AbortSignal): Promise<T> {
     const enabledStages = config.stages.filter((s) => s.enabled !== false);
@@ -59,58 +63,55 @@ export class PipelineEngine implements PipelineEngineInterface {
         throw new Error(`Pipeline deadlock: no stages ready but ${pending.size} pending`);
       }
 
-      const results = await Promise.all(
-        readyStages.map(async (stageConfig) => {
-          const stage = this.registry.getStage(stageConfig.type);
+      // Execute stages SEQUENTIALLY to ensure proper data flow
+      // 线性流语义：每个 stage 的输入来自上一个完成的 stage 输出（通过 currentData 传递）
+      // dependsOn 仅用于声明执行顺序依赖，不影响数据流
+      for (const stageConfig of readyStages) {
+        const stage = this.registry.getStage(stageConfig.type);
 
-          if (!stage) {
-            throw new Error(`Stage type '${stageConfig.type}' not found in registry`);
-          }
+        if (!stage) {
+          throw new Error(`Stage type '${stageConfig.type}' not found in registry`);
+        }
 
-          const inputData = stageConfig.dependsOn?.length
-            ? completed.get(stageConfig.dependsOn[stageConfig.dependsOn.length - 1])
-            : currentData;
+        // 线性流：始终使用 currentData（上一个 stage 的输出）作为输入
+        // dependsOn 仅确保执行顺序，不决定数据来源
+        const inputData = currentData;
 
-          const context: StageContext = {
-            config,
-            data: inputData,
+        const context: StageContext = {
+          config,
+          data: inputData,
+          runId,
+          signal: signal ?? new AbortSignal(),
+        };
+
+        try {
+          logger.debug(`Executing stage: ${stageConfig.type}`);
+          getEventBus().emit('pipeline:stage-started', {
             runId,
-            signal: signal ?? new AbortController().signal,
-          };
+            stage: stageConfig.type,
+            index: enabledStages.indexOf(stageConfig),
+            total: enabledStages.length,
+          });
 
-          try {
-            logger.debug(`Executing stage: ${stageConfig.type}`);
-            getEventBus().emit('pipeline:stage-started', {
-              runId,
-              stage: stageConfig.type,
-              index: enabledStages.indexOf(stageConfig),
-              total: enabledStages.length,
-            });
+          const result = await stage.execute(inputData, context);
 
-            const result = await stage.execute(inputData, context);
+          getEventBus().emit('pipeline:stage-completed', {
+            runId,
+            stage: stageConfig.type,
+          });
 
-            getEventBus().emit('pipeline:stage-completed', {
-              runId,
-              stage: stageConfig.type,
-            });
-
-            return { id: stageConfig.id, result };
-          } catch (error) {
-            logger.error(`Stage ${stageConfig.type} failed`, { error });
-            getEventBus().emit('pipeline:error', {
-              runId,
-              stage: stageConfig.type,
-              error,
-            });
-            throw error;
-          }
-        })
-      );
-
-      for (const { id, result } of results) {
-        completed.set(id, result);
-        pending.delete(id);
-        currentData = result;
+          completed.set(stageConfig.id, result);
+          pending.delete(stageConfig.id);
+          currentData = result;
+        } catch (error) {
+          logger.error(`Stage ${stageConfig.type} failed`, { error });
+          getEventBus().emit('pipeline:error', {
+            runId,
+            stage: stageConfig.type,
+            error,
+          });
+          throw error;
+        }
       }
     }
 

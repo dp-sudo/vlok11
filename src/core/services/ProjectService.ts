@@ -21,23 +21,23 @@ class ProjectService implements Disposable {
     }
 
     const projectData = this.collectProjectData();
-    
+
     logger.info('Saving project...');
-    
+
     // Create downloadable file
     const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     // Create download link if not exists
     if (!this.downloadAnchor) {
       this.downloadAnchor = document.createElement('a');
       document.body.appendChild(this.downloadAnchor);
     }
-    
+
     this.downloadAnchor.href = url;
     this.downloadAnchor.download = `${this.currentProjectName}.immersa`;
     this.downloadAnchor.click();
-    
+
     URL.revokeObjectURL(url);
 
     logger.info('Project saved successfully');
@@ -52,7 +52,7 @@ class ProjectService implements Disposable {
       input.type = 'file';
       input.accept = '.immersa';
       input.style.display = 'none';
-      
+
       input.onchange = async (event) => {
         const file = (event.target as HTMLInputElement).files?.[0];
 
@@ -84,7 +84,7 @@ class ProjectService implements Disposable {
           resolve(false);
         }
       };
-      
+
       input.click();
     });
   }
@@ -105,7 +105,7 @@ class ProjectService implements Disposable {
         currentTime: 0,
         duration: 0,
         isPlaying: false,
-      }
+      },
     };
 
     return {
@@ -129,7 +129,7 @@ class ProjectService implements Disposable {
     const sessionStore = useSessionStore.getState();
 
     if (assets.sourcePath) {
-       sessionStore.uploadStart(assets.sourcePath); 
+      sessionStore.uploadStart(assets.sourcePath);
     }
 
     const { position, target, fov } = scene.camera;
@@ -154,10 +154,8 @@ class ProjectService implements Disposable {
 
   async dispose(): Promise<void> {
     logger.info('ProjectService disposed');
-    if (this.downloadAnchor) {
-      document.body.removeChild(this.downloadAnchor);
-      this.downloadAnchor = null;
-    }
+    this.downloadAnchor?.parentNode?.removeChild(this.downloadAnchor);
+    this.downloadAnchor = null;
   }
 }
 

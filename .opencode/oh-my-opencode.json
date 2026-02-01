@@ -1,0 +1,175 @@
+{
+  "_schema": "local",
+  "version": "1.0.0",
+  "project": {
+    "name": "immersa-3d-scene-viewer",
+    "type": "react-vite-3d",
+    "description": "AI-powered 2D to 3D scene reconstruction using React Three Fiber and TensorFlow.js"
+  },
+  "agents": {
+    "enabled": true,
+    "default": "sisyphus",
+    "sisyphus": {
+      "model": "google/claude-opus-4-5-thinking",
+      "variant": "max"
+    },
+    "oracle": {
+      "model": "google/claude-opus-4-5-thinking",
+      "variant": "max"
+    },
+    "librarian": {
+      "model": "google/gemini-3-flash",
+      "variant": "high"
+    },
+    "explore": {
+      "model": "google/gemini-2.5-flash"
+    },
+    "frontend-developer": {
+      "model": "google/claude-opus-4-5-thinking",
+      "variant": "max"
+    },
+    "code-reviewer": {
+      "model": "google/claude-opus-4-5-thinking",
+      "variant": "max"
+    }
+  },
+  "lsp": {
+    "enabled": true,
+    "note": "7 LSP servers configured for complete IDE experience. Note: Windows + Bun v1.3.5 may cause segfault - use fallback commands if needed.",
+    "servers": {
+      "typescript": {
+        "enabled": true,
+        "priority": 10,
+        "command": "typescript-language-server",
+        "args": ["--stdio"],
+        "config": "tsconfig.json",
+        "extensions": [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"],
+        "rootPatterns": ["tsconfig.json", "package.json", "jsconfig.json"],
+        "fallbackCommand": "npx tsc --noEmit"
+      },
+      "eslint": {
+        "enabled": true,
+        "priority": 20,
+        "command": "vscode-eslint-language-server",
+        "args": ["--stdio"],
+        "config": "eslint.config.js",
+        "extensions": [".ts", ".tsx", ".js", ".jsx", ".vue"],
+        "fallbackCommand": "npm run lint"
+      },
+      "vue": {
+        "enabled": true,
+        "priority": 15,
+        "command": "vue-language-server",
+        "args": ["--stdio"],
+        "extensions": [".vue"],
+        "fallbackCommand": "npx vue-tsc --noEmit"
+      },
+      "css": {
+        "enabled": true,
+        "priority": 30,
+        "command": "vscode-css-language-server",
+        "args": ["--stdio"],
+        "extensions": [".css", ".scss", ".sass", ".less", ".stylus"],
+        "fallbackCommand": "npx stylelint src/**/*.{css,scss}"
+      },
+      "html": {
+        "enabled": true,
+        "priority": 40,
+        "command": "vscode-html-language-server",
+        "args": ["--stdio"],
+        "extensions": [".html", ".htm", ".xhtml"],
+        "fallbackCommand": "echo 'HTML validation not configured'"
+      },
+      "json": {
+        "enabled": true,
+        "priority": 50,
+        "command": "vscode-json-language-server",
+        "args": ["--stdio"],
+        "extensions": [".json", ".jsonc", ".code-workspace"],
+        "fallbackCommand": "echo 'JSON validation not configured'"
+      },
+      "markdown": {
+        "enabled": true,
+        "priority": 60,
+        "command": "vscode-markdown-language-server",
+        "args": ["--stdio"],
+        "extensions": [".md", ".markdown", ".mdx"],
+        "fallbackCommand": "echo 'Markdown validation not configured'"
+      }
+    }
+  },
+  "mcp": {
+    "enabled": true,
+    "servers": [
+      {
+        "name": "filesystem",
+        "enabled": true,
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/a/opencode/3d"]
+      },
+      {
+        "name": "github",
+        "enabled": true,
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-github"]
+      },
+      {
+        "name": "fetch",
+        "enabled": true,
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-fetch"]
+      }
+    ]
+  },
+  "hooks": {
+    "enabled": true,
+    "autoExecute": true,
+    "triggers": {
+      "preEdit": ["lsp-diagnostics"],
+      "postEdit": ["lsp-diagnostics", "format"],
+      "preCommit": ["lint", "type-check"]
+    }
+  },
+  "features": {
+    "experimental": {
+      "parallelAgents": false,
+      "backgroundTasks": false
+    },
+    "analysis": {
+      "codeReview": true,
+      "dependencyCheck": true
+    }
+  },
+  "workflow": {
+    "categories": {
+      "visual-engineering": {
+        "enabled": true,
+        "skills": ["frontend-ui-ux", "senior-frontend"]
+      },
+      "deep": {
+        "enabled": true,
+        "skills": ["context7-auto-research"]
+      },
+      "quick": {
+        "enabled": true,
+        "skills": []
+      }
+    }
+  },
+  "tools": {
+    "permissions": {
+      "allow": [
+        "Bash(npm run *)",
+        "Bash(npx tsc:*)",
+        "Bash(git status)",
+        "Bash(git diff)",
+        "Bash(git log)",
+        "Bash(ls *)",
+        "Bash(cat *)",
+        "Bash(find *)",
+        "Bash(grep *)"
+      ],
+      "deny": ["Bash(rm -rf /)", "Bash(rm -rf ~)"]
+    }
+  }
+}

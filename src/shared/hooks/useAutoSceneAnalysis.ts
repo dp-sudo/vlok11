@@ -2,9 +2,12 @@ import { useEffect, useRef } from 'react';
 
 import { getEventBus } from '@/core/EventBus';
 import { SessionEvents } from '@/core/EventTypes';
+import { createLogger } from '@/core/Logger';
 import { immersiveExperienceManager } from '@/features/immersive/ImmersiveExperienceManager';
 import type { SceneConfig } from '@/shared/types';
 import { useSessionStore } from '@/stores/sharedStore';
+
+const logger = createLogger({ module: 'useAutoSceneAnalysis' });
 
 export function useAutoSceneAnalysis(config: Pick<SceneConfig, 'autoSceneAnalysis'>): void {
   const prevEnabled = useRef(config.autoSceneAnalysis);
@@ -77,7 +80,7 @@ export function useAutoSceneAnalysis(config: Pick<SceneConfig, 'autoSceneAnalysi
         });
       } catch (error) {
         if (!signal.aborted) {
-          console.warn('Auto scene analysis failed:', error);
+          logger.warn('Auto scene analysis failed', { error: String(error) });
         }
       } finally {
         cleanup();
@@ -86,7 +89,7 @@ export function useAutoSceneAnalysis(config: Pick<SceneConfig, 'autoSceneAnalysi
 
     img.onerror = () => {
       if (!signal.aborted) {
-        console.warn('Failed to load image for scene analysis');
+        logger.warn('Failed to load image for scene analysis');
       }
       cleanup();
     };

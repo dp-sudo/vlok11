@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react';
 
+import { createLogger } from '@/core/Logger';
 import { useSceneStore } from '@/stores/sharedStore';
 import type { SceneConfig } from '@/shared/types';
+
+const logger = createLogger({ module: 'useWeatherEffect' });
 
 type WeatherEffect = SceneConfig['weatherEffect'];
 type ParticleType = 'dust' | 'snow' | 'rain' | 'firefly' | 'stars' | 'leaves';
@@ -124,7 +127,7 @@ export function useWeatherEffect(config: WeatherConfig): void {
         enableVignette: visualConfig.vignetteStrength > 0.1,
       });
 
-      console.info('[Weather Effect] Applied:', {
+      logger.info('[Weather Effect] Applied', {
         effect: weatherEffect,
         intensity,
         brightness: lerp(1.0, visualConfig.brightness, intensity).toFixed(2),

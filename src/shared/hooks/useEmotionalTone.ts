@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react';
 
+import { createLogger } from '@/core/Logger';
 import { useSceneStore } from '@/stores/sharedStore';
 import type { SceneConfig } from '@/shared/types';
+
+const logger = createLogger({ module: 'useEmotionalTone' });
 
 type EmotionalTone = SceneConfig['emotionalTone'];
 
@@ -40,7 +43,7 @@ const TONE_PRESETS: Record<EmotionalTone, TonePreset> = {
     exposure: 0.88,
   },
   dramatic: {
-    saturation: 1.50,
+    saturation: 1.5,
     contrast: 1.35,
     brightness: 0.85,
     vignetteStrength: 0.55,
@@ -48,7 +51,7 @@ const TONE_PRESETS: Record<EmotionalTone, TonePreset> = {
     exposure: 0.9,
   },
   ethereal: {
-    saturation: 1.20,
+    saturation: 1.2,
     contrast: 0.88,
     brightness: 1.15,
     vignetteStrength: 0.3,
@@ -120,7 +123,7 @@ export function useEmotionalTone(config: EmotionalToneConfig): void {
         exposure: lerp(1.0, preset.exposure, intensity),
       });
 
-      console.info('[Emotional Tone] Applied:', {
+      logger.info('[Emotional Tone] Applied', {
         tone: emotionalTone,
         intensity,
         saturation: lerp(1.0, preset.saturation, intensity).toFixed(2),

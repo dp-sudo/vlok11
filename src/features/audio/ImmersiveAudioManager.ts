@@ -1,3 +1,5 @@
+import { createLogger } from '@/core/Logger';
+
 declare global {
   interface Window {
     webkitAudioContext: typeof AudioContext;
@@ -97,6 +99,8 @@ const MOOD_CONFIGS: Record<AudioMood, MoodConfig> = {
   },
 };
 
+const logger = createLogger({ module: 'ImmersiveAudioManager' });
+
 export class ImmersiveAudioManager {
   private audioContext: AudioContext | null = null;
   private masterGain: GainNode | null = null;
@@ -154,9 +158,9 @@ export class ImmersiveAudioManager {
 
       this.masterGain.gain.value = config.volume * moodConfig.masterVolume;
 
-      console.info('[Immersive Audio] Playing:', config.mood, 'volume:', config.volume);
+      logger.info('[Immersive Audio] Playing', { mood: config.mood, volume: config.volume });
     } catch (error) {
-      console.warn('Procedural audio playback failed:', error);
+      logger.warn('Procedural audio playback failed', { error: String(error) });
     }
   }
 

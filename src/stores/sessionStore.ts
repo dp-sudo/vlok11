@@ -10,6 +10,21 @@ import type {
 } from '@/shared/domain/types';
 import type { StateCreator } from 'zustand';
 
+/**
+ * 类型守卫函数：验证是否为有效的 ProcessingResult
+ */
+function isProcessingResult(obj: unknown): obj is ProcessingResult {
+  if (!obj || typeof obj !== 'object') return false;
+  const result = obj as Record<string, unknown>;
+
+  return (
+    typeof result.depthMapUrl === 'string' &&
+    typeof result.imageUrl === 'string' &&
+    result.asset !== undefined &&
+    typeof (result.asset as Record<string, unknown>).id === 'string'
+  );
+}
+
 export interface SessionState {
   currentAsset?: Asset;
   error?: Error;
@@ -59,7 +74,7 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
         throw new Error('AI Service not initialized');
       }
       pipeline = createUploadPipeline({ aiService });
-      
+
       pipeline.onProgress((p) => {
         if (p.stage === 'complete') return;
         let status: ProcessingStatus = 'analyzing';
@@ -73,7 +88,11 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       });
 
       pipeline.onComplete((result) => {
-        get().uploadComplete(result as unknown as ProcessingResult);
+        if (isProcessingResult(result)) {
+          get().uploadComplete(result);
+        } else {
+          get().uploadError('Invalid processing result received from pipeline');
+        }
       });
     }
 
@@ -92,7 +111,9 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       const currentStatus = get().status;
 
       if (!isValidStatusTransition(currentStatus, 'uploading')) {
-        get().uploadError(`Invalid status transition: cannot start upload from '${currentStatus}' status`);
+        get().uploadError(
+          `Invalid status transition: cannot start upload from '${currentStatus}' status`
+        );
 
         return;
       }

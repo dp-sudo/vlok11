@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
+import { getEventBus } from '@/core/EventBus';
 import {
   calculateDistance,
   calculatePresetPose,
@@ -36,7 +37,7 @@ const DEFAULT_POSE: CameraPose = {
   fov: 50,
 };
 
-const DEFAULT_MOTION: MotionState = {
+const DEFAULT_MOTION: CameraMotionState = {
   isActive: false,
   type: 'STATIC',
   progress: 0,
@@ -48,7 +49,7 @@ const DEFAULT_MOTION: MotionState = {
 
 export const DEFAULT_MOTION_STATE = DEFAULT_MOTION;
 
-const DEFAULT_INTERACTION: InteractionState = {
+const DEFAULT_INTERACTION: CameraInteractionState = {
   isInteracting: false,
   interactionType: 'none',
   startPosition: null,
@@ -70,8 +71,8 @@ export interface CameraSlice {
   clearBasePose: () => void;
   endInteraction: () => void;
   history: CameraHistoryEntry[];
-  interaction: InteractionState;
-  motion: MotionState;
+  interaction: CameraInteractionState;
+  motion: CameraMotionState;
   pauseMotion: () => void;
   pose: CameraPose;
   removeBookmark: (id: string) => void;
@@ -106,9 +107,6 @@ export interface CameraMotionState {
   startTime: number;
   type: string;
 }
-
-export type InteractionState = CameraInteractionState;
-export type MotionState = CameraMotionState;
 
 export const createCameraSlice: StateCreator<CameraSlice, [], [], CameraSlice> = (set, get) => ({
   pose: { ...DEFAULT_POSE },
@@ -188,6 +186,8 @@ const createMotionActions = (
         startTime: Date.now() - motion.pausedAt * motion.duration,
       },
     });
+    // 发射 motion:resumed 事件，让 CameraAnimator 触发恢复过渡动画
+    getEventBus().emit('motion:resumed', { type: motion.type, progress: motion.pausedAt });
   },
   updateMotionProgress: (progress: number) => {
     set((state) => ({

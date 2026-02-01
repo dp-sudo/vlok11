@@ -127,12 +127,13 @@ export interface CameraTransitionConfig {
 }
 export interface CoreController {
   animation: AnimationService;
-  dispose(): void;
+  destroy(): Promise<void>;
   initialize(): Promise<void>;
   isInitialized: boolean;
   pause(): void;
   reset(): void;
   resume(): void;
+  readonly serviceId: string;
 }
 export interface FovZoomEquivalence {
   fov: number;
@@ -256,6 +257,7 @@ export interface QueuedAnimation {
   priority?: number;
 }
 export type {
+  AIImmersiveConfig,
   AnimeStyleConfig,
   CameraControlConfig,
   CelStyleConfig,
@@ -265,6 +267,7 @@ export type {
   MatrixStyleConfig,
   MotionParamsConfig,
   PostProcessConfig,
+  RecordingConfig,
   RenderMeshConfig,
   RetroStyleConfig,
   SceneConfig,

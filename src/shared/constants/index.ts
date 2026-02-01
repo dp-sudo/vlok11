@@ -1,7 +1,7 @@
 export const BYTES_PER_KB = 1024;
 const BYTES_PER_MB = BYTES_PER_KB * BYTES_PER_KB;
 
-export const MAX_FILE_SIZE_MB = 100;
+export const MAX_FILE_SIZE_MB = 2048;
 export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * BYTES_PER_MB;
 export const DEFAULT_FOV = 55;
 
@@ -24,6 +24,7 @@ export const ANIMATION_DURATION = {
   BOOKMARK: 800,
   DEFAULT: 500,
 } as const;
+export const DEFAULT_ANIMATION_DURATION = ANIMATION_DURATION.DEFAULT;
 export const BOOTSTRAP_PROGRESS = {
   INIT: 0,
   AI_SERVICE: 20,
@@ -50,7 +51,6 @@ export const RENDERER = {
   DPR_MAX: 2,
   DPR: [1, 2] as [number, number],
 } as const;
-export const DEFAULT_ANIMATION_DURATION = 500;
 export const DOUBLE_TAP_THRESHOLD = 300;
 export const LONG_PRESS_THRESHOLD = 500;
 export const MAX_ERROR_HISTORY = 100;

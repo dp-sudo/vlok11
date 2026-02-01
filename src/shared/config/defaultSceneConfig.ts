@@ -22,13 +22,11 @@ import type { SceneConfig } from '@/shared/types';
  * - Display: UI display preferences
  */
 export const DEFAULT_SCENE_CONFIG: SceneConfig = {
-  // ========== Mesh Configuration ==========
   displacementScale: 1.5,
   wireframe: false,
   meshDensity: 256,
   mirrorMode: MirrorMode.NONE,
 
-  // ========== Camera Configuration ==========
   /** Field of view in degrees (perspective mode) */
   fov: 50,
   /** Zoom level for orthographic mode */
@@ -60,7 +58,6 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   /** Maximum polar angle (0 = top, PI = bottom) */
   maxPolarAngle: Math.PI,
 
-  // ========== Motion Configuration ==========
   autoRotate: false,
   cameraMotionType: CameraMotionType.STATIC,
   /** Motion animation speed multiplier */
@@ -72,11 +69,10 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   /** Transition duration when resuming motion (ms) */
   motionResumeTransitionMs: 400,
 
-  // Motion type specific parameters
   orbitRadius: 10,
   orbitTilt: 15,
-  flyByHeight: 3,
-  flyBySwing: 12,
+  flyByHeight: 5,
+  flyBySwing: 20,
   spiralLoops: 2,
   spiralHeight: 8,
   arcAngle: 90,
@@ -86,12 +82,10 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   dollyRange: 20,
   dollyIntensity: 1,
 
-  // ========== Display Configuration ==========
   isImmersive: false,
   showGrid: false,
   showAxes: false,
 
-  // ========== Rendering Configuration ==========
   renderStyle: RenderStyle.NORMAL,
   roughness: 0.5,
   metalness: 0.15,
@@ -101,30 +95,40 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   /** Projection angle in degrees (0-180) */
   projectionAngle: 180,
   depthInvert: false,
-  backgroundIntensity: 0.85,
 
-  // ========== Effects Configuration ==========
   enableNakedEye3D: false,
   enableParticles: false,
   edgeFade: 0.75,
-  parallaxScale: 0.35,
   depthFog: 0.15,
   lightAngleX: 40,
   lightAngleY: 35,
   vignetteStrength: 0,
   particleType: 'dust',
 
-  // ========== Color Grading ==========
   colorGrade: ColorGradePreset.CINEMATIC,
   saturation: 1.1,
   contrast: 1.08,
   brightness: 1.02,
 
-  // ========== Video Configuration ==========
   videoMuted: true,
   enableFrameInterpolation: true,
   enableVignette: false,
 
-  // ========== Tracking Configuration ==========
   enableFaceTracking: false,
+
+  aiMotionEnabled: false,
+  aiMotionStyle: 'cinematic',
+  autoResumeMotion: true,
+  immersiveAudioEnabled: false,
+  audioMood: 'nature',
+  audioVolume: 0.4,
+  weatherEnabled: false,
+  weatherEffect: 'sunny',
+  weatherIntensity: 0.5,
+  emotionalToneEnabled: false,
+  emotionalTone: 'warm',
+  toneIntensity: 0.6,
+  autoSceneAnalysis: false,
+
+  recordingQuality: 'medium',
 };

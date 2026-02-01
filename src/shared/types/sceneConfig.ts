@@ -63,7 +63,6 @@ export interface RenderMeshConfig {
 }
 
 export interface PostProcessConfig {
-  backgroundIntensity: number;
   brightness: number;
   colorGrade: ColorGradePreset;
   contrast: number;
@@ -76,7 +75,6 @@ export interface PostProcessConfig {
   lightAngleX: number;
   lightAngleY: number;
   lightIntensity: number;
-  parallaxScale: number;
   particleType: string;
   saturation: number;
   vignetteStrength: number;
@@ -159,6 +157,33 @@ export interface UIDisplayConfig {
   videoMuted: boolean;
 }
 
+// AI智能沉浸体验配置
+export interface AIImmersiveConfig {
+  // 智能运镜
+  aiMotionEnabled: boolean;
+  aiMotionStyle: 'cinematic' | 'dynamic' | 'focus' | 'exploration';
+  autoResumeMotion: boolean;
+  // 沉浸音效
+  immersiveAudioEnabled: boolean;
+  audioMood: 'nature' | 'urban' | 'indoor' | 'space';
+  audioVolume: number;
+  // 天气氛围
+  weatherEnabled: boolean;
+  weatherEffect: 'sunny' | 'rain' | 'fog' | 'snow';
+  weatherIntensity: number;
+  // 情感色调
+  emotionalToneEnabled: boolean;
+  emotionalTone: 'warm' | 'cool' | 'vintage' | 'dramatic' | 'ethereal' | 'natural';
+  toneIntensity: number;
+  // 自动场景分析
+  autoSceneAnalysis: boolean;
+}
+
+// 录制配置
+export interface RecordingConfig {
+  recordingQuality: 'high' | 'medium' | 'low';
+}
+
 export interface SceneConfig
   extends
     CameraControlConfig,
@@ -166,4 +191,6 @@ export interface SceneConfig
     RenderMeshConfig,
     PostProcessConfig,
     StyleEffectsConfig,
-    UIDisplayConfig {}
+    UIDisplayConfig,
+    AIImmersiveConfig,
+    RecordingConfig {}

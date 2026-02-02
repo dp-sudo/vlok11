@@ -11,6 +11,7 @@ interface ErrorToastProps {
 export const ErrorToast = memo(({ error, onClose, onRecovery }: ErrorToastProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: handleClose is stable within render
   useEffect(() => {
     if (error) {
       setIsVisible(true);

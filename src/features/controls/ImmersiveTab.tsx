@@ -118,10 +118,10 @@ const WeatherSection = memo<{
 export const ImmersiveTab: React.FC<ImmersiveTabProps> = memo(
   ({ config, set, expandedSections, toggleSection }) => (
     <>
-      <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-blue-900/40 to-purple-900/30 border border-blue-800/30">
+      <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-zinc-800/80 to-zinc-800/40 border border-zinc-700/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-            <Brain className="w-5 h-5 text-blue-400" />
+          <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+            <Brain className="w-5 h-5 text-amber-400" />
           </div>
           <div className="flex-1">
             <div className="text-sm font-medium text-white">AI智能沉浸体验</div>

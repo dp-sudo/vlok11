@@ -86,8 +86,8 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
     <>
       <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-zinc-800/80 to-zinc-800/40 border border-zinc-700/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-            <Camera className="w-5 h-5 text-purple-400" />
+          <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
+            <Camera className="w-5 h-5" />
           </div>
           <div className="flex-1">
             <div className="text-sm font-medium text-white">
@@ -102,7 +102,10 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
           </div>
           <div className="text-right">
             <div className="text-xs text-zinc-400">速度</div>
-            <div className="text-sm font-mono text-purple-400">
+            <div
+              className="text-sm font-mono text-amber-400 font-bold"
+              style={{ filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.7))' }}
+            >
               {config.cameraMotionSpeed.toFixed(1)}x
             </div>
           </div>

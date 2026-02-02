@@ -59,29 +59,24 @@ const ColorGradeSection = memo<{
               flex flex-col items-center gap-2 relative overflow-hidden min-h-[4.5rem]
               ${
                 isActive
-                  ? `
-                    bg-emerald-600
-                    border-emerald-400
-                    text-white
-                    shadow-[0_4px_15px_rgba(16,185,129,0.4)]
-                    scale-[1.02]
-                  `
-                  : `
-                    bg-zinc-800
-                    border-zinc-700
-                    text-zinc-300
-                    hover:border-zinc-500
-                    hover:text-white
-                    hover:bg-zinc-700
-                  `
+                  ? 'bg-gradient-to-b from-amber-500/40 to-orange-600/30 border-amber-400 text-white scale-[1.02]'
+                  : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white hover:bg-zinc-700'
               }
             `}
             key={c.grade}
             onClick={() => set('colorGrade', c.grade)}
+            style={
+              isActive
+                ? {
+                    boxShadow:
+                      '0 0 25px rgba(251, 191, 36, 0.6), 0 4px 15px rgba(251, 191, 36, 0.3)',
+                  }
+                : undefined
+            }
           >
             {/* 激活状态顶部光条 */}
             {isActive && (
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 via-white/50 to-emerald-400" />
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-400 via-white/50 to-amber-400" />
             )}
 
             {/* 颜色指示器 */}
@@ -103,13 +98,13 @@ const ColorGradeSection = memo<{
 export const EffectsTab: React.FC<EffectsTabProps> = memo(
   ({ config, set, expandedSections, toggleSection, activeStyle }) => (
     <>
-      <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-blue-900/30 to-purple-900/20 border border-blue-800/30">
+      <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-zinc-800/80 to-zinc-800/40 border border-zinc-700/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
             {typeof activeStyle?.icon === 'string' ? (
               <span className="text-lg">{activeStyle.icon}</span>
             ) : (
-              <span className="text-blue-400">{activeStyle?.icon}</span>
+              activeStyle?.icon
             )}
           </div>
           <div className="flex-1">
@@ -118,7 +113,7 @@ export const EffectsTab: React.FC<EffectsTabProps> = memo(
           </div>
           <div className="flex gap-1">
             {config.enableParticles ? (
-              <span className="px-1.5 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400">
+              <span className="px-1.5 py-0.5 rounded text-[9px] bg-amber-500/20 text-amber-400">
                 粒子
               </span>
             ) : null}

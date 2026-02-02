@@ -141,8 +141,7 @@ export interface RetroStyleConfig {
 }
 
 export interface StyleEffectsConfig
-  extends
-    AnimeStyleConfig,
+  extends AnimeStyleConfig,
     CelStyleConfig,
     CrystalStyleConfig,
     HologramStyleConfig,
@@ -175,8 +174,7 @@ export interface RecordingConfig {
 }
 
 export interface SceneConfig
-  extends
-    CameraControlConfig,
+  extends CameraControlConfig,
     MotionParamsConfig,
     RenderMeshConfig,
     PostProcessConfig,

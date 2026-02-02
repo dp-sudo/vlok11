@@ -144,7 +144,7 @@ export const extractFrameFromVideo = (
       const { duration } = video;
       let seekTime: number = VIDEO_PROCESSING.DEFAULT_SEEK_TIME;
 
-      if (isFinite(duration) && duration > 0)
+      if (Number.isFinite(duration) && duration > 0)
         seekTime = Math.min(
           VIDEO_PROCESSING.MAX_SEEK_TIME,
           duration * VIDEO_PROCESSING.SEEK_DURATION_RATIO

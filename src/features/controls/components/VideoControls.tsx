@@ -39,14 +39,20 @@ interface PlayButtonProps {
 
 const PlayButton = memo<PlayButtonProps>(({ isPlaying, onClick }) => (
   <button
-    className="relative w-12 h-12 rounded-full flex items-center justify-center bg-white border-2 border-cyan-500 hover:bg-cyan-50 active:scale-95 transition-all duration-200 ease-out shadow-md"
+    className={`
+      relative w-14 h-14 rounded-full flex items-center justify-center 
+      bg-gradient-to-br from-cyan-400 to-teal-500 hover:from-cyan-300 hover:to-teal-400
+      active:scale-95 transition-all duration-300 ease-out 
+      shadow-[0_8px_20px_rgba(6,182,212,0.4)] hover:shadow-[0_12px_24px_rgba(6,182,212,0.5)]
+      border border-white/20 ring-4 ring-cyan-500/10
+    `}
     onClick={onClick}
     title={isPlaying ? '暂停' : '播放'}
   >
     {isPlaying ? (
-      <Pause className="w-5 h-5 text-cyan-600 fill-cyan-600 relative z-10" />
+      <Pause className="w-6 h-6 text-white fill-white relative z-10" />
     ) : (
-      <Play className="w-5 h-5 text-cyan-600 fill-cyan-600 ml-1 relative z-10" />
+      <Play className="w-6 h-6 text-white fill-white ml-1 relative z-10" />
     )}
   </button>
 ));
@@ -135,21 +141,21 @@ const ProgressTrack = memo<ProgressTrackProps>(
 
           {/* Progress Bar */}
           <div
-            className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-75 ease-out"
+            className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 transition-all duration-75 ease-out shadow-[0_0_10px_rgba(45,212,191,0.5)]"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
         {/* Thumb - larger and easier to grab */}
         <div
-          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-6 h-6 rounded-full cursor-grab active:cursor-grabbing bg-white border-[3px] border-cyan-500 shadow-md transition-all duration-150 ease-out ${
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-6 h-6 rounded-full cursor-grab active:cursor-grabbing bg-white border-[3px] border-teal-500 shadow-md transition-all duration-150 ease-out ${
             isHovering || isDragging ? 'scale-125' : 'scale-100'
           }`}
           style={{ left: `${progressPercent}%` }}
         >
           {/* Inner glow */}
           <div
-            className={`absolute inset-0.5 rounded-full ${isDragging ? 'bg-cyan-400' : 'bg-cyan-500'}`}
+            className={`absolute inset-0.5 rounded-full ${isDragging ? 'bg-teal-400' : 'bg-teal-500'}`}
           />
           {/* Center dot */}
           <div className={`absolute inset-2 rounded-full bg-white`} />

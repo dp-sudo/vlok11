@@ -1,10 +1,11 @@
-import { memo, useRef, useState } from 'react';
+import { Suspense, lazy, memo, useRef, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 import { ModelManager } from '@/features/ai/components/ModelManager';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import { ControlPanel } from '@/features/controls';
 import { FloatingControls } from '@/features/controls/FloatingControls';
-import { SceneViewer, type SceneViewerHandle } from '@/features/scene';
+import type { SceneViewerHandle } from '@/features/scene';
 import { StatusDisplay, UploadPanel } from '@/features/upload';
 import { AppHeader, MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
@@ -15,6 +16,9 @@ import { useSceneConfigSubscriber } from '@/shared/hooks/useSceneConfigSubscribe
 import { useWeatherEffect } from '@/shared/hooks/useWeatherEffect';
 import type { CameraViewPreset, ProcessingState } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
+
+// Lazy load SceneViewer to optimize initial bundle size
+const SceneViewer = lazy(() => import('@/features/scene').then(module => ({ default: module.SceneViewer })));
 
 type AppCameraView = CameraViewPreset | 'default';
 
@@ -32,6 +36,7 @@ const App = memo(() => {
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlInput, setUrlInput] = useState('');
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [modelManagerOpen, setModelManagerOpen] = useState(false);
   const [activeCameraView, setActiveCameraView] = useState<AppCameraView>('default');
   const [isRecording, setIsRecording] = useState(false);
 
@@ -97,7 +102,7 @@ const App = memo(() => {
 
   return (
     <div className="h-screen w-screen bg-black text-white overflow-hidden flex flex-col">
-      <TitleBar />
+      <TitleBar onOpenModelManager={() => setModelManagerOpen(true)} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <AppHeader />
 
@@ -134,20 +139,27 @@ const App = memo(() => {
             <>
               {/* Scene Container */}
               <div className="flex-1 relative bg-zinc-950">
-                <SceneViewer
-                  aspectRatio={vm.result.asset.aspectRatio}
-                  backgroundUrl={vm.result.backgroundUrl ?? null}
-                  depthUrl={vm.result.depthMapUrl}
-                  imageUrl={vm.result.imageUrl}
-                  isLooping={vm.videoState.isLooping}
-                  isVideoPlaying={vm.videoState.isPlaying}
-                  onVideoDurationChange={setVideoDuration}
-                  onVideoEnded={() => toggleVideoPlay()}
-                  onVideoTimeUpdate={setVideoTime}
-                  playbackRate={vm.videoState.playbackRate}
-                  ref={sceneRef}
-                  videoUrl={vm.result.asset.type === 'video' ? vm.result.asset.sourceUrl : null}
-                />
+                <Suspense fallback={
+                  <div className="flex-1 flex items-center justify-center bg-zinc-950 text-cyan-500 gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <span className="font-mono text-sm tracking-widest">LOADING 3D ENGINE...</span>
+                  </div>
+                }>
+                  <SceneViewer
+                    aspectRatio={vm.result.asset.aspectRatio}
+                    backgroundUrl={vm.result.backgroundUrl ?? null}
+                    depthUrl={vm.result.depthMapUrl}
+                    imageUrl={vm.result.imageUrl}
+                    isLooping={vm.videoState.isLooping}
+                    isVideoPlaying={vm.videoState.isPlaying}
+                    onVideoDurationChange={setVideoDuration}
+                    onVideoEnded={() => toggleVideoPlay()}
+                    onVideoTimeUpdate={setVideoTime}
+                    playbackRate={vm.videoState.playbackRate}
+                    ref={sceneRef}
+                    videoUrl={vm.result.asset.type === 'video' ? vm.result.asset.sourceUrl : null}
+                  />
+                </Suspense>
 
                 {/* INDUSTRIAL HUD OVERLAY */}
                 <FloatingControls
@@ -157,7 +169,7 @@ const App = memo(() => {
               </div>
 
               {/* Side Panel - Glassmorphism */}
-              <div className="w-80 border-l border-zinc-800/50 bg-zinc-950/80 backdrop-blur-md overflow-y-auto z-10 shadow-xl">
+              <div className="w-80 overflow-y-auto z-10 shadow-xl hidden lg:block">
                 <ControlPanel {...controlPanelProps} />
               </div>
             </>
@@ -173,7 +185,7 @@ const App = memo(() => {
         {vm.showScene ? <ControlPanel {...controlPanelProps} /> : null}
       </MobileDrawer>
 
-      <ModelManager />
+      <ModelManager isOpen={modelManagerOpen} onClose={() => setModelManagerOpen(false)} />
     </div>
   );
 });

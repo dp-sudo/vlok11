@@ -26,22 +26,22 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
     activeProjection,
   }) => (
     <>
-      <div className="mb-3 p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+      <div className="mb-3 p-4 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 border-2 border-amber-200 flex items-center justify-center text-amber-600 text-xl shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl shadow-[0_0_15px_rgba(6,182,212,0.15)]">
             {activeProjection?.icon}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[16px] font-bold text-slate-800 tracking-wide">
+            <div className="text-[16px] font-bold text-zinc-100 tracking-wide font-tech">
               {activeProjection?.label}投影
             </div>
-            <div className="text-[13px] text-slate-500 mt-1">{activeProjection?.desc}</div>
+            <div className="text-[13px] text-zinc-400 mt-1">{activeProjection?.desc}</div>
           </div>
-          <div className="text-right flex-shrink-0 bg-slate-50 px-3 py-2 rounded-lg">
-            <div className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold mb-1">
+          <div className="text-right flex-shrink-0 bg-zinc-800/50 px-3 py-2 rounded-lg border border-white/5">
+            <div className="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold mb-1">
               深度
             </div>
-            <div className="text-xl font-mono font-bold text-violet-600">
+            <div className="text-xl font-mono font-bold text-violet-400">
               {config.displacementScale.toFixed(1)}x
             </div>
           </div>
@@ -63,13 +63,25 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
               onMouseEnter={() => setHoveredItem(p.mode)}
               onMouseLeave={() => setHoveredItem(null)}
             >
-              <span className="text-base mb-0.5">{p.icon}</span>
-              <span>{p.label}</span>
+              <span
+                className={`text-xl mb-1.5 transition-transform duration-200 ${
+                  config.projectionMode === p.mode ? 'scale-110 text-cyan-400' : 'text-zinc-500'
+                }`}
+              >
+                {p.icon}
+              </span>
+              <span
+                className={`text-xs font-medium ${
+                  config.projectionMode === p.mode ? 'text-cyan-400 font-bold' : 'text-zinc-400'
+                }`}
+              >
+                {p.label}
+              </span>
             </CardBtn>
           ))}
         </div>
         {hoveredItem && PROJECTIONS.find((p) => p.mode === hoveredItem) ? (
-          <div className="mt-2 px-2 py-1.5 rounded-lg bg-slate-100 text-[10px] text-slate-600 flex items-center gap-1.5">
+          <div className="mt-2 px-2 py-1.5 rounded-lg bg-zinc-900/80 border border-white/10 text-[10px] text-zinc-400 flex items-center gap-1.5">
             <Info className="w-3 h-3" />
             {PROJECTIONS.find((p) => p.mode === hoveredItem)?.desc}
           </div>

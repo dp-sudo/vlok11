@@ -59,8 +59,8 @@ const ColorGradeSection = memo<{
               flex flex-col items-center gap-2 relative overflow-hidden min-h-[4.5rem]
               ${
                 isActive
-                  ? 'bg-gradient-to-b from-violet-600/30 to-purple-600/20 border-violet-400/50 text-slate-100 scale-[1.02]'
-                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100 hover:bg-slate-700'
+                  ? 'bg-gradient-to-b from-violet-600/30 to-purple-600/20 border-violet-400/50 text-zinc-800 scale-[1.02]'
+                  : 'bg-zinc-100 border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-800 hover:bg-zinc-200'
               }
             `}
             key={c.grade}
@@ -82,7 +82,7 @@ const ColorGradeSection = memo<{
             <div
               className={`
                 w-6 h-6 rounded-full border-2 transition-all duration-200 flex-shrink-0
-                ${isActive ? 'border-slate-200 shadow-md' : 'border-slate-600'}
+                ${isActive ? 'border-white shadow-md' : 'border-zinc-300'}
               `}
               style={{ backgroundColor: c.color }}
             />
@@ -97,9 +97,9 @@ const ColorGradeSection = memo<{
 export const EffectsTab: React.FC<EffectsTabProps> = memo(
   ({ config, set, expandedSections, toggleSection, activeStyle }) => (
     <>
-      <div className="mb-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
+      <div className="mb-3 p-3 rounded-xl bg-white border border-zinc-200 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
+          <div className="w-10 h-10 rounded-lg bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600">
             {typeof activeStyle?.icon === 'string' ? (
               <span className="text-lg">{activeStyle.icon}</span>
             ) : (
@@ -107,10 +107,10 @@ export const EffectsTab: React.FC<EffectsTabProps> = memo(
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-slate-800 tracking-wide">
+            <div className="text-sm font-semibold text-zinc-800 tracking-wide">
               {activeStyle?.label}风格
             </div>
-            <div className="text-[11px] text-slate-500 font-normal mt-0.5">{activeStyle?.desc}</div>
+            <div className="text-[11px] text-zinc-500 font-normal mt-0.5">{activeStyle?.desc}</div>
           </div>
           <div className="flex gap-1 flex-shrink-0">
             {config.enableParticles ? (
@@ -227,7 +227,7 @@ const LightingSection = memo<{
       step={CONTRAST.STEP}
       value={config.contrast}
     />
-    <div className="h-px bg-zinc-800 my-2" />
+    <div className="h-px bg-zinc-200 my-2" />
     <Slider
       label="光照强度"
       max={LIGHT_INTENSITY.MAX}

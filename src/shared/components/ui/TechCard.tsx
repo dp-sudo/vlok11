@@ -31,8 +31,8 @@ export const TechCard = ({
 
       {/* 3. Decorative Border Lines */}
       {/* Top Left Accent */}
-      <div className="absolute top-0 left-0 w-20 h-[2px] bg-amber-500/50 z-10 box-shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-      <div className="absolute top-0 left-0 w-[2px] h-10 bg-amber-500/50 z-10" />
+      <div className="absolute top-0 left-0 w-20 h-[2px] bg-cyan-500/50 z-10 box-shadow-[0_0_10px_rgba(6,182,212,0.5)]" />
+      <div className="absolute top-0 left-0 w-[2px] h-10 bg-cyan-500/50 z-10" />
 
       {/* Bottom Right Cut Accent */}
       <div className="absolute bottom-[-1px] right-[19px] w-[28px] h-[2px] bg-cyan-500/50 z-10 origin-right rotate-[-45deg]" />

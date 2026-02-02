@@ -40,10 +40,10 @@ export const UploadPanel = memo(
                 DATA IMPORT
               </h2>
               <div className="flex flex-col gap-1">
-                <p className="text-amber-500 font-tech text-xs tracking-[0.3em] uppercase opacity-90">
+                <p className="text-cyan-500 font-tech text-xs tracking-[0.3em] uppercase opacity-90">
                   SYSTEM READY FOR INGESTION
                 </p>
-                <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent mx-auto mt-2" />
+                <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent mx-auto mt-2" />
               </div>
 
               <div className="pt-4 space-y-2">
@@ -57,10 +57,10 @@ export const UploadPanel = memo(
             </div>
 
             <div className="relative group w-full max-w-sm pt-4">
-              <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 via-cyan-500/20 to-amber-500/20 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-cyan-500/20 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
               <div className="relative">
                 {/* Border Effect */}
-                <div className="absolute inset-0 border-2 border-dashed border-zinc-700 rounded-lg group-hover:border-amber-500/50 group-hover:bg-amber-500/5 transition-all duration-300 pointer-events-none" />
+                <div className="absolute inset-0 border-2 border-dashed border-zinc-700 rounded-lg group-hover:border-cyan-500/50 group-hover:bg-cyan-500/5 transition-all duration-300 pointer-events-none" />
 
                 <input
                   accept={acceptedFormats}
@@ -70,11 +70,11 @@ export const UploadPanel = memo(
                 />
 
                 <div className="w-full py-10 px-6 bg-zinc-900/50 backdrop-blur-sm rounded-lg flex flex-col items-center justify-center gap-4 transition-all z-10">
-                  <div className="p-4 rounded-full bg-zinc-800/50 group-hover:bg-amber-500/20 group-hover:text-amber-400 text-zinc-400 transition-all duration-300 ring-1 ring-white/5 group-hover:ring-amber-500/30">
+                  <div className="p-4 rounded-full bg-zinc-800/50 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 text-zinc-400 transition-all duration-300 ring-1 ring-white/5 group-hover:ring-cyan-500/30">
                     <Upload className="w-8 h-8" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="tracking-[0.2em] uppercase font-orbitron text-sm text-white group-hover:text-amber-400 transition-colors">
+                    <span className="tracking-[0.2em] uppercase font-orbitron text-sm text-white group-hover:text-cyan-400 transition-colors">
                       INITIALIZE UPLOAD
                     </span>
                     <span className="text-[10px] font-mono text-zinc-500 group-hover:text-zinc-400">
@@ -121,7 +121,7 @@ export const UploadPanel = memo(
 
             <div className="flex gap-0">
               <input
-                className="flex-1 bg-black/50 border border-zinc-700 border-r-0 rounded-l-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 font-mono placeholder:text-zinc-700"
+                className="flex-1 bg-black/50 border border-zinc-700 border-r-0 rounded-l-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono placeholder:text-zinc-700"
                 onChange={(e) => {
                   setUrlInput(e.target.value);
                 }}
@@ -135,7 +135,7 @@ export const UploadPanel = memo(
                 value={urlInput}
               />
               <button
-                className="bg-amber-600 hover:bg-amber-500 text-black px-5 rounded-r-sm flex items-center justify-center btn-cyber border border-amber-500"
+                className="bg-cyan-600 hover:bg-cyan-500 text-white px-5 rounded-r-sm flex items-center justify-center btn-cyber border border-cyan-500"
                 onClick={() => {
                   void onUrlSubmit();
                 }}

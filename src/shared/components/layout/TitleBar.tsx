@@ -1,9 +1,13 @@
-import { FolderOpen, Save } from 'lucide-react';
+import { Bot, FolderOpen, Save } from 'lucide-react';
 import type React from 'react';
 
 import { projectService } from '@/core/services/ProjectService';
 
-export const TitleBar: React.FC = () => {
+interface TitleBarProps {
+  onOpenModelManager?: () => void;
+}
+
+export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager }) => {
   return (
     <div className="h-12 bg-zinc-950/90 backdrop-blur-sm flex items-center justify-between px-4 select-none z-[9999] fixed top-0 left-0 right-0 border-b border-white/5 shadow-md">
       <div className="flex h-full items-center gap-6">
@@ -36,6 +40,16 @@ export const TitleBar: React.FC = () => {
           >
             <Save className="w-4 h-4 group-hover:text-purple-400 transition-colors" />
             <span className="font-mono tracking-wider font-medium">SAVE</span>
+          </button>
+          
+          <div className="w-px h-4 bg-zinc-800 mx-1" />
+
+          <button
+            onClick={onOpenModelManager}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-500 hover:text-white hover:bg-white/5 border border-transparent transition-all duration-200 group"
+          >
+            <Bot className="w-4 h-4" />
+            <span className="font-mono tracking-wider font-medium">模型管理</span>
           </button>
         </div>
       </div>

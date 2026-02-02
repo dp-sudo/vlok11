@@ -16,11 +16,15 @@ const TIME_DISPLAY_PRECISION = 10;
 const MS_IN_MICROSECOND = 1;
 const MICROSECONDS_PER_MS = 1000;
 
-export const ModelManager = memo(() => {
+interface ModelManagerProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const ModelManager = memo(({ isOpen, onClose }: ModelManagerProps) => {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [selectedModel, setSelectedModel] = useState<ModelInfo | null>(null);
   const [benchmark, setBenchmark] = useState<ModelBenchmarkResult | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'loaded' | 'available'>('all');
 
   useEffect(() => {
@@ -70,15 +74,7 @@ export const ModelManager = memo(() => {
   }, [formatBytes]);
 
   if (!isOpen) {
-    return (
-      <button
-        className="fixed bottom-20 right-4 z-40 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-slate-800 text-sm rounded-lg shadow-lg transition-colors"
-        onClick={() => setIsOpen(true)}
-        type="button"
-      >
-        🤖 模型管理
-      </button>
-    );
+    return null;
   }
 
   return (
@@ -93,7 +89,7 @@ export const ModelManager = memo(() => {
           </div>
           <button
             className="text-slate-400 hover:text-slate-800 transition-colors"
-            onClick={() => setIsOpen(false)}
+            onClick={onClose}
             type="button"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

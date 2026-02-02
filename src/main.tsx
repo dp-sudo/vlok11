@@ -35,13 +35,11 @@ const initAndRender = async () => {
   const root = ReactDOM.createRoot(rootElement);
 
   root.render(
-    <React.StrictMode>
       <ErrorBoundaryWithRecovery>
         <ServiceProvider services={{ aiService: aiService ?? null }}>
           <App />
         </ServiceProvider>
       </ErrorBoundaryWithRecovery>
-    </React.StrictMode>
   );
 };
 

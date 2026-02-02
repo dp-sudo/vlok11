@@ -84,24 +84,24 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
     activeMotion,
   }) => (
     <>
-      <div className="mb-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
+      <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
+          <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
             <Camera className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-slate-800 tracking-wide">
+            <div className="text-sm font-semibold text-zinc-100 tracking-wide font-tech">
               {config.cameraMode === CameraMode.PERSPECTIVE
                 ? CAMERA_MODE_LABELS.PERSPECTIVE
                 : CAMERA_MODE_LABELS.ORTHOGRAPHIC}
               相机
             </div>
-            <div className="text-[11px] text-slate-500 font-normal mt-0.5">
+            <div className="text-[11px] text-zinc-400 font-normal mt-0.5">
               {activeMotion?.label} · FOV {config.fov}°
             </div>
           </div>
           <div className="text-right flex-shrink-0">
-            <div className="text-[10px] text-slate-500 uppercase tracking-wider font-medium mb-0.5">
+            <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-0.5">
               速度
             </div>
             <div className="text-base font-mono text-violet-600 font-semibold">

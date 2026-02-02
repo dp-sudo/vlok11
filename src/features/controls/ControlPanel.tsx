@@ -13,7 +13,7 @@ import { EffectsTab } from './EffectsTab';
 import { ImmersiveTab } from './ImmersiveTab';
 import { ControlPanelHeader, ControlPanelTabBar, SceneTab } from './parts';
 
-interface ControlPanelNewProps {
+interface ControlPanelProps {
   activeCameraView?: CameraViewPreset | null;
   hasVideo: boolean;
   isRecording?: boolean;
@@ -32,7 +32,7 @@ interface ControlPanelNewProps {
   };
 }
 
-export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
+export const ControlPanel: React.FC<ControlPanelProps> = memo(
   ({
     hasVideo,
     videoState,
@@ -62,6 +62,7 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
     const config = useSceneStore((s) => s.config);
+    // ... rest of component ...
     const setConfig = useSceneStore((s) => s.setConfig);
     const resetConfig = useSceneStore((s) => s.resetConfig);
     const { exportState, setPlaybackRate, toggleVideoLoop } = useAppViewModel();
@@ -96,7 +97,7 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
     const { isExporting } = exportState;
 
     return (
-      <div className="w-80 bg-white flex flex-col h-full border-l border-slate-300 shadow-2xl relative">
+      <div className="w-80 bg-zinc-950/90 backdrop-blur-xl flex flex-col h-full border-l border-white/10 shadow-2xl relative text-zinc-100">
         {isExporting ? (
           <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
             <div className="flex flex-col items-center gap-2 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl">
@@ -196,4 +197,4 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
   }
 );
 
-ControlPanelNew.displayName = 'ControlPanelNew';
+ControlPanel.displayName = 'ControlPanel';

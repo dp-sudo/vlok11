@@ -44,28 +44,35 @@ interface ToggleProps {
   onChange: (v: boolean) => void;
 }
 
-export const Btn: React.FC<BtnProps> = ({ active, onClick, children, small, disabled }) => (
-  <button
-    className={`
+export const Btn: React.FC<BtnProps> = ({ active, onClick, children, small, disabled }) => {
+  const getBtnStateClasses = () => {
+    if (disabled) {
+      return 'bg-zinc-800/50 border-zinc-700/50 text-zinc-600 cursor-not-allowed opacity-50';
+    }
+    if (active) {
+      return 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.2)]';
+    }
+
+    return 'bg-zinc-900/40 border-white/5 text-zinc-400 hover:border-cyan-500/30 hover:text-cyan-300 hover:bg-white/5';
+  };
+
+  return (
+    <button
+      className={`
       ${small ? 'py-1.5 px-3 text-[12px]' : 'py-2.5 px-4 text-[13px]'}
       rounded-lg border font-semibold tracking-wide transition-all duration-200
-      ${
-        active
-          ? 'bg-gradient-to-b from-amber-500 to-amber-600 border-amber-400 text-white shadow-md'
-          : disabled
-            ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-50'
-            : 'bg-white border-slate-300 text-slate-700 hover:border-amber-400 hover:text-amber-700 hover:bg-amber-50'
-      }
+      ${getBtnStateClasses()}
       active:scale-[0.96]
       disabled:cursor-not-allowed
     `}
-    onClick={onClick}
-    disabled={disabled}
-    type="button"
-  >
-    {children}
-  </button>
-);
+      onClick={onClick}
+      disabled={disabled}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+};
 
 export const CardBtn: React.FC<CardBtnProps> = ({
   active,
@@ -75,42 +82,48 @@ export const CardBtn: React.FC<CardBtnProps> = ({
   onMouseEnter,
   onMouseLeave,
   disabled,
-}) => (
-  <button
-    className={`
-      ${small ? 'py-2.5 px-2 min-h-[4.5rem]' : 'py-3 px-2.5 min-h-[5.5rem]'}
-      rounded-xl border-2 transition-all duration-200
-      flex flex-col items-center justify-center gap-2 relative overflow-hidden
-      ${
-        active
-          ? 'bg-gradient-to-b from-amber-50 to-amber-100 border-amber-400 text-amber-800 scale-[1.02] shadow-md'
-          : disabled
-            ? 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
-            : 'bg-white border-slate-300 text-slate-700 hover:border-amber-400 hover:text-amber-700 hover:bg-amber-50 hover:scale-[1.02]'
-      }
-      active:scale-[0.98]
-      disabled:cursor-not-allowed disabled:hover:scale-100
-    `}
-    onClick={onClick}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-    disabled={disabled}
-    type="button"
-  >
-    {active && (
-      <>
-        {/* 激活状态指示点 */}
-        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-amber-500 shadow-md flex items-center justify-center z-10">
-          <Check className="w-3 h-3 text-white" strokeWidth={3} />
-        </div>
-        {/* 顶部指示条 */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
-      </>
-    )}
+}) => {
+  const getCardBtnStateClasses = () => {
+    if (disabled) {
+      return 'bg-zinc-900/20 border-zinc-800 text-zinc-700 opacity-60 cursor-not-allowed';
+    }
+    if (active) {
+      return 'bg-cyan-950/40 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.15)] scale-[1.02]';
+    }
 
-    <div className="relative z-10 flex flex-col items-center gap-2">{children}</div>
-  </button>
-);
+    return 'bg-zinc-900/40 border-white/5 text-zinc-400 hover:border-cyan-500/30 hover:bg-white/5 hover:shadow-lg hover:-translate-y-0.5';
+  };
+
+  return (
+    <button
+      className={`
+      ${small ? 'py-2.5 px-2 min-h-[4.5rem]' : 'py-3 px-2.5 min-h-[6rem]'}
+      rounded-xl border-2 transition-all duration-300
+      flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group
+      ${getCardBtnStateClasses()}
+      active:scale-[0.98] active:translate-y-0
+    `}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      disabled={disabled}
+      type="button"
+    >
+      {active && (
+        <>
+          {/* Active Indicator Dot */}
+          <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)] flex items-center justify-center z-10 animate-in fade-in zoom-in duration-200">
+            <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+          </div>
+          {/* Top Gradient Line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 opacity-80" />
+        </>
+      )}
+
+      <div className="relative z-10 flex flex-col items-center w-full">{children}</div>
+    </button>
+  );
+};
 
 export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   title,
@@ -130,29 +143,32 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       rounded-xl overflow-hidden transition-all duration-200
       ${
         open
-          ? 'bg-white border border-slate-300 shadow-sm'
-          : 'bg-slate-100 border border-slate-200 hover:bg-white'
+          ? 'bg-zinc-800/50 border border-white/5 shadow-sm'
+          : 'bg-zinc-900/40 border border-white/5 hover:bg-zinc-800/50'
       }
     `}
     >
       <button
-        className="w-full px-3 py-2.5 flex items-center gap-2 text-left hover:bg-slate-100 transition-colors group"
+        className="w-full flex items-center justify-between p-3 bg-zinc-900/30 hover:bg-white/5 border border-transparent hover:border-white/5 rounded-lg transition-colors group"
         onClick={handleToggle}
+        type="button"
       >
-        <div className={`transition-transform duration-200 ${open ? 'rotate-0' : '-rotate-90'}`}>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-700" />
+        <div className="flex items-center gap-2 text-[13px] font-semibold text-zinc-300 group-hover:text-cyan-400">
+          {icon ? (
+            <span className="text-zinc-500 group-hover:text-cyan-500/70 transition-colors">
+              {icon}
+            </span>
+          ) : null}
+          {title}
         </div>
-        {icon ? (
-          <span className="text-slate-500 group-hover:text-slate-700 transition-colors">
-            {icon}
-          </span>
-        ) : null}
-        <span className="text-xs font-semibold text-slate-700 flex-1">{title}</span>
         {badge !== undefined ? (
           <span className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-violet-100 text-violet-700 border border-violet-300">
             {badge}
           </span>
         ) : null}
+        <ChevronDown
+          className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+        />
       </button>
       <div
         className={`
@@ -195,14 +211,14 @@ export const Slider: React.FC<SliderProps> = ({
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between items-center">
-        <span className="text-[11px] text-slate-600 font-medium">{label}</span>
+        <span className="text-[11px] text-zinc-400 font-medium">{label}</span>
         <span
           className={`
-          text-[11px] font-mono px-2 py-0.5 rounded-md transition-all duration-150
+          text-[11px] font-mono px-2 py-0.5 rounded-md transition-all duration-150 font-bold
           ${
             isDragging
-              ? 'bg-violet-100 text-violet-700 border border-violet-300 scale-105'
-              : 'bg-slate-200 text-slate-700'
+              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 scale-105 shadow-sm'
+              : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
           }
         `}
         >
@@ -211,7 +227,7 @@ export const Slider: React.FC<SliderProps> = ({
       </div>
       <div className="relative group">
         <input
-          className="w-full h-2 rounded-full appearance-none cursor-pointer relative z-10 slider-thumb"
+          className="w-full h-2 rounded-full appearance-none cursor-pointer relative z-10 slider-thumb bg-zinc-800"
           max={max}
           min={min}
           onChange={(e) => onChange(parseFloat(e.target.value))}
@@ -222,31 +238,31 @@ export const Slider: React.FC<SliderProps> = ({
           step={step}
           style={{
             background: `linear-gradient(to right, 
-            #7c3aed 0%, 
-            #a78bfa ${percentage}%, 
-            #cbd5e1 ${percentage}%, 
-            #cbd5e1 100%)`,
+            #06b6d4 0%, 
+            #2dd4bf ${percentage}%, 
+            #27272a ${percentage}%, 
+            #27272a 100%)`,
           }}
           type="range"
           value={value}
         />
         {isDragging ? (
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-violet-400/30 blur-md pointer-events-none"
-            style={{ left: `calc(${percentage}% - 8px)` }}
+            className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-cyan-400/40 blur-md pointer-events-none transition-all duration-75"
+            style={{ left: `calc(${percentage}% - 10px)` }}
           />
         ) : null}
       </div>
       {showPresets && presets ? (
-        <div className="flex gap-1 mt-1">
+        <div className="flex gap-1.5 mt-2">
           {presets.map((p) => (
             <button
               className={`
-                flex-1 py-1 text-[9px] rounded-md transition-all duration-150
+                flex-1 py-1.5 text-[10px] rounded-lg transition-all duration-200 font-medium
                 ${
                   Math.abs(value - p) < step
-                    ? 'bg-violet-500/20 text-violet-300 border border-violet-400/40'
-                    : 'bg-slate-800/50 text-slate-500 hover:text-slate-400 hover:bg-slate-800/70'
+                    ? 'bg-cyan-600 text-white shadow-md shadow-cyan-500/20 scale-105'
+                    : 'bg-zinc-800 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600'
                 }
               `}
               key={p}

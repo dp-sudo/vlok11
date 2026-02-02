@@ -34,4 +34,4 @@ class ControlsModuleImpl implements LifecycleAware {
   }
 }
 
-export { ControlPanelNew as ControlPanel } from './ControlPanelNew';
+export { ControlPanel } from './ControlPanel';

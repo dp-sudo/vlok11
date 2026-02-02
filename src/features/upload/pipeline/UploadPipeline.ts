@@ -1,3 +1,4 @@
+import { generateUUID } from '@/shared/utils/uuid';
 import { getEventBus } from '@/core/EventBus';
 import { PipelineEvents } from '@/core/EventTypes';
 import { createLogger } from '@/core/Logger';
@@ -65,7 +66,7 @@ const buildAsset = (
   isVideo: boolean
 ): ProcessedResult['asset'] => {
   const baseAsset = {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     sourceUrl: imageUrl,
     width: (stageInput.metadata?.width as number) ?? ASSET_DEFAULTS.WIDTH,
     height: (stageInput.metadata?.height as number) ?? ASSET_DEFAULTS.HEIGHT,
@@ -329,7 +330,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
     this.releaseBlobUrls();
     this.startTime = Date.now();
     this.abortController = new AbortController();
-    this.currentRunId = crypto.randomUUID();
+    this.currentRunId = generateUUID();
     const inputType = input instanceof File ? 'file' : 'url';
 
     this.eventEmitter.emit(PipelineEvents.STARTED, { inputType });

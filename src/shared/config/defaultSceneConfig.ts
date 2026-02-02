@@ -114,6 +114,7 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   enableVignette: false,
 
   enableFaceTracking: false,
+  measurementEnabled: false,
 
   aiMotionEnabled: false,
   aiMotionStyle: 'cinematic',

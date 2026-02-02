@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2'><path d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'></path><polyline points='3.27 6.96 12 12.01 20.73 6.96'></polyline><line x1='12' y1='22.08' x2='12' y2='12'></line></svg>"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Immersa 3D - 单视图场景重建</title>
@@ -21,11 +21,12 @@
     <title>IMMERSA 3D // SYSTEM</title>
     
     <style>
-      /* CRITICAL BOOT STYLES - ZERO LATENCY */
+      /* CRITICAL BOOT STYLES - CYBERPUNK THEME */
       body {
-        background-color: #0b0b10;
+        background-color: #050505;
         margin: 0;
         overflow: hidden;
+        font-family: 'Consolas', 'Monaco', monospace;
       }
 
       #boot-loader {
@@ -36,98 +37,115 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(circle at center, #1e1e24 0%, #0b0b10 100%);
-        font-family: 'Courier New', Courier, monospace;
-        color: #f59e0b; /* Amber */
-        transition: opacity 0.5s ease-out;
+        background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+        color: #06b6d4;
+        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      /* Pulse Core */
-      .core-pulse {
+      /* Tech Rings Container */
+      .loader-container {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Inner Ring */
+      .ring-inner {
+        position: absolute;
         width: 60px;
         height: 60px;
-        border: 2px solid rgba(245, 158, 11, 0.3);
+        border: 2px solid rgba(6, 182, 212, 0.3);
+        border-top: 2px solid #06b6d4;
         border-radius: 50%;
-        position: relative;
-        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        animation: spin-right 1.5s linear infinite;
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
       }
-      
-      .core-pulse::after {
-        content: '';
+
+      /* Outer Ring */
+      .ring-outer {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 40px;
-        height: 40px;
-        background: #f59e0b;
+        width: 100px;
+        height: 100px;
+        border: 1px dashed rgba(6, 182, 212, 0.2);
         border-radius: 50%;
-        box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
-        animation: pulse-core 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        animation: spin-left 4s linear infinite;
       }
 
-      /* Terminal Text */
-      .sys-text {
-        margin-top: 2rem;
-        font-size: 12px;
-        letter-spacing: 2px;
-        opacity: 0.8;
-        text-transform: uppercase;
+      /* Center Core */
+      .core-gem {
+        width: 8px;
+        height: 8px;
+        background: #22d3ee;
+        border-radius: 50%;
+        box-shadow: 0 0 20px #22d3ee;
+        animation: pulse 2s ease-in-out infinite;
       }
 
-      .sys-text::after {
-        content: '...';
-        animation: ellipsis 1.5s infinite;
+      /* Scanning Line */
+      .scan-line {
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+        top: 50%;
+        animation: scan 3s ease-in-out infinite;
+        opacity: 0.5;
       }
 
-      @keyframes pulse-ring {
-        0% { transform: scale(0.8); opacity: 0; border-width: 4px; }
+      /* Text Styles */
+      .boot-text {
+        margin-top: 3rem;
+        font-size: 14px;
+        letter-spacing: 4px;
+        color: #22d3ee;
+        text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        position: relative;
+      }
+
+      .boot-text::before {
+        content: '> ';
+        opacity: 0.5;
+      }
+
+      .boot-sub {
+        margin-top: 0.5rem;
+        font-size: 10px;
+        color: rgba(6, 182, 212, 0.5);
+        letter-spacing: 1px;
+      }
+
+      /* Animations */
+      @keyframes spin-right { 100% { transform: rotate(360deg); } }
+      @keyframes spin-left { 100% { transform: rotate(-360deg); } }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.5); }
+      }
+      @keyframes scan {
+        0% { top: 0%; opacity: 0; }
         50% { opacity: 1; }
-        100% { transform: scale(2); opacity: 0; border-width: 0px; }
-      }
-
-      @keyframes pulse-core {
-        0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
-        50% { transform: translate(-50%, -50%) scale(1); opacity: 1; box-shadow: 0 0 30px rgba(245, 158, 11, 1); }
-        100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
-      }
-
-      @keyframes ellipsis {
-        0% { content: '.'; }
-        33% { content: '..'; }
-        66% { content: '...'; }
+        100% { top: 100%; opacity: 0; }
       }
     </style>
   </head>
   <body>
     <!-- SYSTEM BOOT LOADER -->
     <div id="boot-loader">
-      <div class="core-pulse"></div>
-      <div class="sys-text">INITIALIZING CORE</div>
+      <div class="loader-container">
+        <div class="ring-outer"></div>
+        <div class="ring-inner"></div>
+        <div class="core-gem"></div>
+        <div class="scan-line"></div>
+      </div>
+      <div class="boot-text">系统启动初始化</div>
+      <div class="boot-sub">加载神经元网络组件...</div>
     </div>
 
     <div id="root">
-      <style>
-        body { background-color: #000; margin: 0; overflow: hidden; }
-        .startup-loader {
-          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          background: #000; z-index: 9999;
-        }
-        .loader-ring {
-          width: 40px; height: 40px; border: 3px solid rgba(6, 182, 212, 0.2);
-          border-top-color: #06b6d4; border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-        .loader-text {
-          margin-top: 15px; font-family: monospace; color: #06b6d4; font-size: 12px; letter-spacing: 2px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-      </style>
-      <div class="startup-loader">
-        <div class="loader-ring"></div>
-        <div class="loader-text">SYSTEM INITIALIZING...</div>
-      </div>
+      <!-- React Hydration Target -->
     </div>
     <script type="module" src="/src/main.tsx"></script>
     

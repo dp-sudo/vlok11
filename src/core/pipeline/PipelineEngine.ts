@@ -1,3 +1,4 @@
+import { generateUUID } from '@/shared/utils/uuid';
 import { getEventBus } from '@/core/EventBus';
 import { createLogger } from '@/core/Logger';
 import { getStageRegistry } from '@/core/pipeline/StageRegistry';
@@ -31,7 +32,7 @@ export class PipelineEngine implements PipelineEngineInterface {
 
   async execute<T>(initialInput: T, config: PipelineConfig, signal?: AbortSignal): Promise<T> {
     const enabledStages = config.stages.filter((s) => s.enabled !== false);
-    const runId = crypto.randomUUID();
+    const runId = generateUUID();
 
     logger.info(
       `Starting pipeline ${config.id} (RunID: ${runId}) with ${enabledStages.length} stages`

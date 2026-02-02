@@ -151,6 +151,7 @@ export interface StyleEffectsConfig
 
 export interface UIDisplayConfig {
   enableFaceTracking: boolean;
+  measurementEnabled: boolean;
   showAxes: boolean;
   showGrid: boolean;
   videoMuted: boolean;

@@ -8,16 +8,56 @@ interface TitleBarProps {
   onOpenSettings?: () => void;
 }
 
+const AppLogo = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="opacity-90 group-hover:opacity-100 transition-opacity filter drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+  >
+    <path
+      d="M12 2L2 7L12 12L22 7L12 2Z"
+      stroke="#06b6d4"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="animate-[pulse_3s_ease-in-out_infinite]"
+    />
+    <path
+      d="M2 17L12 22L22 17"
+      stroke="#a78bfa"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2 7V17L12 22V12L2 7Z"
+      stroke="#06b6d4"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeOpacity="0.5"
+    />
+    <path
+      d="M22 7V17L12 22V12L22 7Z"
+      stroke="#a78bfa"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeOpacity="0.5"
+    />
+    <circle cx="12" cy="12" r="2" fill="#22d3ee" className="animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+  </svg>
+);
+
 export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSettings }) => {
   return (
     <div className="h-12 bg-zinc-950/90 backdrop-blur-sm flex items-center justify-between px-4 select-none z-[9999] fixed top-0 left-0 right-0 border-b border-white/5 shadow-md">
       <div className="flex h-full items-center gap-6">
-        <div className="flex items-center gap-2 pl-1 group cursor-default">
-          <img
-            src="/icon.png"
-            alt="Icon"
-            className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"
-          />
+        <div className="flex items-center gap-3 pl-1 group cursor-default">
+          <AppLogo />
           <span className="text-xs font-orbitron text-zinc-400 group-hover:text-white tracking-[0.2em] transition-all duration-300">
             IMMERSA <span className="text-cyan-400 font-bold">3D</span>
           </span>
@@ -31,7 +71,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-400 hover:text-cyan-300 hover:bg-cyan-950/30 border border-transparent hover:border-cyan-500/30 transition-all duration-200 group"
           >
             <FolderOpen className="w-4 h-4 group-hover:text-cyan-400 transition-colors" />
-            <span className="font-mono tracking-wider font-medium">OPEN</span>
+            <span className="font-mono tracking-wider font-medium">打开</span>
           </button>
           <button
             onClick={() => {
@@ -40,7 +80,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-400 hover:text-purple-300 hover:bg-purple-950/30 border border-transparent hover:border-purple-500/30 transition-all duration-200 group"
           >
             <Save className="w-4 h-4 group-hover:text-purple-400 transition-colors" />
-            <span className="font-mono tracking-wider font-medium">SAVE</span>
+            <span className="font-mono tracking-wider font-medium">保存</span>
           </button>
 
           <div className="w-px h-4 bg-zinc-800 mx-1" />

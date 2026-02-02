@@ -7,6 +7,7 @@ import {
   Focus,
   Grid3X3,
   Move3D,
+  Ruler,
   Sliders,
 } from 'lucide-react';
 import type React from 'react';
@@ -375,9 +376,84 @@ const OrthoPresetSection = memo<{
 
 export type { CameraTabProps };
 
+// 测量工具部分
+interface MeasurementSectionProps {
+  config: SceneConfig;
+  set: <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
+}
+
+const MeasurementSection = memo<MeasurementSectionProps>(({ config, set }) => {
+  const measurementService = (() => {
+    const {
+      getMeasurementService,
+    } = require('@/features/scene/services/measurement/MeasurementService');
+    return getMeasurementService();
+  })();
+
+  const handleStartDistance = () => {
+    measurementService.startTool('distance');
+    set('measurementEnabled', true);
+  };
+
+  const handleStartAngle = () => {
+    measurementService.startTool('angle');
+    set('measurementEnabled', true);
+  };
+
+  const handleStop = () => {
+    measurementService.stopTool();
+    set('measurementEnabled', false);
+  };
+
+  const handleClear = () => {
+    measurementService.clearAll();
+  };
+
+  return (
+    <CollapsibleSection icon={<Ruler className="w-3.5 h-3.5" />} title="测量工具">
+      <div className="grid grid-cols-2 gap-1.5 mb-3">
+        <Btn
+          active={
+            config.measurementEnabled &&
+            measurementService.getConfig().measurementType === 'distance'
+          }
+          onClick={handleStartDistance}
+        >
+          <Move3D className="w-4 h-4 mb-1" />
+          <span>距离</span>
+        </Btn>
+        <Btn
+          active={
+            config.measurementEnabled && measurementService.getConfig().measurementType === 'angle'
+          }
+          onClick={handleStartAngle}
+        >
+          <Focus className="w-4 h-4 mb-1" />
+          <span>角度</span>
+        </Btn>
+      </div>
+
+      {config.measurementEnabled && (
+        <>
+          <div className="text-xs text-zinc-400 mb-2">点击场景中的点进行测量</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            <Btn active={false} onClick={handleStop}>
+              停止
+            </Btn>
+            <Btn active={false} onClick={handleClear}>
+              清除
+            </Btn>
+          </div>
+        </>
+      )}
+    </CollapsibleSection>
+  );
+});
+
 CameraViewSection.displayName = 'CameraViewSection';
 CameraModeSection.displayName = 'CameraModeSection';
 MotionSection.displayName = 'MotionSection';
+MeasurementSection.displayName = 'MeasurementSection';
 ControlParamsSection.displayName = 'ControlParamsSection';
 OrthoPresetSection.displayName = 'OrthoPresetSection';
 CameraTab.displayName = 'CameraTab';

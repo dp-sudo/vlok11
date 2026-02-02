@@ -1,3 +1,4 @@
+import { generateUUID } from '@/shared/utils/uuid';
 import { createLogger } from '@/core/Logger';
 
 import type { Disposable } from '@/shared/types';
@@ -87,7 +88,7 @@ export class WorkerManager implements Disposable {
     payload: T,
     transfer?: Transferable[]
   ): Promise<R> {
-    const taskId = crypto.randomUUID();
+    const taskId = generateUUID();
 
     return new Promise<R>((resolve, reject) => {
       this.pendingTasks.set(taskId, { resolve: resolve as (v: unknown) => void, reject });

@@ -37,9 +37,7 @@ export const MobileDrawer = memo(({ isOpen, onClose, onOpen, children }: MobileD
           <X className="w-5 h-5" />
         </button>
       </div>
-      <div className="h-full overflow-y-auto pb-20">
-        {children}
-      </div>
+      <div className="h-full overflow-y-auto pb-20">{children}</div>
     </div>
 
     <button

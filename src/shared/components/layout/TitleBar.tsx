@@ -1,13 +1,14 @@
-import { Bot, FolderOpen, Save } from 'lucide-react';
+import { BookOpen, Bot, FolderOpen, Save, Settings } from 'lucide-react';
 import type React from 'react';
 
 import { projectService } from '@/core/services/ProjectService';
 
 interface TitleBarProps {
   onOpenModelManager?: () => void;
+  onOpenSettings?: () => void;
 }
 
-export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager }) => {
+export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSettings }) => {
   return (
     <div className="h-12 bg-zinc-950/90 backdrop-blur-sm flex items-center justify-between px-4 select-none z-[9999] fixed top-0 left-0 right-0 border-b border-white/5 shadow-md">
       <div className="flex h-full items-center gap-6">
@@ -41,7 +42,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager }) => {
             <Save className="w-4 h-4 group-hover:text-purple-400 transition-colors" />
             <span className="font-mono tracking-wider font-medium">SAVE</span>
           </button>
-          
+
           <div className="w-px h-4 bg-zinc-800 mx-1" />
 
           <button
@@ -50,6 +51,22 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager }) => {
           >
             <Bot className="w-4 h-4" />
             <span className="font-mono tracking-wider font-medium">模型管理</span>
+          </button>
+
+          <button
+            onClick={onOpenSettings}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-500 hover:text-white hover:bg-white/5 border border-transparent transition-all duration-200 group"
+          >
+            <Settings className="w-4 h-4" />
+            <span className="font-mono tracking-wider font-medium">设置</span>
+          </button>
+
+          <button
+            onClick={() => window.open('https://github.com/google/gemini-api-cookbook', '_blank')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-500 hover:text-white hover:bg-white/5 border border-transparent transition-all duration-200 group"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span className="font-mono tracking-wider font-medium">文档</span>
           </button>
         </div>
       </div>

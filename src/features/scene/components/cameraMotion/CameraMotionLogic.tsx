@@ -31,6 +31,7 @@ export const CameraMotionLogic = memo(({ config, controlsRef }: CameraMotionLogi
   const { handleInteractionEnd } = useMotionAutoResume(config);
 
   // Handle user interaction start - pause AI motion
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const handleInteractionStart = useCallback(() => {
     const motionState = cameraStore.getState().motion;
 
@@ -61,6 +62,7 @@ export const CameraMotionLogic = memo(({ config, controlsRef }: CameraMotionLogi
     };
   }, [camera, controlsRef, cameraAnimator]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   useEffect(() => {
     const motionType = toMotionType(config.cameraMotionType);
 
@@ -85,6 +87,7 @@ export const CameraMotionLogic = memo(({ config, controlsRef }: CameraMotionLogi
     return MOTION_SCALE_BY_PROJECTION[config.projectionMode] ?? 1.0;
   }, [config.projectionMode]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refs and services are stable
   useEffect(() => {
     if (isUserInteracting) return undefined;
     if (config.cameraMotionType !== CameraMotionType.STATIC) return undefined;

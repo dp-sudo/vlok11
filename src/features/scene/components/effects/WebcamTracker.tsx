@@ -98,7 +98,7 @@ const useWebcamStream = (videoRef: React.RefObject<HTMLVideoElement | null>) => 
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
 
-        stream.getTracks().forEach((track) => track.stop());
+        stream.getTracks().forEach((track) => { track.stop(); });
       }
     };
   }, [videoRef]);
@@ -177,7 +177,7 @@ export const WebcamTracker = () => {
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
 
-        stream.getTracks().forEach((track) => track.stop());
+        stream.getTracks().forEach((track) => { track.stop(); });
       }
     };
   }, [model, isTracking]);

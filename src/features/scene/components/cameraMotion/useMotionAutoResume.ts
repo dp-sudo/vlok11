@@ -31,6 +31,7 @@ export function useMotionAutoResume(_config: SceneConfig) {
   /**
    * Handle user interaction end - optionally auto-resume motion
    */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const handleInteractionEnd = useCallback(() => {
     const motionState = cameraStore.getState().motion;
     const sceneConfig = useSceneStore.getState().config;
@@ -75,6 +76,7 @@ export function useMotionAutoResume(_config: SceneConfig) {
   /**
    * Cancel any pending auto-resume and immediately resume
    */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const immediateResume = useCallback(() => {
     clearResumeTimeout();
 

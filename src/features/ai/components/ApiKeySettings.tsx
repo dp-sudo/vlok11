@@ -37,24 +37,24 @@ export const ApiKeySettings = memo(() => {
   const hasKey = apiKey.length > 0;
 
   return (
-    <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
-      <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+    <div className="bg-white rounded-lg p-4 border border-slate-300">
+      <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
         <span>🔑</span>
         API 配置
       </h3>
 
       {/* 本地模式开关 */}
-      <div className="mb-4 p-3 bg-zinc-800/50 rounded-lg">
+      <div className="mb-4 p-3 bg-slate-100 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-medium text-white">强制本地AI模式</div>
-            <div className="text-xs text-zinc-500 mt-0.5">禁用云端AI，仅使用本地算法</div>
+            <div className="text-sm font-medium text-slate-800">强制本地AI模式</div>
+            <div className="text-xs text-slate-500 mt-0.5">禁用云端AI，仅使用本地算法</div>
           </div>
           <button
             onClick={handleToggleLocalMode}
             className={`
               relative w-12 h-7 rounded-full transition-all duration-200
-              ${isLocalMode ? 'bg-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.4)]' : 'bg-[#3d3d4f]'}
+              ${isLocalMode ? 'bg-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.4)]' : 'bg-slate-300'}
             `}
             type="button"
           >
@@ -68,7 +68,7 @@ export const ApiKeySettings = memo(() => {
             <span
               className={`
                 absolute top-2 w-1.5 h-1.5 rounded-full transition-all duration-200
-                ${isLocalMode ? 'left-2 bg-cyan-200' : 'right-2 bg-[#52525e]'}
+                ${isLocalMode ? 'left-2 bg-cyan-200' : 'right-2 bg-slate-400'}
               `}
             />
           </button>
@@ -94,18 +94,18 @@ export const ApiKeySettings = memo(() => {
               onChange={(e) => setApiKey(e.target.value)}
               placeholder={isLocalMode ? '本地模式无需配置' : '输入您的 Gemini API Key'}
               disabled={isLocalMode}
-              className="flex-1 bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50"
+              className="flex-1 bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-slate-800 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50"
             />
             <button
               onClick={() => setShowKey(!showKey)}
               disabled={!hasKey || isLocalMode}
-              className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded text-zinc-400 hover:text-white disabled:opacity-50 text-sm whitespace-nowrap"
+              className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded text-zinc-400 hover:text-slate-800 disabled:opacity-50 text-sm whitespace-nowrap"
               type="button"
             >
               {showKey ? '隐藏' : '显示'}
             </button>
           </div>
-          <p className="text-xs text-zinc-500 mt-1.5">
+          <p className="text-xs text-slate-500 mt-1.5">
             用于云端场景分析，获取地址：
             <a
               href="https://ai.google.dev/"
@@ -119,13 +119,13 @@ export const ApiKeySettings = memo(() => {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-xs text-zinc-500">
+          <div className="text-xs text-slate-500">
             {isSaved && <span className="text-cyan-400">✓ 已保存</span>}
           </div>
           <button
             onClick={handleSave}
             disabled={isLocalMode}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white rounded text-sm transition-colors"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-700 disabled:cursor-not-allowed text-slate-800 rounded text-sm transition-colors"
             type="button"
           >
             保存配置

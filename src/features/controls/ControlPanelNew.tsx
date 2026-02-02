@@ -96,17 +96,17 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
     const { isExporting } = exportState;
 
     return (
-      <div className="w-80 bg-zinc-900/98 backdrop-blur-md flex flex-col h-full border-l border-zinc-800/80 shadow-2xl relative">
+      <div className="w-80 bg-white flex flex-col h-full border-l border-slate-300 shadow-2xl relative">
         {isExporting ? (
-          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-            <div className="flex flex-col items-center gap-2 p-4 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl">
-              <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-              <div className="text-sm font-medium text-white">
+          <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl">
+              <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+              <div className="text-sm font-semibold text-slate-200">
                 {exportState.format ? `导出 ${exportState.format.toUpperCase()}...` : '导出中...'}
               </div>
-              <div className="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="w-32 h-1 bg-slate-800 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-indigo-500 transition-all duration-300"
+                  className="h-full bg-violet-500 transition-all duration-300"
                   style={{ width: `${exportState.progress}%` }}
                 />
               </div>
@@ -143,7 +143,7 @@ export const ControlPanelNew: React.FC<ControlPanelNewProps> = memo(
           />
         ) : null}
 
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
           <div className="p-3 space-y-1">
             {activeTab === 'scene' && (
               <SceneTab

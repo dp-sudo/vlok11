@@ -168,8 +168,8 @@ export const SmartSuggestions = memo(
 
     if (!analysis) {
       return (
-        <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
-          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+        <div className="bg-white rounded-lg p-4 border border-slate-800">
+          <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
             <span>🔮</span>
             智能场景分析
           </h3>
@@ -177,7 +177,7 @@ export const SmartSuggestions = memo(
           <button
             disabled={isAnalyzing}
             onClick={() => void runAnalysis()}
-            className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:opacity-50 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:opacity-50 text-slate-800 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
             type="button"
           >
             {isAnalyzing ? (
@@ -193,7 +193,7 @@ export const SmartSuggestions = memo(
             )}
           </button>
 
-          <p className="text-xs text-zinc-500 mt-3 text-center">
+          <p className="text-xs text-slate-500 mt-3 text-center">
             AI将分析当前场景配置，提供优化建议
           </p>
         </div>
@@ -205,23 +205,23 @@ export const SmartSuggestions = memo(
     ).length;
 
     return (
-      <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
+      <div className="bg-white rounded-lg p-4 border border-slate-800">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
             <span>🔮</span>
             智能分析结果
           </h3>
           <div className="flex items-center gap-2">
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-slate-800">
               {analysis.overallScore}
-              <span className="text-sm text-zinc-500 font-normal">/100</span>
+              <span className="text-sm text-slate-500 font-normal">/100</span>
             </div>
             <div className={`w-3 h-3 rounded-full ${getScoreColorClass(analysis.overallScore)}`} />
           </div>
         </div>
 
         {/* 总结 */}
-        <div className="mb-4 p-3 bg-zinc-800/50 rounded-lg">
+        <div className="mb-4 p-3 bg-slate-100 rounded-lg">
           <div className="flex flex-wrap gap-2">
             {analysis.strengths.map((strength) => (
               <span
@@ -257,7 +257,7 @@ export const SmartSuggestions = memo(
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{CATEGORY_ICONS[opt.category]}</span>
-                    <span className="text-sm font-medium text-white">{opt.suggestion}</span>
+                    <span className="text-sm font-medium text-slate-800">{opt.suggestion}</span>
                   </div>
                   <span
                     className={`text-xs px-2 py-0.5 rounded ${config.badgeBg} ${config.badgeText}`}
@@ -266,18 +266,18 @@ export const SmartSuggestions = memo(
                   </span>
                 </div>
 
-                <p className="text-xs text-zinc-400 mb-2">{opt.reason}</p>
-                <p className="text-xs text-zinc-500 mb-3">💡 {opt.impact}</p>
+                <p className="text-xs text-slate-400 mb-2">{opt.reason}</p>
+                <p className="text-xs text-slate-500 mb-3">💡 {opt.impact}</p>
 
                 {opt.recommendedValue !== undefined && !isApplied && (
                   <button
                     onClick={() => applyOptimization(opt, index)}
-                    className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded transition-colors flex items-center gap-1"
+                    className="text-xs px-3 py-1.5 bg-slate-800 hover:bg-slate-300 text-slate-800 rounded transition-colors flex items-center gap-1"
                     type="button"
                   >
                     <span>🎯</span>
                     应用建议
-                    <span className="text-zinc-500">
+                    <span className="text-slate-500">
                       ({formatValue(opt.currentValue)} → {formatValue(opt.recommendedValue)})
                     </span>
                   </button>
@@ -295,11 +295,11 @@ export const SmartSuggestions = memo(
         </div>
 
         {/* 操作按钮 */}
-        <div className="flex gap-2 mt-4 pt-3 border-t border-zinc-800">
+        <div className="flex gap-2 mt-4 pt-3 border-t border-slate-800">
           {highPriorityCount > 0 && (
             <button
               onClick={applyAllOptimizations}
-              className="flex-1 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg text-sm font-medium transition-all"
+              className="flex-1 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-slate-800 rounded-lg text-sm font-medium transition-all"
               type="button"
             >
               一键应用所有高优先级建议 ({highPriorityCount})
@@ -310,7 +310,7 @@ export const SmartSuggestions = memo(
               setAnalysis(null);
               setAppliedOptimizations(new Set());
             }}
-            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm transition-colors"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-300 text-slate-300 rounded-lg text-sm transition-colors"
             type="button"
           >
             重新分析

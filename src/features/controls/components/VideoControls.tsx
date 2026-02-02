@@ -39,15 +39,14 @@ interface PlayButtonProps {
 
 const PlayButton = memo<PlayButtonProps>(({ isPlaying, onClick }) => (
   <button
-    className="relative w-12 h-12 rounded-full flex items-center justify-center bg-zinc-900 border border-zinc-700 hover:border-cyan-500 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] active:scale-95 transition-all duration-200 ease-out group"
+    className="relative w-12 h-12 rounded-full flex items-center justify-center bg-white border-2 border-cyan-500 hover:bg-cyan-50 active:scale-95 transition-all duration-200 ease-out shadow-md"
     onClick={onClick}
     title={isPlaying ? '暂停' : '播放'}
   >
-    <div className="absolute inset-0 rounded-full bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
     {isPlaying ? (
-      <Pause className="w-5 h-5 text-cyan-400 fill-cyan-400 relative z-10" />
+      <Pause className="w-5 h-5 text-cyan-600 fill-cyan-600 relative z-10" />
     ) : (
-      <Play className="w-5 h-5 text-cyan-400 fill-cyan-400 ml-1 relative z-10" />
+      <Play className="w-5 h-5 text-cyan-600 fill-cyan-600 ml-1 relative z-10" />
     )}
   </button>
 ));
@@ -67,8 +66,8 @@ const IconButton = memo<IconButtonProps>(({ icon: Icon, onClick, title, active, 
   <button
     className={`relative p-2 rounded-lg transition-all duration-200 group flex items-center gap-2 ${
       active
-        ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
-        : 'text-zinc-400 hover:text-cyan-300 hover:bg-cyan-950/30 hover:border-cyan-500/30 border border-transparent'
+        ? 'text-cyan-600 bg-cyan-100 border border-cyan-400'
+        : 'text-slate-600 hover:text-cyan-600 hover:bg-cyan-50 border border-transparent'
     }`}
     onClick={onClick}
     title={title}
@@ -91,11 +90,11 @@ const TimeTooltip = memo<TimeTooltipProps>(({ hoverTime, duration, isVisible }) 
 
   return (
     <div
-      className="absolute -top-10 transform -translate-x-1/2 px-3 py-1.5 rounded-sm bg-zinc-950/95 backdrop-blur-md text-[10px] text-cyan-400 font-mono tracking-wider shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-cyan-500/30 pointer-events-none z-20 animate-in fade-in duration-150"
+      className="absolute -top-10 transform -translate-x-1/2 px-3 py-1.5 rounded bg-white text-[10px] text-cyan-600 font-mono tracking-wider shadow-lg border border-cyan-300 pointer-events-none z-20"
       style={{ left: `${(hoverTime / (duration || 1)) * PERCENT}%` }}
     >
       {formatTime(hoverTime)}
-      <div className="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-2 h-2 rotate-45 bg-zinc-950 border-r border-b border-cyan-500/30" />
+      <div className="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-2 h-2 rotate-45 bg-white border-r border-b border-cyan-300" />
     </div>
   );
 });
@@ -117,54 +116,49 @@ const ProgressTrack = memo<ProgressTrackProps>(
     return (
       <>
         {/* Background Track with ticks */}
-        <div className="absolute left-0 right-0 h-3 bg-zinc-800 border border-zinc-700 rounded-full overflow-hidden shadow-inner">
+        <div className="absolute left-0 right-0 h-3 bg-slate-200 border border-slate-300 rounded-full overflow-hidden">
           {/* 刻度标记 */}
           <div className="absolute inset-0 flex justify-between px-2 items-center pointer-events-none">
             {ticks.map((tick) => (
               <div
                 key={tick}
-                className={`w-px ${tick % 50 === 0 ? 'h-1.5 bg-zinc-500' : 'h-1 bg-zinc-600/50'}`}
+                className={`w-px ${tick % 50 === 0 ? 'h-1.5 bg-slate-400' : 'h-1 bg-slate-300'}`}
               />
             ))}
           </div>
 
           {/* Buffer Bar */}
           <div
-            className="absolute left-0 top-0 h-full bg-zinc-700/80 rounded-full transition-all duration-300"
+            className="absolute left-0 top-0 h-full bg-slate-300 rounded-full transition-all duration-300"
             style={{ width: `${bufferPercent}%` }}
           />
 
-          {/* Progress Bar - brighter and more visible */}
+          {/* Progress Bar */}
           <div
-            className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.8)] transition-all duration-75 ease-out"
+            className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-75 ease-out"
             style={{ width: `${progressPercent}%` }}
-          >
-            {/* Inner glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-          </div>
+          />
         </div>
 
         {/* Thumb - larger and easier to grab */}
         <div
-          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-6 h-6 rounded-full cursor-grab active:cursor-grabbing bg-zinc-900 border-[3px] border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.9)] transition-all duration-150 ease-out ${
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-6 h-6 rounded-full cursor-grab active:cursor-grabbing bg-white border-[3px] border-cyan-500 shadow-md transition-all duration-150 ease-out ${
             isHovering || isDragging ? 'scale-125' : 'scale-100'
-          } group-hover/slider:scale-115`}
+          }`}
           style={{ left: `${progressPercent}%` }}
         >
           {/* Inner glow */}
           <div
-            className={`absolute inset-0.5 rounded-full shadow-[inset_0_0_8px_rgba(255,255,255,0.5)] ${isDragging ? 'bg-cyan-300' : 'bg-cyan-400'}`}
+            className={`absolute inset-0.5 rounded-full ${isDragging ? 'bg-cyan-400' : 'bg-cyan-500'}`}
           />
           {/* Center dot */}
-          <div
-            className={`absolute inset-2 rounded-full ${isDragging ? 'bg-cyan-200' : 'bg-white'}`}
-          />
+          <div className={`absolute inset-2 rounded-full bg-white`} />
         </div>
 
         {/* Percentage tooltip when hovering */}
         {isHovering && !isDragging && (
           <div
-            className="absolute -top-6 transform -translate-x-1/2 text-[10px] text-cyan-400 font-mono bg-zinc-900/90 px-1.5 py-0.5 rounded border border-cyan-500/30"
+            className="absolute -top-6 transform -translate-x-1/2 text-[10px] text-cyan-400 font-mono bg-slate-900/90 px-1.5 py-0.5 rounded border border-cyan-500/30"
             style={{ left: `${progressPercent}%` }}
           >
             {Math.round(progressPercent)}%
@@ -325,7 +319,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
     }, [playbackRate, onSetPlaybackRate]);
 
     return (
-      <div className="px-4 py-4 border-b border-cyan-500/20 bg-gradient-to-b from-zinc-900/95 to-zinc-950/95 backdrop-blur-md select-none shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+      <div className="px-4 py-4 border-b border-slate-300 bg-white select-none">
         {/* Top Controls: Play/Pause/Seek + Volume */}
         <div className="flex items-center gap-4 mb-3">
           <PlayButton isPlaying={videoState.isPlaying} onClick={onTogglePlay} />
@@ -350,10 +344,8 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
           <div className="flex-1 px-2">
             {/* Metadata */}
             <div className="flex justify-between text-[10px] font-mono mb-1.5">
-              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                {formatTime(sliderValue)}
-              </span>
-              <span className="text-zinc-400">{formatTime(videoState.duration)}</span>
+              <span className="text-slate-800 font-bold">{formatTime(sliderValue)}</span>
+              <span className="text-slate-500">{formatTime(videoState.duration)}</span>
             </div>
 
             {/* Custom Slider Track - supports real-time dragging */}

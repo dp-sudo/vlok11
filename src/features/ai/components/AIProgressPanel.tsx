@@ -72,15 +72,15 @@ export const AIProgressPanel = memo(() => {
   const emoji = STAGE_EMOJIS[progress.stage] || '🤖';
 
   return (
-    <div className="bg-zinc-900/80 backdrop-blur-md rounded-lg p-4 border border-zinc-700/50 shadow-xl">
+    <div className="bg-slate-900/80 backdrop-blur-md rounded-lg p-4 border border-slate-300/50 shadow-xl">
       <div className="flex items-center gap-3 mb-3">
         <span className="text-2xl animate-pulse">{emoji}</span>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-medium text-white">{progress.message}</span>
-            <span className="text-xs text-zinc-400">{Math.round(progress.progress)}%</span>
+            <span className="text-sm font-medium text-slate-800">{progress.message}</span>
+            <span className="text-xs text-slate-400">{Math.round(progress.progress)}%</span>
           </div>
-          <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-300 ease-out"
               style={{ width: `${progress.progress}%` }}
@@ -93,16 +93,16 @@ export const AIProgressPanel = memo(() => {
 
       <div className="flex items-center justify-between text-xs">
         <div className="flex gap-3">
-          <span className={`${progress.progress > 0 ? 'text-blue-400' : 'text-zinc-600'}`}>
+          <span className={`${progress.progress > 0 ? 'text-blue-400' : 'text-slate-500'}`}>
             ● 准备
           </span>
-          <span className={`${progress.progress >= 30 ? 'text-purple-400' : 'text-zinc-600'}`}>
+          <span className={`${progress.progress >= 30 ? 'text-purple-400' : 'text-slate-500'}`}>
             ● 处理
           </span>
-          <span className={`${progress.progress >= 70 ? 'text-pink-400' : 'text-zinc-600'}`}>
+          <span className={`${progress.progress >= 70 ? 'text-pink-400' : 'text-slate-500'}`}>
             ● 优化
           </span>
-          <span className={`${progress.progress === 100 ? 'text-green-400' : 'text-zinc-600'}`}>
+          <span className={`${progress.progress === 100 ? 'text-green-400' : 'text-slate-500'}`}>
             ● 完成
           </span>
         </div>

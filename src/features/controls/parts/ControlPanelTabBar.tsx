@@ -10,7 +10,7 @@ interface ControlPanelTabBarProps {
 
 export const ControlPanelTabBar: React.FC<ControlPanelTabBarProps> = memo(
   ({ activeTab, onTabChange }) => (
-    <div className="flex border-b border-zinc-800 bg-zinc-950/80">
+    <div className="flex border-b border-slate-200 bg-white">
       {TABS.map((t) => {
         const isActive = activeTab === t.key;
 
@@ -18,26 +18,30 @@ export const ControlPanelTabBar: React.FC<ControlPanelTabBarProps> = memo(
           <button
             type="button"
             className={`
-              flex-1 py-2.5 flex flex-col items-center gap-1 text-xs
+              flex-1 py-3 flex flex-col items-center gap-1.5
               transition-all duration-200 relative
-              ${isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'}
+              ${isActive ? 'text-amber-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}
             `}
             key={t.key}
             onClick={() => onTabChange(t.key)}
           >
             <div
               className={`
-              p-1.5 rounded-lg transition-all duration-200
-              ${isActive ? 'bg-amber-500/20 text-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.3)]' : ''}
+              p-2 rounded-xl transition-all duration-200
+              ${isActive ? 'bg-amber-100 text-amber-600 shadow-sm' : 'text-slate-500'}
             `}
             >
               {t.icon}
             </div>
 
-            <span className={`font-medium ${isActive ? 'text-white' : ''}`}>{t.label}</span>
+            <span
+              className={`text-[13px] font-bold tracking-wide ${isActive ? 'text-slate-800' : ''}`}
+            >
+              {t.label}
+            </span>
 
             {isActive && (
-              <div className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+              <div className="absolute bottom-0 left-4 right-4 h-1 rounded-full bg-amber-500" />
             )}
           </button>
         );

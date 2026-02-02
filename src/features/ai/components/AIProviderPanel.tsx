@@ -87,15 +87,15 @@ export const AIProviderPanel = memo(() => {
   );
 
   return (
-    <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
-      <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+    <div className="bg-white rounded-lg p-4 border border-slate-800">
+      <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
         <span>⚙️</span>
         AI Provider 配置
       </h3>
 
       {/* 场景分析 Provider */}
       <div className="mb-4">
-        <label className="text-xs text-zinc-400 mb-2 block">场景分析引擎</label>
+        <label className="text-xs text-slate-400 mb-2 block">场景分析引擎</label>
         <div className="space-y-2">
           {SCENE_PROVIDERS.map((provider) => {
             const isAvailable = isProviderAvailable(provider.id);
@@ -109,7 +109,7 @@ export const AIProviderPanel = memo(() => {
                 className={`w-full p-3 rounded-lg border text-left transition-all ${
                   isActive
                     ? 'bg-blue-500/10 border-blue-500/50'
-                    : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800'
+                    : 'bg-slate-100 border-slate-300 hover:bg-slate-800'
                 } ${!isAvailable || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 type="button"
               >
@@ -117,14 +117,14 @@ export const AIProviderPanel = memo(() => {
                   <span className="text-lg">{provider.icon}</span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-white">{provider.name}</span>
+                      <span className="text-sm font-medium text-slate-800">{provider.name}</span>
                       {isActive && (
                         <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">
                           当前
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-500 mt-1">{provider.description}</p>
+                    <p className="text-xs text-slate-500 mt-1">{provider.description}</p>
                   </div>
                 </div>
               </button>
@@ -135,7 +135,7 @@ export const AIProviderPanel = memo(() => {
 
       {/* 深度估计 Provider */}
       <div className="mb-3">
-        <label className="text-xs text-zinc-400 mb-2 block">深度估计引擎</label>
+        <label className="text-xs text-slate-400 mb-2 block">深度估计引擎</label>
         <div className="space-y-2">
           {DEPTH_PROVIDERS.map((provider) => {
             const isAvailable = isProviderAvailable(provider.id);
@@ -149,7 +149,7 @@ export const AIProviderPanel = memo(() => {
                 className={`w-full p-3 rounded-lg border text-left transition-all ${
                   isActive
                     ? 'bg-purple-500/10 border-purple-500/50'
-                    : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800'
+                    : 'bg-slate-100 border-slate-300 hover:bg-slate-800'
                 } ${!isAvailable || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 type="button"
               >
@@ -157,14 +157,14 @@ export const AIProviderPanel = memo(() => {
                   <span className="text-lg">{provider.icon}</span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-white">{provider.name}</span>
+                      <span className="text-sm font-medium text-slate-800">{provider.name}</span>
                       {isActive && (
                         <span className="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded">
                           当前
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-500 mt-1">{provider.description}</p>
+                    <p className="text-xs text-slate-500 mt-1">{provider.description}</p>
                   </div>
                 </div>
               </button>
@@ -179,7 +179,7 @@ export const AIProviderPanel = memo(() => {
         </div>
       )}
 
-      {isLoading && <div className="mt-3 text-xs text-zinc-500 text-center">切换中...</div>}
+      {isLoading && <div className="mt-3 text-xs text-slate-500 text-center">切换中...</div>}
     </div>
   );
 });

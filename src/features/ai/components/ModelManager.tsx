@@ -72,7 +72,7 @@ export const ModelManager = memo(() => {
   if (!isOpen) {
     return (
       <button
-        className="fixed bottom-20 right-4 z-40 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded-lg shadow-lg transition-colors"
+        className="fixed bottom-20 right-4 z-40 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-slate-800 text-sm rounded-lg shadow-lg transition-colors"
         onClick={() => setIsOpen(true)}
         type="button"
       >
@@ -83,16 +83,16 @@ export const ModelManager = memo(() => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="p-6 border-b border-zinc-700 flex items-center justify-between">
+      <div className="bg-slate-900 border border-slate-300 rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="p-6 border-b border-slate-300 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-white">AI 模型管理</h2>
-            <p className="text-sm text-zinc-400 mt-1">
+            <h2 className="text-xl font-semibold text-slate-800">AI 模型管理</h2>
+            <p className="text-sm text-slate-400 mt-1">
               共 {models.length} 个模型 · 总大小 {getTotalSize()}
             </p>
           </div>
           <button
-            className="text-zinc-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-slate-800 transition-colors"
             onClick={() => setIsOpen(false)}
             type="button"
           >
@@ -107,24 +107,24 @@ export const ModelManager = memo(() => {
           </button>
         </div>
 
-        <div className="p-6 border-b border-zinc-700">
+        <div className="p-6 border-b border-slate-300">
           <div className="flex gap-2">
             <button
-              className={`px-3 py-1 text-sm rounded transition-colors ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
+              className={`px-3 py-1 text-sm rounded transition-colors ${filter === 'all' ? 'bg-blue-600 text-slate-800' : 'bg-slate-800 text-slate-400 hover:bg-slate-300'}`}
               onClick={() => setFilter('all')}
               type="button"
             >
               全部
             </button>
             <button
-              className={`px-3 py-1 text-sm rounded transition-colors ${filter === 'loaded' ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
+              className={`px-3 py-1 text-sm rounded transition-colors ${filter === 'loaded' ? 'bg-blue-600 text-slate-800' : 'bg-slate-800 text-slate-400 hover:bg-slate-300'}`}
               onClick={() => setFilter('loaded')}
               type="button"
             >
               已加载
             </button>
             <button
-              className={`px-3 py-1 text-sm rounded transition-colors ${filter === 'available' ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
+              className={`px-3 py-1 text-sm rounded transition-colors ${filter === 'available' ? 'bg-blue-600 text-slate-800' : 'bg-slate-800 text-slate-400 hover:bg-slate-300'}`}
               onClick={() => setFilter('available')}
               type="button"
             >
@@ -134,9 +134,9 @@ export const ModelManager = memo(() => {
         </div>
 
         <div className="flex-1 overflow-hidden flex">
-          <div className="w-2/5 overflow-y-auto border-r border-zinc-700 p-4 space-y-2">
+          <div className="w-2/5 overflow-y-auto border-r border-slate-300 p-4 space-y-2">
             {models.length === 0 ? (
-              <p className="text-zinc-500 text-center py-8">暂无模型</p>
+              <p className="text-slate-500 text-center py-8">暂无模型</p>
             ) : (
               models.map((model) => (
                 <ModelCard
@@ -159,7 +159,7 @@ export const ModelManager = memo(() => {
                 onFormatTime={formatTime}
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-zinc-500">
+              <div className="flex items-center justify-center h-full text-slate-500">
                 请选择一个模型查看详情
               </div>
             )}

@@ -64,23 +64,23 @@ export const CacheManager = memo(() => {
   const totalItems = stats.analysisCacheSize + stats.depthCacheSize;
 
   return (
-    <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
-      <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+    <div className="bg-white rounded-lg p-4 border border-slate-800">
+      <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
         <span>💾</span>
         AI 缓存管理
       </h3>
 
       {/* 缓存开关 */}
-      <div className="mb-4 p-3 bg-zinc-800/50 rounded-lg">
+      <div className="mb-4 p-3 bg-slate-100 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-medium text-white">启用AI结果缓存</div>
-            <div className="text-xs text-zinc-500 mt-0.5">缓存可以加速重复处理，结果缓存30分钟</div>
+            <div className="text-sm font-medium text-slate-800">启用AI结果缓存</div>
+            <div className="text-xs text-slate-500 mt-0.5">缓存可以加速重复处理，结果缓存30分钟</div>
           </div>
           <button
             onClick={handleToggleCache}
             className={`relative w-11 h-6 rounded-full transition-colors ${
-              cacheEnabled ? 'bg-blue-600' : 'bg-zinc-700'
+              cacheEnabled ? 'bg-blue-600' : 'bg-slate-300'
             }`}
             type="button"
           >
@@ -95,29 +95,29 @@ export const CacheManager = memo(() => {
 
       {/* 统计卡片 */}
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-zinc-800/50 rounded-lg p-3 text-center">
+        <div className="bg-slate-100 rounded-lg p-3 text-center">
           <div className="text-xl font-bold text-blue-400">{stats.analysisCacheSize}</div>
-          <div className="text-xs text-zinc-500">场景分析</div>
+          <div className="text-xs text-slate-500">场景分析</div>
         </div>
-        <div className="bg-zinc-800/50 rounded-lg p-3 text-center">
+        <div className="bg-slate-100 rounded-lg p-3 text-center">
           <div className="text-xl font-bold text-purple-400">{stats.depthCacheSize}</div>
-          <div className="text-xs text-zinc-500">深度图</div>
+          <div className="text-xs text-slate-500">深度图</div>
         </div>
-        <div className="bg-zinc-800/50 rounded-lg p-3 text-center">
+        <div className="bg-slate-100 rounded-lg p-3 text-center">
           <div className="text-xl font-bold text-green-400">{formatBytes(stats.totalSize)}</div>
-          <div className="text-xs text-zinc-500">总大小</div>
+          <div className="text-xs text-slate-500">总大小</div>
         </div>
       </div>
 
       {/* 缓存详情 */}
-      <div className="mb-4 p-3 bg-zinc-800/30 rounded-lg">
+      <div className="mb-4 p-3 bg-slate-800/30 rounded-lg">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-zinc-400">缓存条目总数</span>
-          <span className="text-white font-medium">{totalItems} 个</span>
+          <span className="text-slate-400">缓存条目总数</span>
+          <span className="text-slate-800 font-medium">{totalItems} 个</span>
         </div>
         <div className="flex items-center justify-between text-sm mt-2">
-          <span className="text-zinc-400">平均条目大小</span>
-          <span className="text-white font-medium">
+          <span className="text-slate-400">平均条目大小</span>
+          <span className="text-slate-800 font-medium">
             {totalItems > 0 ? formatBytes(stats.totalSize / totalItems) : '-'}
           </span>
         </div>
@@ -127,7 +127,7 @@ export const CacheManager = memo(() => {
       <div className="flex gap-2">
         <button
           onClick={refreshStats}
-          className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm transition-colors flex items-center justify-center gap-1"
+          className="flex-1 py-2 bg-slate-800 hover:bg-slate-300 text-slate-300 rounded-lg text-sm transition-colors flex items-center justify-center gap-1"
           type="button"
         >
           <span>🔄</span>

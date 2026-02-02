@@ -5,7 +5,7 @@ import {
   BYTES_PER_KB,
   MAX_FILE_SIZE_MB,
 } from '@/shared/constants';
-import { extractFrameFromVideo, getObjectURLManager, validateUrl } from '@/shared/utils';
+import { extractFrameFromVideo, validateUrl } from '@/shared/utils';
 
 import type { PipelineStage, StageInput, StageOutput } from '../types';
 
@@ -32,7 +32,7 @@ export class ReadStage implements PipelineStage {
           throw new Error(`不支持的文件类型: ${file.type}`);
         }
 
-        const fileUrl = getObjectURLManager().create(file);
+        const fileUrl = URL.createObjectURL(file);
         const isVideo = isVideoFile(file);
 
         let imageBase64: string;

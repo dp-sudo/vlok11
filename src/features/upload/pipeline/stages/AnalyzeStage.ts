@@ -54,6 +54,7 @@ export class AnalyzeStage implements PipelineStage {
       return result;
     } catch (error) {
       const errorMessage = String(error);
+
       logger.warn('Analysis failed, using fallback values', { error: errorMessage });
 
       // 将技术错误转换为用户友好的消息

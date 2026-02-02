@@ -60,7 +60,7 @@ export const UploadPanel = memo(
               <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-cyan-500/20 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
               <div className="relative">
                 {/* Border Effect */}
-                <div className="absolute inset-0 border-2 border-dashed border-zinc-700 rounded-lg group-hover:border-cyan-500/50 group-hover:bg-cyan-500/5 transition-all duration-300 pointer-events-none" />
+                <div className="absolute inset-0 border-2 border-dashed border-white/10 rounded-lg group-hover:border-cyan-500/50 group-hover:bg-cyan-500/5 transition-all duration-300 pointer-events-none" />
 
                 <input
                   accept={acceptedFormats}
@@ -69,7 +69,7 @@ export const UploadPanel = memo(
                   type="file"
                 />
 
-                <div className="w-full py-10 px-6 bg-zinc-900/50 backdrop-blur-sm rounded-lg flex flex-col items-center justify-center gap-4 transition-all z-10">
+                <div className="w-full py-10 px-6 bg-zinc-950/50 backdrop-blur-sm rounded-lg flex flex-col items-center justify-center gap-4 transition-all z-10">
                   <div className="p-4 rounded-full bg-zinc-800/50 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 text-zinc-400 transition-all duration-300 ring-1 ring-white/5 group-hover:ring-cyan-500/30">
                     <Upload className="w-8 h-8" />
                   </div>
@@ -121,7 +121,7 @@ export const UploadPanel = memo(
 
             <div className="flex gap-0">
               <input
-                className="flex-1 bg-black/50 border border-zinc-700 border-r-0 rounded-l-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono placeholder:text-zinc-700"
+                className="flex-1 bg-zinc-950/50 border border-white/10 border-r-0 rounded-l-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono placeholder:text-zinc-600"
                 onChange={(e) => {
                   setUrlInput(e.target.value);
                 }}

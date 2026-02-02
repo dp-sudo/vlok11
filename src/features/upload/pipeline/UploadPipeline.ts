@@ -89,7 +89,9 @@ const createDefaultEmitter = (): PipelineEventEmitter => ({
   emit: (event, payload) => {
     try {
       getEventBus().emit(event, payload);
-    } catch {}
+    } catch (error) {
+      logger.warn('Failed to emit pipeline event', { event, error: String(error) });
+    }
   },
 });
 const createStageInput = (input: File | string, signal: AbortSignal, runId: string): StageInput => {
@@ -102,6 +104,7 @@ const logger = createLogger({ module: 'UploadPipeline' });
 
 class UploadPipelineImpl implements UploadPipelineInterface {
   private abortController: AbortController | null = null;
+  private blobUrls: string[] = []; // Track created blob URLs for cleanup
   private completeCallbacks = new Set<CompleteCallback>();
   private currentProgress: PipelineProgress = {
     stage: '',
@@ -197,6 +200,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
     this.errorCallbacks.clear();
     this.progressCallbacks.clear();
     this.abortController?.abort();
+    this.releaseBlobUrls();
   }
 
   private emitStageComplete(stageName: string, index: number, total: number): void {
@@ -321,6 +325,8 @@ class UploadPipelineImpl implements UploadPipelineInterface {
     return () => this.progressCallbacks.delete(callback);
   }
   async process(input: File | string): Promise<ProcessedResult> {
+    // Clean up any existing blob URLs from previous runs
+    this.releaseBlobUrls();
     this.startTime = Date.now();
     this.abortController = new AbortController();
     this.currentRunId = crypto.randomUUID();
@@ -331,8 +337,34 @@ class UploadPipelineImpl implements UploadPipelineInterface {
 
     stageInput = await this.executeStages(stageInput);
 
+    // Track blob URLs created during processing for cleanup
+    this.trackBlobUrlsFromStageInput(stageInput);
+
     return this.buildResult(stageInput);
   }
+
+  private trackBlobUrlsFromStageInput(stageInput: StageInput): void {
+    // Track blob URLs for later cleanup
+
+    const urlsToTrack = [stageInput.imageUrl, stageInput.videoUrl, stageInput.backgroundUrl].filter(
+      (url): url is string => typeof url === 'string' && url.startsWith('blob:')
+    );
+
+    this.blobUrls.push(...urlsToTrack);
+  }
+
+  private releaseBlobUrls(): void {
+    for (const url of this.blobUrls) {
+      try {
+        URL.revokeObjectURL(url);
+        logger.debug('Revoked blob URL', { url });
+      } catch (error) {
+        logger.warn('Failed to revoke blob URL', { url, error: String(error) });
+      }
+    }
+    this.blobUrls = [];
+  }
+
   private updateProgress(progress: PipelineProgress): void {
     this.currentProgress = progress;
     for (const callback of this.progressCallbacks) {

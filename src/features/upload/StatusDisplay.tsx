@@ -82,6 +82,7 @@ export const StatusDisplay = memo(({ processingState, onRetry }: StatusDisplayPr
               onClick={() => {
                 // 打开设置页面
                 const event = new CustomEvent('openSettings');
+
                 window.dispatchEvent(event);
               }}
             >

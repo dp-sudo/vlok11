@@ -10,7 +10,7 @@ import type {
   PerspectiveCamera as ThreePerspectiveCamera,
 } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
-import { calculateCameraSync } from '@/features/scene/services/camera';
+import { calculateCameraSync, getCameraTransitionService } from '@/features/scene/services/camera';
 
 import type { SceneConfig } from '@/shared/types';
 import { CameraMode, CameraMotionType, ProjectionMode } from '@/shared/types';
@@ -68,33 +68,53 @@ const CameraRig = memo(({ config, controlsRef, children }: CameraRigProps) => {
         : orthographicRef.current;
     const controls = controlsRef.current;
 
-    if (from && to) {
-      to.position.copy(from.position);
-      to.up.copy(from.up);
+    if (from && to && controls) {
+      // 使用CameraTransitionService执行平滑切换动画
+      const transitionService = getCameraTransitionService();
 
-      const distance = from.position.length();
-      const currentValue =
-        previousMode === CameraMode.PERSPECTIVE
-          ? (from as ThreePerspectiveCamera).fov
-          : (from as ThreeOrthographicCamera).zoom;
-      const syncResult = calculateCameraSync(
-        previousMode === CameraMode.PERSPECTIVE ? 'perspective' : 'orthographic',
-        currentValue,
-        distance
+      transitionService.transitionProjectionMode(
+        previousMode,
+        config.cameraMode,
+        from,
+        to,
+        controls,
+        {
+          onComplete: () => {
+            lastCameraModeRef.current = config.cameraMode;
+            invalidate();
+          },
+        }
       );
+    } else {
+      // 降级处理：直接切换（无动画）
+      if (from && to) {
+        to.position.copy(from.position);
+        to.up.copy(from.up);
 
-      if (config.cameraMode === CameraMode.ORTHOGRAPHIC && to === orthographicRef.current) {
-        to.zoom = syncResult.orthoZoom;
-      } else if (config.cameraMode === CameraMode.PERSPECTIVE && to === perspectiveRef.current) {
-        to.fov = syncResult.perspectiveFov;
+        const distance = from.position.length();
+        const currentValue =
+          previousMode === CameraMode.PERSPECTIVE
+            ? (from as ThreePerspectiveCamera).fov
+            : (from as ThreeOrthographicCamera).zoom;
+        const syncResult = calculateCameraSync(
+          previousMode === CameraMode.PERSPECTIVE ? 'perspective' : 'orthographic',
+          currentValue,
+          distance
+        );
+
+        if (config.cameraMode === CameraMode.ORTHOGRAPHIC && to === orthographicRef.current) {
+          to.zoom = syncResult.orthoZoom;
+        } else if (config.cameraMode === CameraMode.PERSPECTIVE && to === perspectiveRef.current) {
+          to.fov = syncResult.perspectiveFov;
+        }
+
+        to.updateProjectionMatrix();
+        if (controls) controls.update();
+        invalidate();
       }
 
-      to.updateProjectionMatrix();
-      if (controls) controls.update();
-      invalidate();
+      lastCameraModeRef.current = config.cameraMode;
     }
-
-    lastCameraModeRef.current = config.cameraMode;
   }, [config.cameraMode, controlsRef, invalidate]);
 
   useFrame(() => {

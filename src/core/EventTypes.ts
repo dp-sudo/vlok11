@@ -150,6 +150,29 @@ export interface CoreEventPayloadMap {
   };
   [CameraEvents.PRESET_APPLIED]: CameraPresetAppliedPayload;
   [CameraEvents.PROJECTION_CHANGED]: CameraProjectionChangedPayload;
+  [CameraEvents.ORTHO_PRESET_APPLIED]: {
+    preset: string;
+    previousPreset: string | null;
+    pose: CameraPose;
+    zoom: number;
+  };
+  [CameraEvents.PROJECTION_TRANSITION_START]: {
+    from: 'perspective' | 'orthographic';
+    to: 'perspective' | 'orthographic';
+    duration: number;
+  };
+  [CameraEvents.PROJECTION_TRANSITION_UPDATE]: {
+    progress: number;
+    from: 'perspective' | 'orthographic';
+    to: 'perspective' | 'orthographic';
+  };
+  [CameraEvents.PROJECTION_TRANSITION_COMPLETE]: {
+    mode: 'perspective' | 'orthographic';
+    restoredSettings: {
+      fov?: number;
+      zoom?: number;
+    };
+  };
   [CameraEvents.VIEW_RESET]: undefined;
   [ConfigEvents.CHANGED]: ConfigChangedPayload;
 
@@ -364,6 +387,11 @@ export const CameraEvents = {
   MOTION_STARTED: 'camera:motion:started',
   MOTION_STOPPED: 'camera:motion:stopped',
   MOTION_COMPLETED: 'camera:motion:completed',
+  // 正交视图专用事件
+  ORTHO_PRESET_APPLIED: 'camera:ortho-preset-applied',
+  PROJECTION_TRANSITION_START: 'camera:projection-transition-start',
+  PROJECTION_TRANSITION_UPDATE: 'camera:projection-transition-update',
+  PROJECTION_TRANSITION_COMPLETE: 'camera:projection-transition-complete',
 } as const;
 export const CameraConfigEvents = {
   FOV_CHANGED: 'camera:config:fov_changed',

@@ -274,6 +274,126 @@ class CameraTransitionServiceImpl implements LifecycleAware {
 
     return this.activeTransition;
   }
+
+  /**
+   * 执行透视-正交平滑切换动画（阶段二增强功能）
+   * @param fromMode - 源相机模式
+   * @param toMode - 目标相机模式
+   * @param fromCamera - 源相机实例（PerspectiveCamera | OrthographicCamera）
+   * @param toCamera - 目标相机实例
+   * @param controls - OrbitControls实例
+   * @param callbacks - 回调函数
+   * @returns 动画句柄
+   */
+  transitionProjectionMode(
+    fromMode: CameraMode,
+    toMode: CameraMode,
+    fromCamera: import('three').PerspectiveCamera | import('three').OrthographicCamera,
+    toCamera: import('three').PerspectiveCamera | import('three').OrthographicCamera,
+    controls: import('three-stdlib').OrbitControls,
+    callbacks?: TransitionCallbacks & {
+      onProgress?: (progress: number, state: { fov?: number; zoom?: number }) => void;
+    }
+  ): AnimationHandle | null {
+    if (fromMode === toMode) return null;
+
+    this.cancelTransition();
+
+    const startPosition = fromCamera.position.clone();
+    const startTarget = controls.target.clone();
+    const startUp = fromCamera.up.clone();
+    const distance = startPosition.distanceTo(startTarget);
+
+    // 计算同步参数
+    const currentValue =
+      fromMode === CameraMode.PERSPECTIVE
+        ? (fromCamera as import('three').PerspectiveCamera).fov
+        : (fromCamera as import('three').OrthographicCamera).zoom;
+
+    const syncResult = calculateCameraSync(
+      fromMode === CameraMode.PERSPECTIVE ? 'perspective' : 'orthographic',
+      currentValue,
+      distance
+    );
+
+    // 发射过渡开始事件
+    getEventBus().emit('camera:projection-transition-start', {
+      from: fromMode,
+      to: toMode,
+      duration: 600,
+    });
+
+    const scheduler = getAnimationScheduler();
+
+    callbacks?.onStart?.();
+
+    this.activeTransition = scheduler.animate(0, 1, {
+      duration: 600,
+      easing: 'ease-in-out-cubic',
+      onUpdate: (progress) => {
+        // 插值位置
+        toCamera.position.lerpVectors(startPosition, startPosition, progress);
+        toCamera.up.lerpVectors(startUp, startUp, progress);
+        controls.target.lerpVectors(startTarget, startTarget, progress);
+
+        // 插值FOV/Zoom
+        if (toMode === CameraMode.ORTHOGRAPHIC) {
+          (toCamera as import('three').OrthographicCamera).zoom = lerp(
+            currentValue,
+            syncResult.orthoZoom,
+            this.easeInOutCubic(progress)
+          );
+        } else {
+          (toCamera as import('three').PerspectiveCamera).fov = lerp(
+            currentValue,
+            syncResult.perspectiveFov,
+            this.easeInOutCubic(progress)
+          );
+        }
+
+        toCamera.updateProjectionMatrix();
+        controls.update();
+
+        // 发射进度事件
+        getEventBus().emit('camera:projection-transition-update', {
+          progress,
+          from: fromMode,
+          to: toMode,
+        });
+
+        callbacks?.onProgress?.(progress, {
+          fov: toMode === CameraMode.PERSPECTIVE ? syncResult.perspectiveFov : undefined,
+          zoom: toMode === CameraMode.ORTHOGRAPHIC ? syncResult.orthoZoom : undefined,
+        });
+      },
+      onComplete: () => {
+        this.activeTransition = null;
+
+        // 发射完成事件
+        getEventBus().emit('camera:projection-transition-complete', {
+          mode: toMode,
+          restoredSettings: {
+            fov: toMode === CameraMode.PERSPECTIVE ? syncResult.perspectiveFov : undefined,
+            zoom: toMode === CameraMode.ORTHOGRAPHIC ? syncResult.orthoZoom : undefined,
+          },
+        });
+
+        callbacks?.onComplete?.();
+        logger.info(`投影模式切换完成: ${fromMode} -> ${toMode}`);
+      },
+    });
+
+    return this.activeTransition;
+  }
+
+  private easeInOutCubic(t: number): number {
+    return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+  }
+}
+
+// 线性插值辅助函数
+function lerp(start: number, end: number, t: number): number {
+  return start + (end - start) * t;
 }
 
 export { CameraTransitionServiceImpl as CameraTransitionService };

@@ -349,9 +349,11 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
 
           <div className="flex-1 px-2">
             {/* Metadata */}
-            <div className="flex justify-between text-[10px] font-mono text-zinc-500 mb-1.5">
-              <span className="text-cyan-400 font-bold">{formatTime(sliderValue)}</span>
-              <span>{formatTime(videoState.duration)}</span>
+            <div className="flex justify-between text-[10px] font-mono mb-1.5">
+              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                {formatTime(sliderValue)}
+              </span>
+              <span className="text-zinc-400">{formatTime(videoState.duration)}</span>
             </div>
 
             {/* Custom Slider Track - supports real-time dragging */}

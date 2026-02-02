@@ -29,7 +29,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
           )}
         </button>
         <button
-          className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-50"
+          className="p-1.5 rounded-md text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all disabled:opacity-50"
           disabled={isExporting}
           onClick={onDownloadSnapshot}
           title="保存截图"
@@ -37,7 +37,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
           <ImageIcon className="w-3.5 h-3.5" />
         </button>
         <button
-          className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-50"
+          className="p-1.5 rounded-md text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all disabled:opacity-50"
           disabled={isExporting}
           onClick={onExportScene}
           title="导出场景 (GLB)"
@@ -46,7 +46,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
         </button>
         <div className="w-px h-3 bg-zinc-800 mx-1" />
         <button
-          className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-50"
+          className="p-1.5 rounded-md text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all disabled:opacity-50"
           disabled={isExporting}
           onClick={onReset}
           title="重置设置"

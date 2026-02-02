@@ -28,7 +28,7 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
     <>
       <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-zinc-800/80 to-zinc-800/40 border border-zinc-700/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-lg">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
             {activeProjection?.icon}
           </div>
           <div className="flex-1">
@@ -37,7 +37,10 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
           </div>
           <div className="text-right">
             <div className="text-xs text-zinc-400">深度</div>
-            <div className="text-sm font-mono text-indigo-400">
+            <div
+              className="text-sm font-mono text-amber-400 font-bold"
+              style={{ filter: 'drop-shadow(0 0 10px rgba(251, 191, 36, 0.8))' }}
+            >
               {config.displacementScale.toFixed(1)}x
             </div>
           </div>

@@ -64,23 +64,23 @@ export const CacheManager = memo(() => {
   const totalItems = stats.analysisCacheSize + stats.depthCacheSize;
 
   return (
-    <div className="bg-white rounded-lg p-4 border border-slate-800">
-      <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-        <span>💾</span>
+    <div className="bg-zinc-900/80 backdrop-blur-md rounded-xl p-4 border border-zinc-700/50 shadow-xl">
+      <h3 className="text-sm font-semibold text-zinc-200 mb-3 flex items-center gap-2">
+        <span className="text-lg">💾</span>
         AI 缓存管理
       </h3>
 
       {/* 缓存开关 */}
-      <div className="mb-4 p-3 bg-slate-100 rounded-lg">
+      <div className="mb-4 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/30">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-medium text-slate-800">启用AI结果缓存</div>
-            <div className="text-xs text-slate-500 mt-0.5">缓存可以加速重复处理，结果缓存30分钟</div>
+            <div className="text-sm font-medium text-zinc-200">启用AI结果缓存</div>
+            <div className="text-xs text-zinc-500 mt-0.5">缓存可以加速重复处理，结果缓存30分钟</div>
           </div>
           <button
             onClick={handleToggleCache}
             className={`relative w-11 h-6 rounded-full transition-colors ${
-              cacheEnabled ? 'bg-blue-600' : 'bg-slate-300'
+              cacheEnabled ? 'bg-blue-600' : 'bg-zinc-600'
             }`}
             type="button"
           >
@@ -95,29 +95,29 @@ export const CacheManager = memo(() => {
 
       {/* 统计卡片 */}
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-slate-100 rounded-lg p-3 text-center">
-          <div className="text-xl font-bold text-blue-400">{stats.analysisCacheSize}</div>
-          <div className="text-xs text-slate-500">场景分析</div>
+        <div className="bg-zinc-800/50 rounded-lg p-3 text-center border border-zinc-700/30">
+          <div className="text-2xl font-bold text-blue-400">{stats.analysisCacheSize}</div>
+          <div className="text-xs text-zinc-500 mt-1">场景分析</div>
         </div>
-        <div className="bg-slate-100 rounded-lg p-3 text-center">
-          <div className="text-xl font-bold text-purple-400">{stats.depthCacheSize}</div>
-          <div className="text-xs text-slate-500">深度图</div>
+        <div className="bg-zinc-800/50 rounded-lg p-3 text-center border border-zinc-700/30">
+          <div className="text-2xl font-bold text-purple-400">{stats.depthCacheSize}</div>
+          <div className="text-xs text-zinc-500 mt-1">深度图</div>
         </div>
-        <div className="bg-slate-100 rounded-lg p-3 text-center">
-          <div className="text-xl font-bold text-green-400">{formatBytes(stats.totalSize)}</div>
-          <div className="text-xs text-slate-500">总大小</div>
+        <div className="bg-zinc-800/50 rounded-lg p-3 text-center border border-zinc-700/30">
+          <div className="text-2xl font-bold text-green-400">{formatBytes(stats.totalSize)}</div>
+          <div className="text-xs text-zinc-500 mt-1">总大小</div>
         </div>
       </div>
 
       {/* 缓存详情 */}
-      <div className="mb-4 p-3 bg-slate-800/30 rounded-lg">
+      <div className="mb-4 p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-400">缓存条目总数</span>
-          <span className="text-slate-800 font-medium">{totalItems} 个</span>
+          <span className="text-zinc-500">缓存条目总数</span>
+          <span className="text-zinc-200 font-medium">{totalItems} 个</span>
         </div>
         <div className="flex items-center justify-between text-sm mt-2">
-          <span className="text-slate-400">平均条目大小</span>
-          <span className="text-slate-800 font-medium">
+          <span className="text-zinc-500">平均条目大小</span>
+          <span className="text-zinc-200 font-medium">
             {totalItems > 0 ? formatBytes(stats.totalSize / totalItems) : '-'}
           </span>
         </div>
@@ -127,7 +127,7 @@ export const CacheManager = memo(() => {
       <div className="flex gap-2">
         <button
           onClick={refreshStats}
-          className="flex-1 py-2 bg-slate-800 hover:bg-slate-300 text-slate-300 rounded-lg text-sm transition-colors flex items-center justify-center gap-1"
+          className="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 border border-zinc-700/50"
           type="button"
         >
           <span>🔄</span>
@@ -136,7 +136,7 @@ export const CacheManager = memo(() => {
         <button
           onClick={handleClearCache}
           disabled={totalItems === 0}
-          className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors flex items-center justify-center gap-1"
+          className="flex-1 py-2.5 bg-red-600/20 hover:bg-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
           type="button"
         >
           <span>🗑️</span>
@@ -145,7 +145,7 @@ export const CacheManager = memo(() => {
       </div>
 
       {!cacheEnabled && (
-        <p className="mt-3 text-xs text-yellow-500 text-center">
+        <p className="mt-3 text-xs text-yellow-500/80 text-center bg-yellow-500/10 py-2 rounded-lg">
           ⚠️ 缓存已禁用，AI处理将每次都重新计算
         </p>
       )}

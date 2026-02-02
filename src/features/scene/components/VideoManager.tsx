@@ -9,11 +9,11 @@ interface VideoManagerProps {
   videoUrl: string | null;
 }
 
+const isPowerOfTwo = (value: number): boolean => (value & (value - 1)) === 0;
+
 export const VideoManager = memo<VideoManagerProps>(({ videoUrl, onTextureReady }) => {
   const config = useSceneStore((state) => state.config);
   const [videoTexture, setVideoTexture] = useState<VideoTexture | null>(null);
-
-  const isPowerOfTwo = (value: number): boolean => (value & (value - 1)) === 0;
 
   const configRef = useRef(config);
 

@@ -194,6 +194,7 @@ const SceneGeometryComponent: React.FC<SceneGeometryProps> = ({
   const infiniteBoxRef = useRef<Mesh>(null);
   const cubeRef = useRef<Mesh>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refs are stable
   useEffect(() => {
     if (meshRef.current?.geometry) {
       const geo = meshRef.current.geometry;
@@ -206,6 +207,7 @@ const SceneGeometryComponent: React.FC<SceneGeometryProps> = ({
       if (geo.boundingSphere) geo.boundingSphere.radius += expansion;
     }
   }, [width, height, density, displacementScale, projectionMode, projectionAngle]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refs are stable
   useLayoutEffect(() => {
     if (projectionMode === ProjectionMode.CORNER) {
       updateUVs(

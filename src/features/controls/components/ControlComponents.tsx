@@ -298,7 +298,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         transition-all duration-300 ease-out
         ${
           checked
-            ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-400/50 shadow-[0_0_25px_rgba(251,191,36,0.3)]'
+            ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-400/50'
             : 'bg-zinc-800/40 border border-zinc-700/50 hover:bg-zinc-800/60 hover:border-zinc-600/50'
         }
       `}
@@ -306,6 +306,7 @@ export const Toggle: React.FC<ToggleProps> = ({
       type="button"
       role="switch"
       aria-checked={checked}
+      style={checked ? { boxShadow: '0 0 25px rgba(251, 191, 36, 0.3)' } : undefined}
     >
       <div className="flex items-center gap-3">
         {/* 状态指示器 - 启用时琥珀色，禁用时灰色 */}
@@ -315,10 +316,11 @@ export const Toggle: React.FC<ToggleProps> = ({
             transition-all duration-300
             ${
               checked
-                ? 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_15px_rgba(251,191,36,0.8)]'
+                ? 'bg-gradient-to-br from-amber-400 to-orange-500'
                 : 'bg-zinc-700 border-2 border-zinc-600 group-hover:border-zinc-500'
             }
           `}
+          style={checked ? { boxShadow: '0 0 15px rgba(251, 191, 36, 0.8)' } : undefined}
         >
           <Check
             className={`w-4 h-4 transition-all duration-300 ${checked ? 'text-black scale-100' : 'text-zinc-500 scale-0'}`}
@@ -344,10 +346,11 @@ export const Toggle: React.FC<ToggleProps> = ({
                 text-[10px] px-2 py-0.5 rounded-full font-bold transition-all duration-300
                 ${
                   checked
-                    ? 'bg-amber-400 text-black shadow-[0_0_10px_rgba(251,191,36,0.6)]'
+                    ? 'bg-amber-400 text-black'
                     : 'bg-zinc-700 text-zinc-500 border border-zinc-600'
                 }
               `}
+              style={checked ? { boxShadow: '0 0 10px rgba(251, 191, 36, 0.6)' } : undefined}
             >
               {checked ? '已启用' : '已关闭'}
             </span>
@@ -370,10 +373,11 @@ export const Toggle: React.FC<ToggleProps> = ({
           transition-all duration-300
           ${
             checked
-              ? 'bg-gradient-to-r from-amber-500 to-orange-400 shadow-[0_0_20px_rgba(251,191,36,0.6)]'
+              ? 'bg-gradient-to-r from-amber-500 to-orange-400'
               : 'bg-zinc-700 border border-zinc-600'
           }
         `}
+        style={checked ? { boxShadow: '0 0 20px rgba(251, 191, 36, 0.6)' } : undefined}
       >
         {/* 滑块按钮 */}
         <div

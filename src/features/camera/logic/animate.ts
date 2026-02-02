@@ -22,7 +22,7 @@ export const easings: Record<string, EasingFunction> = {
 };
 
 export function getEasing(name: string): EasingFunction {
-  return easings[name] ?? easings['linear'];
+  return easings[name] ?? easings.linear;
 }
 
 export interface AnimationConfig {

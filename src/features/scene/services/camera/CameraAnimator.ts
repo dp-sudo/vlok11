@@ -313,7 +313,7 @@ class CameraAnimatorImpl implements LifecycleAware {
   }
 
   cancelAllAnimations(): void {
-    this.state.activeHandles.forEach((handle) => handle.cancel());
+    this.state.activeHandles.forEach((handle) => { handle.cancel(); });
     this.state.activeHandles.clear();
   }
 
@@ -352,7 +352,7 @@ class CameraAnimatorImpl implements LifecycleAware {
 
   dispose(): void {
     this.cancelAllAnimations();
-    this.unsubscribers.forEach((unsub) => unsub());
+    this.unsubscribers.forEach((unsub) => { unsub(); });
     this.unsubscribers = [];
     this.state = createDefaultState();
     this.threeCamera = null;

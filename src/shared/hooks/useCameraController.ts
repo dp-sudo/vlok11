@@ -33,6 +33,7 @@ export function useCameraController(options: CameraControllerOptions): CameraCon
     };
   }, [camera, controlsRef, cameraAnimator]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const syncToStore = useCallback(() => {
     if (!controlsRef.current) return;
 
@@ -128,6 +129,7 @@ export function useCameraController(options: CameraControllerOptions): CameraCon
     [cameraAnimator, invalidate]
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const reset = useCallback(() => {
     cameraAnimator.transitionTo(
       {
@@ -140,6 +142,7 @@ export function useCameraController(options: CameraControllerOptions): CameraCon
     cameraStore.getState().applyPreset('FRONT');
   }, [cameraAnimator, cameraStore]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const applyPreset = useCallback(
     (preset: 'FRONT' | 'TOP' | 'SIDE' | 'ISO' | 'FOCUS') => {
       const currentPose = cameraStore.getState().pose;
@@ -164,6 +167,7 @@ export function useCameraController(options: CameraControllerOptions): CameraCon
     };
   }, [camera, controlsRef, reusableVec]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const startInteraction = useCallback(
     (type: 'rotate' | 'pan' | 'zoom' | 'touch') => {
       const currentPose = getCurrentPose();
@@ -174,6 +178,7 @@ export function useCameraController(options: CameraControllerOptions): CameraCon
     [cameraStore, cameraAnimator, getCurrentPose]
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cameraStore is stable Zustand reference
   const endInteraction = useCallback(() => {
     cameraAnimator.setUserInteracting(false);
     cameraStore.getState().endInteraction();

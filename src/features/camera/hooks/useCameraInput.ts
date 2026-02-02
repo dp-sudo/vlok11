@@ -40,6 +40,7 @@ export function useCameraInput(
 
   const store = useCameraPoseStore;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: store is stable Zustand reference
   const startInteraction = useCallback(
     (type: InteractionType, position: Point2D) => {
       isInteracting.current = true;
@@ -53,12 +54,14 @@ export function useCameraInput(
     [store]
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: store is stable Zustand reference
   const endInteraction = useCallback(() => {
     isInteracting.current = false;
     interactionType.current = 'none';
     store.getState().endInteraction();
   }, [store]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: store is stable Zustand reference
   const updateRotation = useCallback(
     (deltaX: number, deltaY: number) => {
       const { pose, setPose } = store.getState();
@@ -84,6 +87,7 @@ export function useCameraInput(
     [store, rotateSpeed]
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: store is stable Zustand reference
   const updatePan = useCallback(
     (deltaX: number, deltaY: number) => {
       const { pose, setPose } = store.getState();
@@ -109,6 +113,7 @@ export function useCameraInput(
     [store, panSpeed]
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: store is stable Zustand reference
   const updateZoom = useCallback(
     (delta: number) => {
       const { pose, setPose } = store.getState();

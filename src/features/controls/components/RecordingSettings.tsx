@@ -45,6 +45,7 @@ export const RecordingSettings: React.FC<RecordingSettingsProps> = memo(({ confi
             `}
             key={q.quality}
             onClick={() => set('recordingQuality', q.quality as RecordingQuality)}
+            type="button"
           >
             <span className="text-sm">{q.icon}</span>
             <span>{q.label}</span>

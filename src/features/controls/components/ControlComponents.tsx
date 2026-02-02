@@ -267,6 +267,7 @@ export const Slider: React.FC<SliderProps> = ({
               `}
               key={p}
               onClick={() => onChange(p)}
+              type="button"
             >
               {p}
             </button>

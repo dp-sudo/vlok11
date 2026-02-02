@@ -21,6 +21,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
           disabled={isExporting}
           onClick={onToggleRecording}
           title={isRecording ? '停止录制' : '开始录制(WebM)'}
+          type="button"
         >
           {isRecording ? (
             <Square className="w-4 h-4 fill-current" />
@@ -33,6 +34,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
           disabled={isExporting}
           onClick={onDownloadSnapshot}
           title="保存截图"
+          type="button"
         >
           <ImageIcon className="w-3.5 h-3.5" />
         </button>
@@ -41,6 +43,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
           disabled={isExporting}
           onClick={onExportScene}
           title="导出场景 (GLB)"
+          type="button"
         >
           <Download className="w-3.5 h-3.5" />
         </button>
@@ -50,6 +53,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
           disabled={isExporting}
           onClick={onReset}
           title="重置设置"
+          type="button"
         >
           <RotateCcw className="w-3.5 h-3.5" />
         </button>

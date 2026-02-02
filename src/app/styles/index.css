@@ -1,30 +1,195 @@
 /**
- * Main CSS Entry Point
- * 主样式入口文件
- *
- * 重构后的CSS结构：
- * 1. Tailwind CSS v4 - 工具类框架
- * 2. variables.css - CSS变量和设计令牌
- * 3. base.css - 基础重置和元素样式
- * 4. components.css - 自定义组件样式
- * 5. animations.css - 动画和过渡效果
- * 6. responsive.css - 响应式媒体查询
+ * Main CSS Entry Point - Tailwind CSS v4
+ * 
+ * 配色方案：
+ * - accent-primary: Amber-500 (所有激活/选中状态)
+ * - accent-video: Cyan-500 (视频播放专用)
+ * - 灰阶: zinc 系列
  */
 
-/* 1. Tailwind CSS v4 - 核心框架（必须最先导入） */
+/* 1. Tailwind CSS v4 */
 @import 'tailwindcss';
 
-/* 2. Design Tokens - 设计令牌 */
+/* 2. CSS 变量定义 */
+:root {
+  /* 强调色 - Amber (统一所有激活状态) */
+  --accent-primary: #f59e0b;
+  --accent-primary-light: #fbbf24;
+  --accent-primary-dark: #d97706;
+
+  /* 视频专用 - Cyan */
+  --accent-video: #06b6d4;
+  --accent-video-light: #22d3ee;
+
+  /* 语义化颜色 */
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* 背景色 */
+  --bg-panel: #0b0b10;
+  --bg-card: rgba(30, 41, 59, 0.6);
+  --bg-hover: rgba(71, 85, 105, 0.4);
+
+  /* 边框 */
+  --border-default: #334155;
+  --border-hover: #475569;
+  --border-active: #f59e0b;
+}
+
+/* 3. Tailwind v4 @theme 配置 - 定义主题变量 */
+@theme inline {
+  /* 颜色映射 - 这些变量会被 Tailwind 识别 */
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary-light: var(--accent-primary-light);
+  --color-accent-primary-dark: var(--accent-primary-dark);
+  --color-accent-video: var(--accent-video);
+  --color-accent-video-light: var(--accent-video-light);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-bg-panel: var(--bg-panel);
+  --color-bg-card: var(--bg-card);
+  --color-bg-hover: var(--bg-hover);
+
+  --color-border-default: var(--border-default);
+  --color-border-hover: var(--border-hover);
+  --color-border-active: var(--border-active);
+}
+
+/* 4. @layer 基础样式 */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg-panel);
+    color: var(--text-secondary);
+    font-family: 'Exo 2', system-ui, sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+/* 5. @layer 组件样式 */
+@layer components {
+  /* 控制面板卡片 */
+  .control-card {
+    @apply p-3 rounded-xl;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    transition: all 0.2s ease;
+  }
+
+  .control-card:hover {
+    border-color: var(--border-hover);
+  }
+
+  /* 激活状态卡片 */
+  .control-card-active {
+    @apply p-3 rounded-xl;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+    border: 1px solid var(--accent-primary);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+
+  /* 按钮基础样式 */
+  .btn-base {
+    @apply py-2 px-3 text-xs rounded-lg border font-medium transition-all duration-200;
+    background: rgba(30, 41, 59, 0.8);
+    border-color: var(--border-default);
+    color: var(--text-secondary);
+  }
+
+  .btn-base:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+
+  /* 按钮激活状态 - 统一使用 Amber */
+  .btn-active {
+    @apply py-2 px-3 text-xs rounded-lg border font-medium transition-all duration-200;
+    background: linear-gradient(to bottom, var(--accent-primary-light), var(--accent-primary));
+    border-color: var(--accent-primary-light);
+    color: #000000;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+  }
+}
+
+/* 6. @layer 工具类 */
+@layer utilities {
+  .text-accent {
+    color: var(--accent-primary);
+  }
+
+  .text-video {
+    color: var(--accent-video);
+  }
+
+  .bg-accent-soft {
+    background: rgba(245, 158, 11, 0.15);
+  }
+
+  .bg-video-soft {
+    background: rgba(6, 182, 212, 0.15);
+  }
+
+  .border-glow {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+  }
+
+  /* 高对比度发光效果 - Btn组件激活状态 */
+  .btn-glow-active {
+    box-shadow:
+      0 0 30px rgba(251, 191, 36, 0.9),
+      0 0 60px rgba(251, 191, 36, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  /* 高对比度发光效果 - CardBtn组件激活状态 */
+  .card-btn-glow-active {
+    box-shadow:
+      0 0 30px rgba(251, 191, 36, 0.8),
+      0 0 60px rgba(251, 191, 36, 0.4),
+      inset 0 0 20px rgba(251, 191, 36, 0.2);
+  }
+
+  /* 文字发光效果 */
+  .text-glow-amber {
+    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8));
+  }
+
+  /* 背景渐变 - 琥珀色激活 */
+  .bg-gradient-amber-active {
+    background: linear-gradient(to bottom, #fbbf24, #ea580c);
+    border-color: #fbbf24;
+  }
+
+  /* 背景渐变 - 半透明琥珀色 */
+  .bg-gradient-amber-soft {
+    background: linear-gradient(to bottom, rgba(245, 158, 11, 0.4), rgba(234, 88, 12, 0.3));
+    border-color: #fbbf24;
+  }
+}
+
+/* 7. 导入其他样式 */
 @import './variables.css';
-
-/* 3. Base Styles - 基础样式 */
-@import './base.css';
-
-/* 4. Component Styles - 自定义组件样式 */
-@import './components.css';
-
-/* 5. Animations - 动画效果 */
 @import './animations.css';
-
-/* 6. Responsive - 响应式适配 */
-@import './responsive.css';

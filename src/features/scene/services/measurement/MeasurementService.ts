@@ -71,18 +71,16 @@ class MeasurementService {
     if (!this.activeTool) return;
 
     // 网格吸附
-    if (this.config.snapToGrid) {
-      point = this.snapToGrid(point);
-    }
+    const finalPoint = this.config.snapToGrid ? this.snapToGrid(point) : point;
 
-    this.currentPoints.push(point.clone());
+    this.currentPoints.push(finalPoint.clone());
 
     const eventBus = getEventBus();
 
     if (this.activeTool === 'distance') {
       if (this.currentPoints.length === 1) {
         eventBus.emit('measurement:point-added', {
-          point: point.toArray(),
+          point: finalPoint.toArray(),
           totalPoints: 1,
         });
       } else if (this.currentPoints.length === 2) {
@@ -142,6 +140,7 @@ class MeasurementService {
    */
   snapToGrid(point: Vector3): Vector3 {
     const size = this.config.gridSize;
+
     return new Vector3(
       Math.round(point.x / size) * size,
       Math.round(point.y / size) * size,
@@ -168,9 +167,11 @@ class MeasurementService {
    */
   deleteMeasurement(id: string): boolean {
     const deleted = this.measurements.delete(id);
+
     if (deleted) {
       getEventBus().emit('measurement:deleted', { id });
     }
+
     return deleted;
   }
 
@@ -225,6 +226,7 @@ let measurementServiceInstance: MeasurementService | null = null;
 
 export function getMeasurementService(): MeasurementService {
   measurementServiceInstance ??= new MeasurementService();
+
   return measurementServiceInstance;
 }
 

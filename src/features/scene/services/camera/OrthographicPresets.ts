@@ -114,8 +114,10 @@ export function calculateOrthoPresetPose(
   preset: OrthoViewPreset;
 } | null {
   const preset = ORTHO_VIEW_PRESETS[presetType];
+
   if (!preset) {
     logger.warn(`未知的正交视图预设: ${presetType}`);
+
     return null;
   }
 
@@ -179,6 +181,7 @@ export function getOrthoPresetDisplayInfo(presetType: OrthoViewPresetType): {
   description: string;
 } {
   const preset = ORTHO_VIEW_PRESETS[presetType];
+
   return {
     label: preset.name,
     icon: preset.icon,

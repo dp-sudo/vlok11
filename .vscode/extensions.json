@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "formulahendry.auto-rename-tag",
+    "dsznajder.es7-react-js-snippets",
+    "streetsidesoftware.code-spell-checker",
+    "EditorConfig.EditorConfig",
+    "naumovs.color-highlight",
+    "michelemelluso.code-beautifier",
+    "pkief.material-icon-theme",
+    "zixuanchen.tabnine-vscode"
+  ]
+}

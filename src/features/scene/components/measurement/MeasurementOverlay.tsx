@@ -22,12 +22,15 @@ const MeasurementOverlayComponent: React.FC<MeasurementOverlayProps> = ({ visibl
 
     const handleCompleted = (payload: unknown) => {
       const { measurement } = payload as { measurement: Measurement };
+
       setMeasurements((prev) => [...prev, measurement]);
+
       setCurrentPoints([]);
     };
 
     const handleCleared = () => {
       setMeasurements([]);
+
       setCurrentPoints([]);
     };
 
@@ -37,6 +40,7 @@ const MeasurementOverlayComponent: React.FC<MeasurementOverlayProps> = ({ visibl
 
     const handleDeleted = (payload: unknown) => {
       const { id } = payload as { id: string };
+
       setMeasurements((prev) => prev.filter((m) => m.id !== id));
     };
 
@@ -133,8 +137,8 @@ const MeasurementItem: React.FC<{ measurement: Measurement }> = memo(({ measurem
         </line>
 
         {/* 端点标记 */}
-        {measurement.points.map((point, i) => (
-          <mesh key={i} position={point}>
+        {measurement.points.map((point) => (
+          <mesh key={`${point.x}-${point.y}-${point.z}`} position={point}>
             <sphereGeometry args={[0.1, 16, 16]} />
             <meshBasicMaterial color="#ff8800" />
           </mesh>
@@ -172,8 +176,8 @@ const CurrentMeasurementPoints: React.FC<{ points: Vector3[] }> = memo(({ points
       )}
 
       {/* 点标记 */}
-      {points.map((point, i) => (
-        <mesh key={i} position={point}>
+      {points.map((point) => (
+        <mesh key={`${point.x}-${point.y}-${point.z}`} position={point}>
           <sphereGeometry args={[0.08, 16, 16]} />
           <meshBasicMaterial color="#00aaff" />
         </mesh>

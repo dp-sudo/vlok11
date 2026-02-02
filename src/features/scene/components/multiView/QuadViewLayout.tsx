@@ -88,6 +88,7 @@ export const QuadViewLayout: React.FC<QuadViewLayoutProps> = ({
           if (vp.cameraMode === CameraMode.ORTHOGRAPHIC) {
             return { ...vp, target: pose.target };
           }
+
           // 透视视口同步位置和target
           return {
             ...vp,
@@ -97,6 +98,7 @@ export const QuadViewLayout: React.FC<QuadViewLayoutProps> = ({
         });
 
         onViewportChange?.(updated);
+
         return updated;
       });
     },

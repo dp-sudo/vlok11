@@ -43,14 +43,17 @@ const ViewportComponent: React.FC<ViewportProps> = ({
 
     const handleChange = () => {
       const controls = controlsRef.current;
+
       if (controls) {
         const position = controls.object.position.toArray() as [number, number, number];
         const target = controls.target.toArray() as [number, number, number];
+
         onCameraChange({ position, target });
       }
     };
 
     const controls = controlsRef.current;
+
     controls.addEventListener('change', handleChange);
 
     return () => {
@@ -63,6 +66,9 @@ const ViewportComponent: React.FC<ViewportProps> = ({
       className={`relative border ${isActive ? 'border-cyan-500' : 'border-zinc-700'} ${className}`}
       style={style}
       onClick={onClick}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+      role="button"
+      tabIndex={0}
     >
       {/* 标签 */}
       <div
@@ -70,13 +76,20 @@ const ViewportComponent: React.FC<ViewportProps> = ({
           isActive ? 'bg-cyan-500/20 text-cyan-400' : 'bg-zinc-800/80 text-zinc-400'
         }`}
       >
-        {config.type === 'perspective'
-          ? '透视'
-          : config.type === 'ortho-top'
-            ? '顶视图'
-            : config.type === 'ortho-front'
-              ? '前视图'
-              : '侧视图'}
+        {(() => {
+          switch (config.type) {
+            case 'perspective':
+              return '透视';
+            case 'ortho-top':
+              return '顶视图';
+            case 'ortho-front':
+              return '前视图';
+            case 'ortho-side':
+              return '侧视图';
+            default:
+              return '视图';
+          }
+        })()}
       </div>
 
       {/* 渲染区域 */}

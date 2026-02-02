@@ -52,6 +52,7 @@ export class SectionViewService {
 
   static getInstance(): SectionViewService {
     SectionViewService.instance ??= new SectionViewService();
+
     return SectionViewService.instance;
   }
 
@@ -124,10 +125,12 @@ export class SectionViewService {
   applySection(config: SectionConfig): void {
     if (!config.enabled) {
       this.clearSection();
+
       return;
     }
 
     const sectionPlane = this.createPlane(config);
+
     this.clippingPlanes = [sectionPlane.plane];
     this.currentConfig = config;
 
@@ -153,6 +156,7 @@ export class SectionViewService {
   clearSection(): void {
     this.clippingPlanes = [];
     const previousConfig = this.currentConfig;
+
     this.currentConfig = null;
 
     this.notifySubscribers();
@@ -173,6 +177,7 @@ export class SectionViewService {
     if (!this.currentConfig) return;
 
     const newConfig = { ...this.currentConfig, position };
+
     this.applySection(newConfig);
   }
 
@@ -207,6 +212,7 @@ export class SectionViewService {
    */
   subscribe(callback: (planes: Plane[], config: SectionConfig | null) => void): () => void {
     this.subscribers.add(callback);
+
     return () => this.subscribers.delete(callback);
   }
 
@@ -231,6 +237,7 @@ export class SectionViewService {
       z: 'Z轴 (前后)',
       custom: '自定义',
     };
+
     return names[axis];
   }
 

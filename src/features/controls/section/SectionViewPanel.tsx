@@ -39,6 +39,7 @@ const SectionViewPanelComponent: React.FC<SectionViewPanelProps> = ({ config, se
       set('sectionShowHelper', true);
 
       const newConfig = service.createConfig(axis, position);
+
       service.applySection(newConfig);
 
       eventBus.emit('camera:section-enabled', { axis, position });
@@ -57,11 +58,14 @@ const SectionViewPanelComponent: React.FC<SectionViewPanelProps> = ({ config, se
   const handlePositionChange = useCallback(
     (position: number) => {
       set('sectionPosition', position);
+
       const newConfig = service.createConfig(currentAxis, position, {
         enabled: true,
         showHelper,
       });
+
       service.applySection(newConfig);
+
       eventBus.emit('camera:section-position-changed', { position, axis: currentAxis });
     },
     [set, currentAxis, showHelper, service, eventBus]
@@ -70,12 +74,16 @@ const SectionViewPanelComponent: React.FC<SectionViewPanelProps> = ({ config, se
   const handleAxisChange = useCallback(
     (axis: SectionAxis) => {
       set('sectionAxis', axis);
+
       const newConfig = service.createConfig(axis, currentPosition, {
         enabled: true,
         showHelper,
       });
+
       service.applySection(newConfig);
+
       eventBus.emit('camera:section-axis-changed', { from: currentAxis, to: axis });
+
       logger.info(`剖面轴已切换: ${currentAxis} -> ${axis}`);
     },
     [set, currentAxis, currentPosition, showHelper, service, eventBus]
@@ -83,6 +91,7 @@ const SectionViewPanelComponent: React.FC<SectionViewPanelProps> = ({ config, se
 
   const handleFlipNormal = useCallback(() => {
     const newFlip = !config.sectionFlipNormal;
+
     set('sectionFlipNormal', newFlip);
 
     const newConfig = service.createConfig(currentAxis, currentPosition, {
@@ -90,18 +99,22 @@ const SectionViewPanelComponent: React.FC<SectionViewPanelProps> = ({ config, se
       showHelper,
       flipNormal: newFlip,
     });
+
     service.applySection(newConfig);
+
     eventBus.emit('camera:section-flip-changed', { flipNormal: newFlip });
   }, [config.sectionFlipNormal, set, currentAxis, currentPosition, showHelper, service, eventBus]);
 
   const handleToggleHelper = useCallback(() => {
     const newShowHelper = !showHelper;
+
     set('sectionShowHelper', newShowHelper);
 
     const newConfig = service.createConfig(currentAxis, currentPosition, {
       enabled: true,
       showHelper: newShowHelper,
     });
+
     service.applySection(newConfig);
   }, [showHelper, set, currentAxis, currentPosition, service]);
 

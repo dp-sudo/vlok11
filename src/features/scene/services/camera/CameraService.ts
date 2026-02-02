@@ -19,6 +19,7 @@ import type {
 import { lerpVec3 } from '@/shared/utils';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 import { type CameraPresetType, calculateDistance, calculatePresetPose } from './CameraPresets';
+import type { OrthoViewPresetType } from './OrthographicPresets';
 import { getPrecisionConfigService, type PrecisionControlConfig } from './PrecisionConfigService';
 
 const logger = createLogger({ module: 'CameraService' });
@@ -282,7 +283,7 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
    * @param duration - 动画持续时间(ms)
    */
   async applyOrthoPreset(
-    presetType: import('./OrthographicPresets').OrthoViewPresetType,
+    presetType: OrthoViewPresetType,
     duration = CAMERA_ANIMATION.PRESET
   ): Promise<void> {
     const { calculateOrthoPresetPose, emitOrthoPresetApplied } = await import(
@@ -296,6 +297,7 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
 
     if (!result) {
       logger.warn(`应用正交预设失败: ${presetType}`);
+
       return;
     }
 
@@ -315,7 +317,7 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
             this.store.setCurrentOrthoPreset(presetType);
             emitOrthoPresetApplied(
               presetType,
-              previousPreset as import('./OrthographicPresets').OrthoViewPresetType | null,
+              previousPreset as OrthoViewPresetType | null,
               {
                 position: result.position,
                 target: result.target,
@@ -339,11 +341,12 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
   async switchToOrthoWithPreset(
     _camera: Camera,
     _controls: OrbitControlsType,
-    presetType: import('./OrthographicPresets').OrthoViewPresetType
+    presetType: OrthoViewPresetType
   ): Promise<void> {
     // 如果当前不是正交模式，先保存当前设置
     if (this.projectionMode !== 'orthographic') {
       const currentFov = this.store.pose.fov;
+
       this.store.saveCameraModeSettings('perspective', currentFov);
     }
 

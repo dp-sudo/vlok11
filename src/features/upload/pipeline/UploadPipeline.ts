@@ -1,4 +1,3 @@
-import { generateUUID } from '@/shared/utils/uuid';
 import { getEventBus } from '@/core/EventBus';
 import { PipelineEvents } from '@/core/EventTypes';
 import { createLogger } from '@/core/Logger';
@@ -10,6 +9,7 @@ import type {
   StageContext,
 } from '@/core/pipeline/types';
 import type { AIService } from '@/features/ai/services/AIService';
+import { generateUUID } from '@/shared/utils/uuid';
 import { AnalyzeStage, DepthStage, PrepareStage, ReadStage } from './stages';
 import type {
   CompleteCallback,
@@ -142,12 +142,19 @@ class UploadPipelineImpl implements UploadPipelineInterface {
 
     this.unsubscriptions.push(
       getEventBus().on('pipeline:stage-started', (payload) => {
-        const { stage, index, total } = payload as Record<string, unknown>;
+        const { stage, index, total, progress } = payload as Record<string, unknown>;
+
+        // Prevent infinite loop: ignore events that already have progress (re-emitted by this pipeline)
+        if (typeof progress !== 'undefined') return;
 
         this.emitStageStart(String(stage), Number(index), Number(total));
       }),
       getEventBus().on('pipeline:stage-completed', (payload) => {
-        const { stage } = payload as Record<string, unknown>;
+        const { stage, progress } = payload as Record<string, unknown>;
+
+        // Prevent infinite loop: ignore events that already have progress (re-emitted by this pipeline)
+        if (typeof progress !== 'undefined') return;
+
         const index = this.legacyStages.findIndex((s) => s.name === String(stage));
 
         if (index !== -1) {

@@ -14,6 +14,7 @@ import type React from 'react';
 import { memo } from 'react';
 import type { OrthoViewPresetType } from '@/features/scene/services/camera/OrthographicPresets';
 import { getOrthoPresetDisplayInfo } from '@/features/scene/services/camera/OrthographicPresets';
+import { getMeasurementService } from '@/features/scene/services/measurement/MeasurementService';
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { CameraMode, CameraMotionType } from '@/shared/types';
 import {
@@ -358,6 +359,7 @@ const OrthoPresetSection = memo<{
       <div className="grid grid-cols-2 gap-1.5">
         {presets.map((preset) => {
           const info = getOrthoPresetDisplayInfo(preset);
+
           return (
             <CardBtn
               active={activePreset === preset}
@@ -383,12 +385,7 @@ interface MeasurementSectionProps {
 }
 
 const MeasurementSection = memo<MeasurementSectionProps>(({ config, set }) => {
-  const measurementService = (() => {
-    const {
-      getMeasurementService,
-    } = require('@/features/scene/services/measurement/MeasurementService');
-    return getMeasurementService();
-  })();
+  const measurementService = getMeasurementService();
 
   const handleStartDistance = () => {
     measurementService.startTool('distance');

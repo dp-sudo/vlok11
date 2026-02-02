@@ -1,4 +1,6 @@
+import type { OrthographicCamera, PerspectiveCamera } from 'three';
 import { Vector3 } from 'three';
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 
 import { getEventBus } from '@/core/EventBus';
 import type { LifecycleAware } from '@/core/LifecycleManager';
@@ -288,9 +290,9 @@ class CameraTransitionServiceImpl implements LifecycleAware {
   transitionProjectionMode(
     fromMode: CameraMode,
     toMode: CameraMode,
-    fromCamera: import('three').PerspectiveCamera | import('three').OrthographicCamera,
-    toCamera: import('three').PerspectiveCamera | import('three').OrthographicCamera,
-    controls: import('three-stdlib').OrbitControls,
+    fromCamera: PerspectiveCamera | OrthographicCamera,
+    toCamera: PerspectiveCamera | OrthographicCamera,
+    controls: OrbitControlsType,
     callbacks?: TransitionCallbacks & {
       onProgress?: (progress: number, state: { fov?: number; zoom?: number }) => void;
     }
@@ -307,8 +309,8 @@ class CameraTransitionServiceImpl implements LifecycleAware {
     // 计算同步参数
     const currentValue =
       fromMode === CameraMode.PERSPECTIVE
-        ? (fromCamera as import('three').PerspectiveCamera).fov
-        : (fromCamera as import('three').OrthographicCamera).zoom;
+        ? (fromCamera as PerspectiveCamera).fov
+        : (fromCamera as OrthographicCamera).zoom;
 
     const syncResult = calculateCameraSync(
       fromMode === CameraMode.PERSPECTIVE ? 'perspective' : 'orthographic',
@@ -338,13 +340,13 @@ class CameraTransitionServiceImpl implements LifecycleAware {
 
         // 插值FOV/Zoom
         if (toMode === CameraMode.ORTHOGRAPHIC) {
-          (toCamera as import('three').OrthographicCamera).zoom = lerp(
+          (toCamera as OrthographicCamera).zoom = lerp(
             currentValue,
             syncResult.orthoZoom,
             this.easeInOutCubic(progress)
           );
         } else {
-          (toCamera as import('three').PerspectiveCamera).fov = lerp(
+          (toCamera as PerspectiveCamera).fov = lerp(
             currentValue,
             syncResult.perspectiveFov,
             this.easeInOutCubic(progress)

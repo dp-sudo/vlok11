@@ -339,6 +339,7 @@ const createOrthoActions = (
 
   getCameraModeSettings: (mode: 'perspective' | 'orthographic') => {
     const state = get();
+
     return mode === 'perspective' ? state.perspectiveFovMemory : state.orthoZoomMemory;
   },
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import '@/app/styles/global.css';
@@ -35,12 +34,21 @@ const initAndRender = async () => {
   const root = ReactDOM.createRoot(rootElement);
 
   root.render(
-      <ErrorBoundaryWithRecovery>
-        <ServiceProvider services={{ aiService: aiService ?? null }}>
-          <App />
-        </ServiceProvider>
-      </ErrorBoundaryWithRecovery>
+    <ErrorBoundaryWithRecovery>
+      <ServiceProvider services={{ aiService: aiService ?? null }}>
+        <App />
+      </ServiceProvider>
+    </ErrorBoundaryWithRecovery>
   );
+
+  // Immediate loader removal after mount attempt
+  const loader = document.getElementById('boot-loader');
+
+  if (loader) {
+    loader.style.transition = 'opacity 0.5s ease-out';
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 500);
+  }
 };
 
 void initAndRender();

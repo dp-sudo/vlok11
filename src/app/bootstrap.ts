@@ -86,19 +86,25 @@ export async function bootstrap(config: BootstrapConfig = {}): Promise<AIService
     onProgress?.('initializing-services', BOOTSTRAP_PROGRESS.SERVICES);
     logger.info('Starting lifecycleManager.initializeAll()...');
 
-    const initPromise = lifecycleManager.initializeAll();
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Initialization Timeout')), 30000)
-    );
+    onProgress?.('initializing-services', BOOTSTRAP_PROGRESS.SERVICES);
+    logger.info('Starting lifecycleManager.initializeAll() in background...');
 
-    await Promise.race([initPromise, timeoutPromise]);
-    logger.info('lifecycleManager.initializeAll() complete.');
+    // Non-blocking initialization
+    void lifecycleManager
+      .initializeAll()
+      .then(() => {
+        logger.info('lifecycleManager.initializeAll() complete.');
+        onProgress?.('complete', BOOTSTRAP_PROGRESS.COMPLETE);
+      })
+      .catch((error) => {
+        logger.error('Background initialization failed', { error });
+        // We could dispatch a global error here if needed
+      });
 
     onProgress?.('configuring-error-handling', BOOTSTRAP_PROGRESS.ERROR_HANDLING);
     setupGlobalErrorHandling();
 
-    onProgress?.('complete', BOOTSTRAP_PROGRESS.COMPLETE);
-    logger.info('Started');
+    logger.info('Started (UI Unblocked)');
 
     return aiService;
   } catch (error) {

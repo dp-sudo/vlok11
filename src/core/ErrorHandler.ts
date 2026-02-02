@@ -9,8 +9,6 @@ export class ErrorHandler implements ErrorHandler {
   private history: AppError[] = [];
   private maxHistory = MAX_ERROR_HISTORY;
 
-  constructor() {}
-
   static getInstance(): ErrorHandler {
     ErrorHandler.instance ??= new ErrorHandler();
 

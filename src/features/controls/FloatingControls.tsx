@@ -32,12 +32,12 @@ const ControlGroup = ({ children, label }: { children: React.ReactNode; label?: 
       </span>
     )}
     {/* HUD Panel Background */}
-    <div className="flex items-center gap-1 p-1.5 bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group/panel">
+    <div className="flex items-center gap-1 p-1.5 bg-zinc-950/80 backdrop-blur-md border border-white/10 rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group/panel">
       {/* Scanline Effect */}
       <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.3)_50%)] bg-[length:100%_4px] opacity-20 pointer-events-none" />
       {/* Tech Border Corners */}
-      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-zinc-600 opacity-50" />
-      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-zinc-600 opacity-50" />
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 opacity-50" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 opacity-50" />
 
       {children}
     </div>

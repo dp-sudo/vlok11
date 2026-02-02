@@ -72,6 +72,7 @@ const ColorGradeSection = memo<{
                   }
                 : undefined
             }
+            type="button"
           >
             {/* 激活状态顶部光条 */}
             {isActive && (

@@ -124,7 +124,9 @@ export const ImmersiveTab: React.FC<ImmersiveTabProps> = memo(
             <Brain className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-zinc-100 tracking-wide font-tech">AI智能沉浸体验</div>
+            <div className="text-sm font-semibold text-zinc-100 tracking-wide font-tech">
+              AI智能沉浸体验
+            </div>
             <div className="text-[11px] text-zinc-400 font-normal mt-0.5">智能运镜 + 天气氛围</div>
           </div>
         </div>

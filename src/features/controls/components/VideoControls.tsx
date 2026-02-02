@@ -48,6 +48,7 @@ const PlayButton = memo<PlayButtonProps>(({ isPlaying, onClick }) => (
     `}
     onClick={onClick}
     title={isPlaying ? '暂停' : '播放'}
+    type="button"
   >
     {isPlaying ? (
       <Pause className="w-6 h-6 text-white fill-white relative z-10" />
@@ -77,6 +78,7 @@ const IconButton = memo<IconButtonProps>(({ icon: Icon, onClick, title, active, 
     }`}
     onClick={onClick}
     title={title}
+    type="button"
   >
     <Icon className="w-4 h-4" />
     {label && <span className="text-[10px] font-mono font-medium">{label}</span>}
@@ -158,7 +160,7 @@ const ProgressTrack = memo<ProgressTrackProps>(
             className={`absolute inset-0.5 rounded-full ${isDragging ? 'bg-teal-400' : 'bg-teal-500'}`}
           />
           {/* Center dot */}
-          <div className={`absolute inset-2 rounded-full bg-white`} />
+          <div className="absolute inset-2 rounded-full bg-white" />
         </div>
 
         {/* Percentage tooltip when hovering */}
@@ -335,6 +337,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
               className="p-1.5 rounded-md hover:bg-white/5 text-zinc-500 hover:text-cyan-400 transition-colors"
               onClick={() => handleFrameStep('prev')}
               title="上一帧"
+              type="button"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -342,6 +345,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
               className="p-1.5 rounded-md hover:bg-white/5 text-zinc-500 hover:text-cyan-400 transition-colors"
               onClick={() => handleFrameStep('next')}
               title="下一帧"
+              type="button"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

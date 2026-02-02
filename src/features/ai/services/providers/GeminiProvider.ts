@@ -45,24 +45,44 @@ export class GeminiProvider implements AIProvider {
       }
 
       text = text.replace(/```json\s*|\s*```/g, '').trim();
-      const parsed = JSON.parse(text) as {
-        description: string;
-        estimatedDepthScale: number;
-        reasoning: string;
-        recommendedFov: number;
-        recommendedPipeline: string;
-        sceneType: string;
-        suggestedModel: string;
+
+      let parsed: {
+        description?: string;
+        estimatedDepthScale?: number;
+        reasoning?: string;
+        recommendedFov?: number;
+        recommendedPipeline?: string;
+        sceneType?: string;
+        suggestedModel?: string;
       };
 
+      try {
+        parsed = JSON.parse(text);
+      } catch (parseError) {
+        logger.error('Failed to parse AI response as JSON', { text, error: String(parseError) });
+
+        // Return default analysis when JSON parsing fails
+        return {
+          sceneType: 'UNKNOWN' as SceneType,
+          description: '无法解析AI响应',
+          reasoning: `JSON解析失败: ${String(parseError)}`,
+          estimatedDepthScale: 1.5,
+          recommendedFov: 55,
+          recommendedPipeline: 'DEPTH_MESH' as TechPipeline,
+          suggestedModel: 'default',
+        };
+      }
+
+      // Validate required fields with defaults
       return {
-        sceneType: parsed.sceneType as SceneType,
-        description: parsed.description,
-        reasoning: parsed.reasoning,
-        estimatedDepthScale: parsed.estimatedDepthScale,
-        recommendedFov: parsed.recommendedFov,
-        recommendedPipeline: parsed.recommendedPipeline as TechPipeline,
-        suggestedModel: parsed.suggestedModel,
+        sceneType: (parsed.sceneType ?? 'UNKNOWN') as SceneType,
+        description: parsed.description ?? '无描述',
+        reasoning: parsed.reasoning ?? '无推理说明',
+        estimatedDepthScale:
+          typeof parsed.estimatedDepthScale === 'number' ? parsed.estimatedDepthScale : 1.5,
+        recommendedFov: typeof parsed.recommendedFov === 'number' ? parsed.recommendedFov : 55,
+        recommendedPipeline: (parsed.recommendedPipeline ?? 'DEPTH_MESH') as TechPipeline,
+        suggestedModel: parsed.suggestedModel ?? 'default',
       };
     } catch (error) {
       logger.error('Gemini analysis failed', { error: String(error) });

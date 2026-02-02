@@ -53,7 +53,9 @@ export const ModelDetails = ({
           {model.performance.avgInferenceTime ? (
             <div className="flex justify-between">
               <span className="text-slate-400">平均推理时间</span>
-              <span className="text-slate-800">{onFormatTime(model.performance.avgInferenceTime)}</span>
+              <span className="text-slate-800">
+                {onFormatTime(model.performance.avgInferenceTime)}
+              </span>
             </div>
           ) : null}
           {model.performance.minInputSize ? (

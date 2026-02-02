@@ -27,11 +27,7 @@ export const ModelManager = memo(({ isOpen, onClose }: ModelManagerProps) => {
   const [benchmark, setBenchmark] = useState<ModelBenchmarkResult | null>(null);
   const [filter, setFilter] = useState<'all' | 'loaded' | 'available'>('all');
 
-  useEffect(() => {
-    loadModels();
-  }, [filter]);
-
-  const loadModels = () => {
+  const loadModels = useCallback(() => {
     const registry = getModelRegistry();
     let loadedModels = registry.getAll();
 
@@ -42,7 +38,11 @@ export const ModelManager = memo(({ isOpen, onClose }: ModelManagerProps) => {
     }
 
     setModels(loadedModels);
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    loadModels();
+  }, [loadModels]);
 
   const handleSelectModel = useCallback((model: ModelInfo) => {
     setSelectedModel(model);

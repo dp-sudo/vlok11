@@ -51,16 +51,24 @@ export const Btn: React.FC<BtnProps> = ({ active, onClick, children, small, disa
       rounded-lg border font-medium transition-all duration-200
       ${
         active
-          ? 'bg-gradient-to-b from-amber-400 to-orange-500 border-amber-300 text-black shadow-[0_0_20px_rgba(251,191,36,0.6)]'
+          ? 'bg-gradient-to-b from-amber-400 to-orange-600 border-amber-400 text-black'
           : disabled
             ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed opacity-50'
-            : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white hover:bg-zinc-700'
+            : 'bg-zinc-800 border-zinc-600 text-zinc-300 hover:border-zinc-500 hover:text-white hover:bg-zinc-700'
       }
       active:scale-[0.96]
       disabled:cursor-not-allowed
     `}
     onClick={onClick}
     disabled={disabled}
+    style={
+      active
+        ? {
+            boxShadow:
+              '0 0 30px rgba(251, 191, 36, 0.9), 0 0 60px rgba(251, 191, 36, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4)',
+          }
+        : undefined
+    }
   >
     {children}
   </button>
@@ -82,29 +90,10 @@ export const CardBtn: React.FC<CardBtnProps> = ({
       flex flex-col items-center justify-center gap-2 relative overflow-hidden
       ${
         active
-          ? `
-            bg-gradient-to-b from-amber-500/30 to-orange-600/20
-            border-amber-400 text-white
-            shadow-[0_4px_25px_rgba(251,191,36,0.5)]
-            scale-[1.02]
-          `
+          ? 'bg-gradient-to-b from-amber-500/40 to-orange-600/30 border-amber-400 text-white scale-[1.03]'
           : disabled
-            ? `
-            bg-zinc-800/50
-            border-zinc-700
-            text-zinc-500
-            opacity-50
-            cursor-not-allowed
-          `
-            : `
-            bg-zinc-800/80
-            border-zinc-700
-            text-zinc-300
-            hover:bg-zinc-700/80
-            hover:border-zinc-600
-            hover:text-white
-            hover:scale-[1.01]
-          `
+            ? 'bg-zinc-800/50 border-zinc-700 text-zinc-500 opacity-50 cursor-not-allowed'
+            : 'bg-zinc-800/80 border-zinc-600 text-zinc-300 hover:bg-zinc-700/80 hover:border-zinc-500 hover:text-white hover:scale-[1.02]'
       }
       active:scale-[0.98]
       disabled:cursor-not-allowed disabled:hover:scale-100
@@ -113,6 +102,14 @@ export const CardBtn: React.FC<CardBtnProps> = ({
     onMouseEnter={onMouseEnter}
     onMouseLeave={onMouseLeave}
     disabled={disabled}
+    style={
+      active
+        ? {
+            boxShadow:
+              '0 0 30px rgba(251, 191, 36, 0.8), 0 0 60px rgba(251, 191, 36, 0.4), inset 0 0 20px rgba(251, 191, 36, 0.2)',
+          }
+        : undefined
+    }
   >
     {active && (
       <>

@@ -60,7 +60,15 @@ export const ErrorModal = memo(({ error, isOpen, onClose, onRecovery }: ErrorMod
               onClick={onClose}
               type="button"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                aria-label="关闭"
+                className="w-6 h-6"
+                fill="none"
+                role="img"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <title>关闭</title>
                 <path
                   d="M6 18L18 6M6 6l12 12"
                   strokeLinecap="round"

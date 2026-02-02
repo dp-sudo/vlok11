@@ -30,6 +30,7 @@ export const MobileDrawer = memo(({ isOpen, onClose, onOpen, children }: MobileD
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
         <span className="text-sm font-bold text-zinc-100">控制面板</span>
         <button
+          type="button"
           aria-label="关闭控制面板"
           className="p-2 -mr-2 text-zinc-400 hover:text-zinc-100"
           onClick={onClose}
@@ -41,6 +42,7 @@ export const MobileDrawer = memo(({ isOpen, onClose, onOpen, children }: MobileD
     </div>
 
     <button
+      type="button"
       aria-label="打开控制面板"
       className={`fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-cyan-600 text-white shadow-lg shadow-cyan-900/50 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 lg:hidden ${
         isOpen ? 'scale-0' : 'scale-100'

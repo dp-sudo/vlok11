@@ -1,7 +1,6 @@
-import { generateUUID } from '@/shared/utils/uuid';
 import { createLogger } from '@/core/Logger';
-
 import type { Disposable } from '@/shared/types';
+import { generateUUID } from '@/shared/utils/uuid';
 
 export interface WorkerTask<T = unknown> {
   id: string;

@@ -154,7 +154,9 @@ export const SceneRecorder = memo(
           if (wasMutedRef.current && video) video.muted = true;
 
           if (mediaStreamRef.current) {
-            mediaStreamRef.current.getTracks().forEach((track) => { track.stop(); });
+            mediaStreamRef.current.getTracks().forEach((track) => {
+              track.stop();
+            });
             mediaStreamRef.current = null;
           }
         };

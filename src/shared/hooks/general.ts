@@ -263,7 +263,7 @@ const handleCtrlShortcut = (key: string, e: KeyboardEvent, ctx: KeyHandlerContex
 };
 const handleMotionTypeKey = (key: string, ctx: KeyHandlerContext): boolean => {
   if (key >= '1' && key <= '6') {
-    const index = parseInt(key) - 1;
+    const index = parseInt(key, 10) - 1;
     const motionType = MOTION_TYPE_MAP[index];
 
     if (motionType !== undefined) {
@@ -462,7 +462,7 @@ export {
   useMotionService,
 } from '@/features/scene/services/camera';
 export {
+  useCameraController,
   type CameraControllerOptions,
   type CameraControllerReturn,
-  useCameraController,
 } from '@/shared/hooks/useCameraController';

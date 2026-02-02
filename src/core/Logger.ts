@@ -10,11 +10,11 @@ const MAX_LOG_HISTORY = 500;
 const TIME_SLICE_END = 23;
 const TIME_SLICE_START = 11;
 
-export function createLogger(options: LoggerOptions): Logger {
+export function createLogger(options: LoggerOptions): LoggerContract {
   return new Logger(options);
 }
 
-export class Logger implements Logger {
+export class Logger implements LoggerContract {
   private static globalLevel: LogLevel = LogLevel.INFO;
   private static history: LogEntry[] = [];
   private static maxHistory = MAX_LOG_HISTORY;
@@ -156,7 +156,7 @@ export interface LogEntry {
   module: string;
   timestamp: number;
 }
-export interface Logger {
+export interface LoggerContract {
   clearHistory(): void;
   debug(message: string, context?: Record<string, unknown>): void;
   error(message: string, context?: Record<string, unknown>): void;

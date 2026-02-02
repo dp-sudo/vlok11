@@ -89,7 +89,6 @@ export function calculateMotion(
       return calculateArc(progress, basePose, p);
     case 'TRACKING':
       return calculateTracking(basePose, p, trackingTarget);
-    case 'STATIC':
     default:
       return null;
   }

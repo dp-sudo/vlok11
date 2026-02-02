@@ -1,7 +1,7 @@
-import { generateUUID } from '@/shared/utils/uuid';
 import { getEventBus } from '@/core/EventBus';
 import { createLogger } from '@/core/Logger';
 import { getStageRegistry } from '@/core/pipeline/StageRegistry';
+import { generateUUID } from '@/shared/utils/uuid';
 
 import type {
   PipelineConfig,

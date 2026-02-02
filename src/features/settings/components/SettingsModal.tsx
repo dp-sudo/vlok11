@@ -27,9 +27,12 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
 
         <div className="p-6 space-y-6">
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-zinc-300">Gemini API Key</label>
+            <label htmlFor="gemini-api-key" className="block text-sm font-medium text-zinc-300">
+              Gemini API Key
+            </label>
             <div className="relative">
               <input
+                id="gemini-api-key"
                 className="w-full px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="AIzaSy..."
@@ -53,8 +56,14 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
           <div className="h-px bg-zinc-800" />
 
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-zinc-300">处理模式</label>
-            <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-950 rounded-lg border border-zinc-800">
+            <span id="processing-mode-label" className="block text-sm font-medium text-zinc-300">
+              处理模式
+            </span>
+            <div
+              role="group"
+              aria-labelledby="processing-mode-label"
+              className="grid grid-cols-2 gap-2 p-1 bg-zinc-950 rounded-lg border border-zinc-800"
+            >
               <button
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                   isQualityMode

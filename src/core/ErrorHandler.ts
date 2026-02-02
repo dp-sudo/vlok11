@@ -3,7 +3,7 @@ import { MAX_ERROR_HISTORY } from '@/shared/constants';
 import { type ErrorCode, ErrorCodes, getErrorMessage } from './ErrorCodes';
 import { getEventBus } from './EventBus';
 
-export class ErrorHandler implements ErrorHandler {
+export class ErrorHandler implements ErrorHandlerContract {
   private static instance: ErrorHandler | null = null;
   private fatalCallbacks = new Set<(error: AppError) => void>();
   private history: AppError[] = [];
@@ -247,7 +247,7 @@ export interface AppError {
   severity: ErrorSeverity;
   timestamp: number;
 }
-export interface ErrorHandler {
+export interface ErrorHandlerContract {
   clearHistory(): void;
   createError(code: string, message: string, options?: Partial<AppError>): AppError;
   getHistory(): AppError[];
@@ -266,7 +266,7 @@ export enum ErrorSeverity {
   WARNING = 'warning',
 }
 
-export const getErrorHandler = (): ErrorHandler => ErrorHandler.getInstance();
+export const getErrorHandler = (): ErrorHandlerContract => ErrorHandler.getInstance();
 export const resetErrorHandler = (): void => {
   ErrorHandler.resetInstance();
 };

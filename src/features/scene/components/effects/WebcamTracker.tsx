@@ -14,8 +14,7 @@ const useFaceModel = (enabled: boolean) => {
   const [model, setModel] = useState<faceDetection.FaceDetector | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof window !== 'undefined' && (window as any).__TEST_MODE__ === true) {
+    if (typeof window !== 'undefined' && window.__TEST_MODE__ === true) {
       return;
     }
 
@@ -48,8 +47,7 @@ const useWebcamStream = (videoRef: React.RefObject<HTMLVideoElement | null>) => 
   const [isTracking, setIsTracking] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof window !== 'undefined' && (window as any).__TEST_MODE__ === true) {
+    if (typeof window !== 'undefined' && window.__TEST_MODE__ === true) {
       return;
     }
 
@@ -186,8 +184,7 @@ export const WebcamTracker = () => {
     };
   }, [model, isTracking]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (typeof window !== 'undefined' && (window as any).__TEST_MODE__ === true) {
+  if (typeof window !== 'undefined' && window.__TEST_MODE__ === true) {
     return null;
   }
 

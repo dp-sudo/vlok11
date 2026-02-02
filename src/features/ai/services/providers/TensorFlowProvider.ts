@@ -5,10 +5,32 @@ import type { AIProvider, DepthResult, ImageAnalysis } from '../types';
 
 type DepthEstimationModule = Awaited<ReturnType<typeof loadDepthEstimationModel>>;
 
+// Depth estimator interface to avoid 'any' usage
+interface DepthEstimator {
+  estimateDepth: (
+    image: HTMLImageElement,
+    options: {
+      flipHorizontal: boolean;
+      minDepth: number;
+      maxDepth: number;
+    }
+  ) => Promise<{
+    toCanvasImageSource: () => Promise<CanvasImageSource>;
+  }>;
+}
+
+// Extended depth estimation module interface
+interface DepthEstimationModuleExtended {
+  SupportedModels: {
+    ARPortraitDepth: string;
+  };
+  createEstimator: (model: string, config: unknown) => Promise<DepthEstimator>;
+}
+
 export class TensorFlowProvider implements AIProvider {
   private _isAvailable = false;
 
-  private estimator: unknown | null = null;
+  private estimator: DepthEstimator | null = null;
   private isLoading = false;
   private loadError: Error | null = null;
   readonly providerId = 'tensorflow';
@@ -57,8 +79,7 @@ export class TensorFlowProvider implements AIProvider {
     });
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const depthMap = await (this.estimator as any).estimateDepth(img, {
+      const depthMap = await this.estimator.estimateDepth(img, {
         flipHorizontal: false,
         minDepth: 0,
         maxDepth: 1,
@@ -118,12 +139,10 @@ export class TensorFlowProvider implements AIProvider {
       await loadTensorFlow();
       this.depthEstimation = await loadDepthEstimationModel();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const depthEstimationModule = this.depthEstimation as any;
+      const depthEstimationModule = this.depthEstimation as DepthEstimationModuleExtended;
       const modelPromise = depthEstimationModule.createEstimator(
         depthEstimationModule.SupportedModels.ARPortraitDepth,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getARPortraitDepthModelConfig(depthEstimationModule) as any
+        getARPortraitDepthModelConfig(depthEstimationModule)
       );
 
       const timeoutPromise = new Promise<never>((_, reject) =>
@@ -149,7 +168,9 @@ export class TensorFlowProvider implements AIProvider {
 
 const DEPTH_JPEG_QUALITY = 0.9;
 
-const getARPortraitDepthModelConfig = (_depthEstimation: DepthEstimationModule): unknown => {
+const getARPortraitDepthModelConfig = (
+  _depthEstimation: DepthEstimationModuleExtended
+): unknown => {
   const depthModelUrl = import.meta.env.VITE_TF_DEPTH_MODEL_URL;
   const segmentationModelUrl = import.meta.env.VITE_TF_SEGMENTATION_MODEL_URL;
   const config: Record<string, string> = {};

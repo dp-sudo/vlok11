@@ -83,7 +83,7 @@ export function useVideoControl({
       const handleDurationChange = () => {
         const d = video.duration;
 
-        if (!d || isNaN(d)) {
+        if (!d || Number.isNaN(d)) {
           setIsSeekable(false);
 
           return;
@@ -121,10 +121,15 @@ export function useVideoControl({
     };
 
     attachIfNeeded();
-    const id = window.setInterval(attachIfNeeded, VIDEO_ATTACH_CHECK_INTERVAL_MS);
+    // Use a ref to track the timeout/interval to avoid stale closures
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState !== 'hidden') {
+        attachIfNeeded();
+      }
+    }, VIDEO_ATTACH_CHECK_INTERVAL_MS);
 
     return () => {
-      window.clearInterval(id);
+      window.clearInterval(intervalId);
       cleanupRef.current?.();
       cleanupRef.current = null;
       boundVideoRef.current = null;

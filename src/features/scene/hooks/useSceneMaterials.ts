@@ -42,6 +42,7 @@ export function useSceneMaterials(
   const factory = getMaterialFactory();
   const materialCache = useRef<ShaderMaterialCache>(new Map());
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: factory is stable singleton
   const standardMaterial = useMemo(() => {
     if (!activeMap || !displacementMap) return undefined;
 
@@ -54,6 +55,7 @@ export function useSceneMaterials(
     );
   }, [activeMap, displacementMap, config.displacementScale]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: factory is stable singleton
   const createMaterialForStyle = useCallback((style: ShaderRenderStyle): ShaderMaterial => {
     switch (style) {
       case RenderStyle.ANIME:

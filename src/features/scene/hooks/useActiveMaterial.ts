@@ -31,10 +31,10 @@ export function useActiveMaterial(options: UseActiveMaterialOptions): UseActiveM
   if (isGaussianSplat && activeMap && displacementMap) {
     const { uniforms } = pointCloudMaterial;
 
-    if (uniforms['map'] && uniforms['displacementMap'] && uniforms['displacementScale']) {
-      uniforms['map'].value = activeMap;
-      uniforms['displacementMap'].value = displacementMap;
-      uniforms['displacementScale'].value = config.displacementScale;
+    if (uniforms.map && uniforms.displacementMap && uniforms.displacementScale) {
+      uniforms.map.value = activeMap;
+      uniforms.displacementMap.value = displacementMap;
+      uniforms.displacementScale.value = config.displacementScale;
       activeMaterial = pointCloudMaterial;
     }
   }

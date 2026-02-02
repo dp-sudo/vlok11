@@ -17,7 +17,7 @@ import type {
   Vec3,
 } from '@/shared/types';
 import { lerpVec3 } from '@/shared/utils';
-import { useCameraStore } from '@/stores/index';
+import { useCameraPoseStore } from '@/stores/cameraStore';
 import { type CameraPresetType, calculateDistance, calculatePresetPose } from './CameraPresets';
 import { getPrecisionConfigService, type PrecisionControlConfig } from './PrecisionConfigService';
 
@@ -276,8 +276,88 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
     getEventBus().emit('camera:projection-changed', { mode, previousMode });
   }
 
+  /**
+   * 应用正交视图预设
+   * @param presetType - 正交视图预设类型
+   * @param duration - 动画持续时间(ms)
+   */
+  async applyOrthoPreset(
+    presetType: import('./OrthographicPresets').OrthoViewPresetType,
+    duration = CAMERA_ANIMATION.PRESET
+  ): Promise<void> {
+    const { calculateOrthoPresetPose, emitOrthoPresetApplied } = await import(
+      './OrthographicPresets'
+    );
+
+    const result = calculateOrthoPresetPose(presetType, {
+      useDefaultZoom: false,
+      currentZoom: this.store.orthoZoomMemory,
+    });
+
+    if (!result) {
+      logger.warn(`应用正交预设失败: ${presetType}`);
+      return;
+    }
+
+    const previousPreset = this.store.currentOrthoPreset;
+
+    return new Promise((resolve) => {
+      this.setPose(
+        {
+          position: result.position,
+          target: result.target,
+          up: result.up,
+        },
+        {
+          duration,
+          easing: 'ease-in-out-cubic',
+          onComplete: () => {
+            this.store.setCurrentOrthoPreset(presetType);
+            emitOrthoPresetApplied(
+              presetType,
+              previousPreset as import('./OrthographicPresets').OrthoViewPresetType | null,
+              {
+                position: result.position,
+                target: result.target,
+                up: result.up,
+              },
+              result.zoom
+            );
+            resolve();
+          },
+        }
+      );
+    });
+  }
+
+  /**
+   * 切换到正交模式并应用预设
+   * @param camera - Three.js相机
+   * @param controls - OrbitControls
+   * @param presetType - 正交视图预设类型
+   */
+  async switchToOrthoWithPreset(
+    _camera: Camera,
+    _controls: OrbitControlsType,
+    presetType: import('./OrthographicPresets').OrthoViewPresetType
+  ): Promise<void> {
+    // 如果当前不是正交模式，先保存当前设置
+    if (this.projectionMode !== 'orthographic') {
+      const currentFov = this.store.pose.fov;
+      this.store.saveCameraModeSettings('perspective', currentFov);
+    }
+
+    // 应用正交预设
+    await this.applyOrthoPreset(presetType);
+
+    // 切换到正交投影
+    this.setProjection('orthographic');
+
+    logger.info(`切换到正交模式并应用预设: ${presetType}`);
+  }
+
   private get store() {
-    return useCameraStore.getState();
+    return useCameraPoseStore.getState();
   }
 
   syncFromThree(camera: Camera, controls: OrbitControlsType): void {

@@ -37,6 +37,16 @@ export {
 } from './CoreControllerProvider';
 export { getInputService, InputService } from './InputService';
 export { getMotionService, MotionService } from './MotionService';
+export type { OrthoViewPreset, OrthoViewPresetType } from './OrthographicPresets';
+export {
+  calculateOrthoPresetPose,
+  emitOrthoPresetApplied,
+  getAllOrthoViewPresets,
+  getOrthoPresetDisplayInfo,
+  getOrthoViewPreset,
+  isValidOrthoViewPreset,
+  ORTHO_VIEW_PRESETS,
+} from './OrthographicPresets';
 export type { CameraSyncResult } from './PerspectiveOrthoBridge';
 export {
   calculateCameraSync,

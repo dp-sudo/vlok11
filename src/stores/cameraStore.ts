@@ -61,6 +61,7 @@ export const DEFAULT_INTERACTION_STATE = DEFAULT_INTERACTION;
 export type CameraPose = Omit<SharedCameraPose, 'near' | 'far'>;
 
 export interface CameraSlice {
+  // === 基础功能 ===
   addBookmark: (name: string) => void;
   applyBookmark: (id: string) => void;
   applyPreset: (preset: CameraPresetType) => void;
@@ -87,6 +88,24 @@ export interface CameraSlice {
   stopMotion: () => void;
   undo: () => void;
   updateMotionProgress: (progress: number) => void;
+
+  // === 正交相机功能 ===
+  /** 正交zoom记忆值 */
+  orthoZoomMemory: number;
+  /** 透视FOV记忆值 */
+  perspectiveFovMemory: number;
+  /** 当前正交视图预设 */
+  currentOrthoPreset: string | null;
+  /** 设置正交zoom */
+  setOrthoZoom: (zoom: number) => void;
+  /** 设置透视FOV */
+  setPerspectiveFov: (fov: number) => void;
+  /** 保存相机模式设置 */
+  saveCameraModeSettings: (mode: 'perspective' | 'orthographic', value: number) => void;
+  /** 获取相机模式设置 */
+  getCameraModeSettings: (mode: 'perspective' | 'orthographic') => number;
+  /** 设置当前正交预设 */
+  setCurrentOrthoPreset: (preset: string | null) => void;
 }
 
 export interface CameraInteractionState {
@@ -107,17 +126,30 @@ export interface CameraMotionState {
   type: string;
 }
 
+/** 正交相机默认值 */
+const DEFAULT_ORTHO_ZOOM = 20;
+const DEFAULT_FOV = 50;
+
 export const createCameraSlice: StateCreator<CameraSlice, [], [], CameraSlice> = (set, get) => ({
+  // 基础状态
   pose: { ...DEFAULT_POSE },
   bookmarks: [],
   history: [],
   motion: { ...DEFAULT_MOTION },
   interaction: { ...DEFAULT_INTERACTION },
   basePose: null,
+
+  // 正交相机状态
+  orthoZoomMemory: DEFAULT_ORTHO_ZOOM,
+  perspectiveFovMemory: DEFAULT_FOV,
+  currentOrthoPreset: null,
+
+  // 所有Actions
   ...createPoseActions(set, get),
   ...createMotionActions(set, get),
   ...createInteractionActions(set, get),
   ...createResetAllAction(set),
+  ...createOrthoActions(set, get),
 });
 
 const createInteractionActions = (
@@ -275,7 +307,43 @@ const createResetAllAction = (
       motion: { ...DEFAULT_MOTION },
       interaction: { ...DEFAULT_INTERACTION },
       basePose: null,
+      orthoZoomMemory: DEFAULT_ORTHO_ZOOM,
+      perspectiveFovMemory: DEFAULT_FOV,
+      currentOrthoPreset: null,
     });
+  },
+});
+
+/** 正交相机专用Actions */
+const createOrthoActions = (
+  set: Parameters<StateCreator<CameraSlice, [], [], CameraSlice>>[0],
+  get: Parameters<StateCreator<CameraSlice, [], [], CameraSlice>>[1]
+) => ({
+  setOrthoZoom: (zoom: number) => {
+    set({ orthoZoomMemory: Math.max(1, Math.min(100, zoom)) });
+  },
+
+  setPerspectiveFov: (fov: number) => {
+    set({
+      perspectiveFovMemory: Math.max(CAMERA.FOV_MIN, Math.min(CAMERA.FOV_MAX, fov)),
+    });
+  },
+
+  saveCameraModeSettings: (mode: 'perspective' | 'orthographic', value: number) => {
+    if (mode === 'perspective') {
+      set({ perspectiveFovMemory: value });
+    } else {
+      set({ orthoZoomMemory: value });
+    }
+  },
+
+  getCameraModeSettings: (mode: 'perspective' | 'orthographic') => {
+    const state = get();
+    return mode === 'perspective' ? state.perspectiveFovMemory : state.orthoZoomMemory;
+  },
+
+  setCurrentOrthoPreset: (preset: string | null) => {
+    set({ currentOrthoPreset: preset });
   },
 });
 

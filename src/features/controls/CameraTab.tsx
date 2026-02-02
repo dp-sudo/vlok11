@@ -1,6 +1,18 @@
-import { Camera, Eye, Focus, Grid3X3, Move3D, Sliders } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowRight,
+  Box,
+  Camera,
+  Eye,
+  Focus,
+  Grid3X3,
+  Move3D,
+  Sliders,
+} from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
+import type { OrthoViewPresetType } from '@/features/scene/services/camera/OrthographicPresets';
+import { getOrthoPresetDisplayInfo } from '@/features/scene/services/camera/OrthographicPresets';
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { CameraMode, CameraMotionType } from '@/shared/types';
 import {
@@ -21,9 +33,11 @@ import { FOV_PRESETS, getCameraViewLabel, MOTIONS } from './constants';
 interface CameraTabProps {
   activeCameraView?: CameraViewPreset | null;
   activeMotion: (typeof MOTIONS)[number] | undefined;
+  activeOrthoPreset?: OrthoViewPresetType | null;
   config: SceneConfig;
   expandedSections: Record<string, boolean>;
   onSetCameraView?: (view: CameraViewPreset) => void;
+  onSetOrthoPreset?: (preset: OrthoViewPresetType) => void;
   set: <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
   toggleSection: (key: string) => void;
 }
@@ -82,6 +96,8 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
     activeCameraView,
     onSetCameraView,
     activeMotion,
+    activeOrthoPreset,
+    onSetOrthoPreset,
   }) => (
     <>
       <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
@@ -118,6 +134,13 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
         toggleSection={toggleSection}
       />
       <CameraModeSection config={config} set={set} />
+      <OrthoPresetSection
+        activePreset={activeOrthoPreset}
+        config={config}
+        expandedSections={expandedSections}
+        onSetPreset={onSetOrthoPreset}
+        toggleSection={toggleSection}
+      />
       <MotionSection
         config={config}
         expandedSections={expandedSections}
@@ -304,10 +327,57 @@ const MotionSection = memo<{
   </CollapsibleSection>
 ));
 
+const OrthoPresetSection = memo<{
+  activePreset?: OrthoViewPresetType | null;
+  config: SceneConfig;
+  expandedSections: Record<string, boolean>;
+  onSetPreset?: (preset: OrthoViewPresetType) => void;
+  toggleSection: (key: string) => void;
+}>(({ expandedSections, toggleSection, config, activePreset, onSetPreset }) => {
+  // 只有在正交模式下才显示
+  if (config.cameraMode !== CameraMode.ORTHOGRAPHIC) {
+    return null;
+  }
+
+  const presets: OrthoViewPresetType[] = ['top', 'front', 'side', 'iso'];
+  const icons: Record<OrthoViewPresetType, React.ReactNode> = {
+    top: <ArrowDown className="w-4 h-4 mb-1" />,
+    front: <Eye className="w-4 h-4 mb-1" />,
+    side: <ArrowRight className="w-4 h-4 mb-1" />,
+    iso: <Box className="w-4 h-4 mb-1" />,
+  };
+
+  return (
+    <CollapsibleSection
+      expanded={expandedSections.orthoPresets}
+      icon={<Grid3X3 className="w-3.5 h-3.5" />}
+      onToggle={() => toggleSection('orthoPresets')}
+      title="正交视图"
+    >
+      <div className="grid grid-cols-2 gap-1.5">
+        {presets.map((preset) => {
+          const info = getOrthoPresetDisplayInfo(preset);
+          return (
+            <CardBtn
+              active={activePreset === preset}
+              key={preset}
+              onClick={() => onSetPreset?.(preset)}
+            >
+              {icons[preset]}
+              <span>{info.label}</span>
+            </CardBtn>
+          );
+        })}
+      </div>
+    </CollapsibleSection>
+  );
+});
+
 export type { CameraTabProps };
 
 CameraViewSection.displayName = 'CameraViewSection';
 CameraModeSection.displayName = 'CameraModeSection';
 MotionSection.displayName = 'MotionSection';
 ControlParamsSection.displayName = 'ControlParamsSection';
+OrthoPresetSection.displayName = 'OrthoPresetSection';
 CameraTab.displayName = 'CameraTab';

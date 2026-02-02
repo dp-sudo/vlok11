@@ -1,13 +1,14 @@
-import { Suspense, lazy, memo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { lazy, memo, Suspense, useRef, useState } from 'react';
 
 import { ModelManager } from '@/features/ai/components/ModelManager';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import { ControlPanel } from '@/features/controls';
 import { FloatingControls } from '@/features/controls/FloatingControls';
 import type { SceneViewerHandle } from '@/features/scene';
+import { SettingsModal } from '@/features/settings/components/SettingsModal';
 import { StatusDisplay, UploadPanel } from '@/features/upload';
-import { AppHeader, MobileDrawer } from '@/shared/components';
+import { MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
 
 import { useAIMotion } from '@/shared/hooks/useAIMotion';
@@ -18,7 +19,9 @@ import type { CameraViewPreset, ProcessingState } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
 
 // Lazy load SceneViewer to optimize initial bundle size
-const SceneViewer = lazy(() => import('@/features/scene').then(module => ({ default: module.SceneViewer })));
+const SceneViewer = lazy(() =>
+  import('@/features/scene').then((module) => ({ default: module.SceneViewer }))
+);
 
 type AppCameraView = CameraViewPreset | 'default';
 
@@ -37,6 +40,7 @@ const App = memo(() => {
   const [urlInput, setUrlInput] = useState('');
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [modelManagerOpen, setModelManagerOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeCameraView, setActiveCameraView] = useState<AppCameraView>('default');
   const [isRecording, setIsRecording] = useState(false);
 
@@ -102,9 +106,22 @@ const App = memo(() => {
 
   return (
     <div className="h-screen w-screen bg-black text-white overflow-hidden flex flex-col">
-      <TitleBar onOpenModelManager={() => setModelManagerOpen(true)} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <AppHeader />
+      <TitleBar
+        onOpenModelManager={() => setModelManagerOpen(true)}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
+      <div className="flex-1 flex flex-col overflow-hidden pt-12">
+        {/* Main Content Area - pt-12 added above for TitleBar offset if needed, or if TitleBar is fixed. TitleBar is fixed (Step 365 line 8). Layout needs to account for it. 
+            Before: AppHeader was flex-none h-16.
+            Now: No AppHeader. TitleBar is fixed top.
+            We need padding-top on the container equal to TitleBar height (h-12 = 3rem = 48px).
+            Wait, TitleBar has 'fixed top-0'.
+            So content needs 'pt-12'.
+            The previous AppHeader was IN THE FLEX FLOW.
+            So removing AppHeader means content slides up.
+            If TitleBar is fixed, we definitely need pt-12 on the container.
+            I added `pt-12` to the `flex-col` container.
+        */}
 
         <main className="flex-1 flex overflow-hidden">
           {/* ... main content */}
@@ -139,12 +156,16 @@ const App = memo(() => {
             <>
               {/* Scene Container */}
               <div className="flex-1 relative bg-zinc-950">
-                <Suspense fallback={
-                  <div className="flex-1 flex items-center justify-center bg-zinc-950 text-cyan-500 gap-2">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <span className="font-mono text-sm tracking-widest">LOADING 3D ENGINE...</span>
-                  </div>
-                }>
+                <Suspense
+                  fallback={
+                    <div className="flex-1 flex items-center justify-center bg-zinc-950 text-cyan-500 gap-2">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span className="font-mono text-sm tracking-widest">
+                        LOADING 3D ENGINE...
+                      </span>
+                    </div>
+                  }
+                >
                   <SceneViewer
                     aspectRatio={vm.result.asset.aspectRatio}
                     backgroundUrl={vm.result.backgroundUrl ?? null}
@@ -186,6 +207,7 @@ const App = memo(() => {
       </MobileDrawer>
 
       <ModelManager isOpen={modelManagerOpen} onClose={() => setModelManagerOpen(false)} />
+      {settingsOpen ? <SettingsModal onClose={() => setSettingsOpen(false)} /> : null}
     </div>
   );
 });

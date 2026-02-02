@@ -7,7 +7,7 @@ import {
 import { createLogger } from '@/core/Logger';
 import { AIService } from '@/features/ai/services';
 import { getControlsModule, resetControlsModule } from '@/features/controls';
-import { getSceneModule, resetSceneModule } from '@/features/scene';
+import { getSceneModule, resetSceneModule } from '@/features/scene/scene-module';
 import {
   AnimationScheduler,
   CoreController,

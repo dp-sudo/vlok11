@@ -19,7 +19,11 @@ import type {
 import { lerpVec3 } from '@/shared/utils';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 import { type CameraPresetType, calculateDistance, calculatePresetPose } from './CameraPresets';
-import type { OrthoViewPresetType } from './OrthographicPresets';
+import {
+  calculateOrthoPresetPose,
+  emitOrthoPresetApplied,
+  type OrthoViewPresetType,
+} from './OrthographicPresets';
 import { getPrecisionConfigService, type PrecisionControlConfig } from './PrecisionConfigService';
 
 const logger = createLogger({ module: 'CameraService' });
@@ -286,10 +290,6 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
     presetType: OrthoViewPresetType,
     duration = CAMERA_ANIMATION.PRESET
   ): Promise<void> {
-    const { calculateOrthoPresetPose, emitOrthoPresetApplied } = await import(
-      './OrthographicPresets'
-    );
-
     const result = calculateOrthoPresetPose(presetType, {
       useDefaultZoom: false,
       currentZoom: this.store.orthoZoomMemory,

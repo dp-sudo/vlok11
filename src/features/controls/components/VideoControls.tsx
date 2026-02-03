@@ -309,10 +309,11 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
       };
     }, [isDragging, calculateTimeFromPosition, onSliderChange, onSeek, onDragEnd]);
 
-    const handleFrameStep = useCallback(
-      (direction: 'prev' | 'next') => {
-        const step = 1 / 30; // Assuming 30fps
-        const newTime = sliderValue + (direction === 'next' ? step : -step);
+    // 跳跃快进/快退（默认5秒）- 用于快速浏览
+    const handleSkip = useCallback(
+      (direction: 'backward' | 'forward') => {
+        const skipDuration = 5; // 默认跳跃5秒
+        const newTime = sliderValue + (direction === 'forward' ? skipDuration : -skipDuration);
 
         onSeek?.(Math.max(0, Math.min(newTime, videoState.duration)));
       },
@@ -332,22 +333,23 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
         <div className="flex items-center gap-4 mb-3">
           <PlayButton isPlaying={videoState.isPlaying} onClick={onTogglePlay} />
 
+          {/* 快进/快退按钮 - 每次跳跃5秒 */}
           <div className="flex items-center gap-1">
             <button
-              className="p-1.5 rounded-md hover:bg-white/5 text-zinc-500 hover:text-cyan-400 transition-colors"
-              onClick={() => handleFrameStep('prev')}
-              title="上一帧"
+              className="p-2 rounded-md hover:bg-cyan-100 text-zinc-500 hover:text-cyan-600 transition-all duration-200 active:scale-95"
+              onClick={() => handleSkip('backward')}
+              title="快退 5 秒 (←)"
               type="button"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              className="p-1.5 rounded-md hover:bg-white/5 text-zinc-500 hover:text-cyan-400 transition-colors"
-              onClick={() => handleFrameStep('next')}
-              title="下一帧"
+              className="p-2 rounded-md hover:bg-cyan-100 text-zinc-500 hover:text-cyan-600 transition-all duration-200 active:scale-95"
+              onClick={() => handleSkip('forward')}
+              title="快进 5 秒 (→)"
               type="button"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
 

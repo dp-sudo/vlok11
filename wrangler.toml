@@ -1,0 +1,6 @@
+# Cloudflare Pages 部署配置
+# 文档: https://developers.cloudflare.com/pages/configuration/wrangler/
+
+name = "immersa-3d"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"

@@ -97,7 +97,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
     const { isExporting } = exportState;
 
     return (
-      <div className="w-80 bg-zinc-950/90 backdrop-blur-xl flex flex-col h-full border-l border-white/10 shadow-2xl relative text-zinc-100">
+      <div className="w-full lg:w-80 bg-zinc-950/90 backdrop-blur-xl flex flex-col h-full border-l border-white/10 shadow-2xl relative text-zinc-100">
         {isExporting ? (
           <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
             <div className="flex flex-col items-center gap-2 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl">

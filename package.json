@@ -32,7 +32,12 @@
     "biome:lint": "biome lint src",
     "biome:format": "biome format src",
     "clean": "rimraf dist node_modules/.vite",
-    "deps:update": "npm update"
+    "deps:update": "npm update",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=immersa-3d",
+    "deploy:preview": "npm run build && wrangler pages deploy dist --project-name=immersa-3d --branch=preview",
+    "setup:domain": "bash ./setup-domain.sh",
+    "setup:env": "bash ./setup-env.sh",
+    "full-deploy": "npm run build && wrangler pages deploy dist --project-name=immersa-3d && echo '部署成功！访问: https://immersa-3d.pages.dev'"
   },
   "keywords": [
     "react",

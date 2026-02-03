@@ -38,8 +38,6 @@ const App = memo(() => {
   useAIMotion(sceneConfig);
   useWeatherEffect(sceneConfig);
 
-  const [showUrlInput, setShowUrlInput] = useState(false);
-  const [urlInput, setUrlInput] = useState('');
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [modelManagerOpen, setModelManagerOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -52,17 +50,13 @@ const App = memo(() => {
 
   useSceneConfigSubscriber();
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
+  const handleFileUpload = (file: File) => {
     if (file) vm.uploadStart(file);
   };
 
-  const handleUrlSubmit = () => {
-    if (urlInput.trim()) {
-      vm.uploadStart(urlInput.trim());
-      setUrlInput('');
-      setShowUrlInput(false);
+  const handleUrlSubmit = (url: string) => {
+    if (url.trim()) {
+      vm.uploadStart(url.trim());
     }
   };
 
@@ -151,10 +145,6 @@ const App = memo(() => {
                 acceptedFormats=".jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov"
                 onFileUpload={handleFileUpload}
                 onUrlSubmit={handleUrlSubmit}
-                setShowUrlInput={setShowUrlInput}
-                setUrlInput={setUrlInput}
-                showUrlInput={showUrlInput}
-                urlInput={urlInput}
               />
             </div>
           ) : null}

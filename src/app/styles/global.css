@@ -51,13 +51,13 @@
   /* --- SEMANTIC MAPPINGS (DARK GLASSMORPHISM THEME) --- */
   --color-primary: var(--color-cyan-500);
   --color-primary-glow: rgba(6, 182, 212, 0.5);
-  
+
   --color-bg-body: #000000;
   /* Glassmorphism Panel: Dark Zinc with high transparency */
-  --color-bg-panel: rgba(9, 9, 11, 0.85); 
+  --color-bg-panel: rgba(9, 9, 11, 0.85);
   --color-bg-card: rgba(24, 24, 27, 0.6);
   --color-bg-hover: rgba(39, 39, 42, 0.8);
-  
+
   --color-text-title: var(--color-zinc-100);
   --color-text-body: var(--color-zinc-300);
   --color-text-muted: var(--color-zinc-500);
@@ -80,10 +80,10 @@
   --color-slate-950: var(--color-zinc-950);
 
   /* Ensures 'amber' (old active) maps to 'cyan' (new active) */
-  /* Note: We map amber-50 to cyan-50 for backgrounds, amber-500/600 to cyan/teal equivalents if needed, 
-     but keeping amber strictly for WARNINGS is better. 
+  /* Note: We map amber-50 to cyan-50 for backgrounds, amber-500/600 to cyan/teal equivalents if needed,
+     but keeping amber strictly for WARNINGS is better.
      However, to fix legacy visuals immediately: */
-  /* We DO NOT auto-map amber to cyan globally because amber is useful for yellow. 
+  /* We DO NOT auto-map amber to cyan globally because amber is useful for yellow.
      We fixed the components manually. */
 
   /* --- ANIMATION VARIABLES --- */
@@ -92,6 +92,15 @@
   --duration-300: 300ms;
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  --spacing-mobile: 12px;
+  --font-size-mobile-base: 14px;
+  --touch-target-min: 44px;
 }
 
 /* ========================================
@@ -144,3 +153,26 @@ button {
 /* Backdrop Blur */
 .backdrop-blur-sm { backdrop-filter: blur(4px); }
 .backdrop-blur { backdrop-filter: blur(8px); }
+
+@media (max-width: 767px) {
+  .mobile-hidden { display: none !important; }
+  .mobile-only { display: block !important; }
+  .mobile-full-width { width: 100% !important; }
+}
+
+@media (min-width: 768px) {
+  .mobile-only { display: none !important; }
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+  body { overflow-x: hidden; }
+  .landscape-compact { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

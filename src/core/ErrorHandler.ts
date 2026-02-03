@@ -162,6 +162,25 @@ export class ErrorHandler implements ErrorHandlerContract {
 
   private suggestRecovery(error: Error, severity: ErrorSeverity): RecoveryOption[] | undefined {
     const code = this.extractErrorCode(error);
+    const message = error.message.toLowerCase();
+
+    // Handle TensorFlow specific errors
+    if (message.includes('tensorflow') || message.includes('model load timeout')) {
+      return [
+        {
+          label: '使用云端AI模式',
+          action: () => {
+            getEventBus().emit('ai:switch-to-gemini', {});
+          },
+        },
+        {
+          label: '重试加载',
+          action: () => {
+            getEventBus().emit('ai:retry-tensorflow', {});
+          },
+        },
+      ];
+    }
 
     if (code) {
       switch (code) {

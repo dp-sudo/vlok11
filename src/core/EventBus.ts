@@ -176,10 +176,29 @@ class EventBusImpl implements EventBus {
   }
 
   reset(): void {
+    const subCount = this.getTotalSubscriberCount();
+
     this.subscribers.clear();
     this.history = new Array<EventRecord | null>(this.maxHistory).fill(null);
     this.historyHead = 0;
     this.historySize = 0;
+    logger.info(`EventBus reset - cleared ${subCount} subscribers`);
+  }
+
+  getTotalSubscriberCount(): number {
+    let count = 0;
+
+    for (const subs of this.subscribers.values()) {
+      count += subs.length;
+    }
+
+    return count;
+  }
+
+  dispose(): void {
+    this.reset();
+    eventBusInstance = null;
+    logger.info('EventBus disposed');
   }
 }
 

@@ -328,7 +328,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
     }, [playbackRate, onSetPlaybackRate]);
 
     return (
-      <div className="px-4 py-4 border-b border-slate-300 bg-white select-none">
+      <div className="px-4 py-4 border-b border-slate-700/50 bg-gradient-to-b from-slate-900 to-slate-800 select-none">
         {/* Top Controls: Play/Pause/Seek + Volume */}
         <div className="flex items-center gap-4 mb-3">
           <PlayButton isPlaying={videoState.isPlaying} onClick={onTogglePlay} />

@@ -145,8 +145,17 @@ export class TensorFlowProvider implements AIProvider {
         getARPortraitDepthModelConfig(depthEstimationModule)
       );
 
+      // Increase timeout to 30s and add better error context
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('TensorFlow Model Load Timeout (15s)')), 15000)
+        setTimeout(
+          () =>
+            reject(
+              new Error(
+                'TensorFlow Model Load Timeout (30s) - Model may be too large or network slow'
+              )
+            ),
+          30000
+        )
       );
 
       this.estimator = await Promise.race([modelPromise, timeoutPromise]);

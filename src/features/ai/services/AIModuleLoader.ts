@@ -16,9 +16,9 @@ const moduleCache = new Map<string, any>();
 const loadingPromises = new Map<string, Promise<any>>();
 
 /**
- * Load TensorFlow.js dynamically
+ * Load TensorFlow.js dynamically with retry mechanism
  */
-export async function loadTensorFlow(): Promise<unknown> {
+export async function loadTensorFlow(retries = 3): Promise<unknown> {
   const cacheKey = 'tensorflow';
 
   if (moduleCache.has(cacheKey)) {
@@ -30,22 +30,41 @@ export async function loadTensorFlow(): Promise<unknown> {
   }
 
   const loadPromise = (async () => {
-    try {
-      logger.info('Loading TensorFlow.js...');
-      const tf = await import('@tensorflow/tfjs');
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        logger.info(`Loading TensorFlow.js (attempt ${attempt}/${retries})...`);
+        const tf = await import('@tensorflow/tfjs');
 
-      // Initialize backend
-      await tf.setBackend('webgl');
-      await tf.ready();
+        // Initialize backend with timeout
+        const backendPromise = tf.setBackend('webgl');
+        const backendTimeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('TensorFlow backend initialization timeout')), 30000)
+        );
 
-      moduleCache.set(cacheKey, tf);
-      logger.info('TensorFlow.js loaded successfully');
+        await Promise.race([backendPromise, backendTimeoutPromise]);
+        await tf.ready();
 
-      return tf;
-    } catch (error) {
-      logger.error('Failed to load TensorFlow.js', { error });
-      throw error;
+        moduleCache.set(cacheKey, tf);
+        logger.info('TensorFlow.js loaded successfully');
+
+        return tf;
+      } catch (error) {
+        logger.warn(`TensorFlow.js load attempt ${attempt} failed`, { error });
+
+        if (attempt === retries) {
+          logger.error('Failed to load TensorFlow.js after all retries', { error });
+          throw error;
+        }
+
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = Math.min(1000 * 2 ** (attempt - 1), 10000);
+
+        logger.info(`Retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
     }
+
+    throw new Error('Unexpected error in loadTensorFlow');
   })();
 
   loadingPromises.set(cacheKey, loadPromise);
@@ -54,9 +73,9 @@ export async function loadTensorFlow(): Promise<unknown> {
 }
 
 /**
- * Load Depth Estimation model dynamically
+ * Load Depth Estimation model dynamically with retry mechanism
  */
-export async function loadDepthEstimationModel(): Promise<unknown> {
+export async function loadDepthEstimationModel(retries = 3): Promise<unknown> {
   const cacheKey = 'depth-estimation';
 
   if (moduleCache.has(cacheKey)) {
@@ -68,21 +87,42 @@ export async function loadDepthEstimationModel(): Promise<unknown> {
   }
 
   const loadPromise = (async () => {
-    try {
-      // Ensure TensorFlow is loaded first
-      await loadTensorFlow();
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        // Ensure TensorFlow is loaded first
+        await loadTensorFlow();
 
-      logger.info('Loading depth estimation model...');
-      const depthEstimation = await import('@tensorflow-models/depth-estimation');
+        logger.info(`Loading depth estimation model (attempt ${attempt}/${retries})...`);
 
-      moduleCache.set(cacheKey, depthEstimation);
-      logger.info('Depth estimation model loaded successfully');
+        // Add timeout for model loading
+        const modelPromise = import('@tensorflow-models/depth-estimation');
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Depth estimation model load timeout')), 20000)
+        );
 
-      return depthEstimation;
-    } catch (error) {
-      logger.error('Failed to load depth estimation model', { error });
-      throw error;
+        const depthEstimation = await Promise.race([modelPromise, timeoutPromise]);
+
+        moduleCache.set(cacheKey, depthEstimation);
+        logger.info('Depth estimation model loaded successfully');
+
+        return depthEstimation;
+      } catch (error) {
+        logger.warn(`Depth estimation model load attempt ${attempt} failed`, { error });
+
+        if (attempt === retries) {
+          logger.error('Failed to load depth estimation model after all retries', { error });
+          throw error;
+        }
+
+        // Exponential backoff
+        const delay = Math.min(1000 * 2 ** (attempt - 1), 10000);
+
+        logger.info(`Retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
     }
+
+    throw new Error('Unexpected error in loadDepthEstimationModel');
   })();
 
   loadingPromises.set(cacheKey, loadPromise);

@@ -5,7 +5,9 @@ import {
   resetLifecycleManager,
 } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
+import { resetGlobalResourceManager } from '@/core/ResourceManager';
 import { AIService } from '@/features/ai/services';
+import { clearAIModuleCache } from '@/features/ai/services/AIModuleLoader';
 import { getControlsModule, resetControlsModule } from '@/features/controls';
 import { getSceneModule, resetSceneModule } from '@/features/scene/scene-module';
 import {
@@ -121,23 +123,34 @@ export async function shutdown(): Promise<void> {
   logger.info('Shutting down...');
 
   try {
+    // Clean up global error handlers first
     cleanupGlobalErrorHandling();
 
+    // Destroy all lifecycle-managed services
     const lifecycleManager = getLifecycleManager();
 
     await lifecycleManager.destroyAll();
 
+    // Reset all service modules
     resetSceneModule();
     resetControlsModule();
     resetShaderService();
 
+    // Reset singleton instances
     CoreController.resetInstance();
     AnimationScheduler.resetInstance();
 
+    // Clear AI module cache to free memory
+    clearAIModuleCache();
+
+    // Dispose global resource manager
+    resetGlobalResourceManager();
+
+    // Reset core systems
     resetLifecycleManager();
     resetEventBus();
 
-    logger.info('Shutdown complete');
+    logger.info('Shutdown complete - all resources disposed');
   } catch (error) {
     logger.error('Shutdown error', { error });
     throw error;

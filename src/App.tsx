@@ -1,6 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { lazy, memo, Suspense, useRef, useState } from 'react';
-
+import { getErrorHandler } from '@/core/ErrorHandler';
+import { createLogger } from '@/core/Logger';
 import { ModelManager } from '@/features/ai/components/ModelManager';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import { ControlPanel } from '@/features/controls';
@@ -10,7 +11,6 @@ import { SettingsModal } from '@/features/settings/components/SettingsModal';
 import { StatusDisplay, UploadPanel } from '@/features/upload';
 import { MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
-
 import { useAIMotion } from '@/shared/hooks/useAIMotion';
 import { useProjectShortcuts } from '@/shared/hooks/useProjectShortcuts';
 import { useSceneConfigSubscriber } from '@/shared/hooks/useSceneConfigSubscriber';
@@ -22,6 +22,8 @@ import { useSceneStore } from '@/stores/sharedStore';
 const SceneViewer = lazy(() =>
   import('@/features/scene').then((module) => ({ default: module.SceneViewer }))
 );
+
+const logger = createLogger({ module: 'App' });
 
 type AppCameraView = CameraViewPreset | 'default';
 
@@ -70,16 +72,34 @@ const App = memo(() => {
   };
 
   const handleVideoSeek = (time: number) => {
-    if (!sceneRef.current?.seekVideo) {
-      console.warn('Video seek not available');
+    try {
+      if (!sceneRef.current?.seekVideo) {
+        const errorHandler = getErrorHandler();
+        const appError = errorHandler.handle(new Error('Video seek not available'), {
+          context: 'video-seek',
+        });
 
-      return;
-    }
+        logger.warn('Video seek unavailable', { context: appError.context });
 
-    const success = sceneRef.current.seekVideo(time);
+        return;
+      }
 
-    if (success) {
-      setVideoTime(time);
+      const success = sceneRef.current.seekVideo(time);
+
+      if (success) {
+        setVideoTime(time);
+      } else {
+        const errorHandler = getErrorHandler();
+
+        errorHandler.handle(new Error('Video seek operation failed'), { context: 'video-seek' });
+      }
+    } catch (error) {
+      const errorHandler = getErrorHandler();
+
+      errorHandler.handle(error instanceof Error ? error : new Error(String(error)), {
+        context: 'video-seek',
+      });
+      logger.error('Video seek error', { error });
     }
   };
 

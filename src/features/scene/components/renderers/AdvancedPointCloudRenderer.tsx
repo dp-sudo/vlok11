@@ -284,7 +284,7 @@ export function AdvancedPointCloudRenderer({
 
       // Random color from palette
       const colorIndex = Math.floor(Math.random() * colorPalette.length);
-      const color = colorPalette[colorIndex];
+      const color = colorPalette[colorIndex]!;
 
       colors[i3] = color.r;
       colors[i3 + 1] = color.g;
@@ -336,18 +336,18 @@ export function AdvancedPointCloudRenderer({
   useFrame(({ clock }) => {
     if (!materialRef.current) return;
 
-    materialRef.current.uniforms.uTime.value = clock.getElapsedTime();
+    materialRef.current.uniforms['uTime']!.value = clock.getElapsedTime();
   });
 
   // Update on config change
   useEffect(() => {
     if (materialRef.current) {
-      materialRef.current.uniforms.uSize.value = config.pointSize;
-      materialRef.current.uniforms.uOpacity.value = config.opacity;
-      materialRef.current.uniforms.uDisplacementScale.value = config.displacementScale;
-      materialRef.current.uniforms.uEnableSoftParticles.value = config.enableSoftParticles;
-      materialRef.current.uniforms.uSoftParticleDistance.value = config.softParticleDistance;
-      materialRef.current.uniforms.uEnableColorGrading.value = config.enableColorGrading;
+      materialRef.current.uniforms['uSize']!.value = config.pointSize;
+      materialRef.current.uniforms['uOpacity']!.value = config.opacity;
+      materialRef.current.uniforms['uDisplacementScale']!.value = config.displacementScale;
+      materialRef.current.uniforms['uEnableSoftParticles']!.value = config.enableSoftParticles;
+      materialRef.current.uniforms['uSoftParticleDistance']!.value = config.softParticleDistance;
+      materialRef.current.uniforms['uEnableColorGrading']!.value = config.enableColorGrading;
     }
   }, [config]);
 
@@ -413,7 +413,7 @@ function getColorPalette(type: string): { r: number; g: number; b: number }[] {
     ],
   };
 
-  return palettes[type] ?? palettes.dust;
+  return palettes[type] ?? palettes['dust']!;
 }
 
 // ============================================

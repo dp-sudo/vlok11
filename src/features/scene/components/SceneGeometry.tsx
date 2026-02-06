@@ -1,34 +1,34 @@
+import { ProjectionMode } from '@/shared/types';
 import type React from 'react';
 import { memo, useEffect, useLayoutEffect, useRef } from 'react';
 import type {
-  BoxGeometry,
-  BufferAttribute,
-  InterleavedBufferAttribute,
-  Material,
-  Mesh,
-  Points,
+    BoxGeometry,
+    BufferAttribute,
+    InterleavedBufferAttribute,
+    Material,
+    Mesh,
+    Points,
 } from 'three';
-import { ProjectionMode } from '@/shared/types';
 
 import {
-  renderCornerSystem,
-  renderCylinder,
-  renderDomeSphere,
-  renderGaussianSplat,
-  renderPanoramaSphere,
-  renderSphere,
+    renderCornerSystem,
+    renderCylinder,
+    renderDomeSphere,
+    renderGaussianSplat,
+    renderPanoramaSphere,
+    renderSphere,
 } from './renderers';
 import {
-  BOUNDING_EXPANSION_MULTIPLIER,
-  BOX_DENSITY,
-  BOX_FACE,
-  CYLINDER_RADIUS_FACTOR,
-  DEG_TO_RAD,
-  INFINITE_BOX_SCALE,
-  MAX_CORNER_PLANE_RES,
-  MAX_SPLAT_DENSITY,
-  SPHERE_RADIUS,
-  UV_BOUNDS,
+    BOUNDING_EXPANSION_MULTIPLIER,
+    BOX_DENSITY,
+    BOX_FACE,
+    CYLINDER_RADIUS_FACTOR,
+    DEG_TO_RAD,
+    INFINITE_BOX_SCALE,
+    MAX_CORNER_PLANE_RES,
+    MAX_SPLAT_DENSITY,
+    SPHERE_RADIUS,
+    UV_BOUNDS,
 } from './SceneGeometry.constants';
 
 type UVAttribute = BufferAttribute | InterleavedBufferAttribute;
@@ -248,7 +248,7 @@ const SceneGeometryComponent: React.FC<SceneGeometryProps> = ({
     }
     if (projectionMode === ProjectionMode.INFINITE_BOX && infiniteBoxRef.current) {
       const geo = infiniteBoxRef.current.geometry as BoxGeometry;
-      const uvAttr = geo.attributes.uv;
+      const uvAttr = geo.attributes['uv'];
 
       if (!uvAttr) return;
       mirrorFaceUVs(uvAttr, BOX_FACE.FRONT, true, false);
@@ -281,7 +281,7 @@ const SceneGeometryComponent: React.FC<SceneGeometryProps> = ({
 
 const updateUVs = (mesh: Mesh | null, uMin: number, uMax: number, vMin: number, vMax: number) => {
   if (!mesh?.geometry) return;
-  const uvAttribute = mesh.geometry.attributes.uv;
+  const uvAttribute = mesh.geometry.attributes['uv'];
 
   if (!uvAttribute) return;
   for (let i = 0; i < uvAttribute.count; i++) {

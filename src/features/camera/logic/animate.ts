@@ -22,7 +22,7 @@ export const easings: Record<string, EasingFunction> = {
 };
 
 export function getEasing(name: string): EasingFunction {
-  return easings[name] ?? easings.linear;
+  return easings[name] ?? easings['linear']!;
 }
 
 export interface AnimationConfig {
@@ -117,16 +117,16 @@ export function animatePose(options: PoseAnimationOptions): AnimationController 
 
   return createAnimation({
     duration,
-    easing,
-    onComplete,
+    ...(easing ? { easing } : {}),
+    ...(onComplete ? { onComplete } : {}),
     onUpdate: (progress) => {
       const interpolated: CameraPose = {
         position: lerpVec3(from.position, targetPose.position, progress),
         target: lerpVec3(from.target, targetPose.target, progress),
         up: lerpVec3(from.up, targetPose.up, progress),
-        fov: from.fov + (targetPose.fov - from.fov) * progress,
-        near: from.near,
-        far: from.far,
+        fov: (from.fov ?? 45) + ((targetPose.fov ?? 45) - (from.fov ?? 45)) * progress,
+        near: from.near ?? 0.1,
+        far: from.far ?? 1000,
       };
 
       onUpdate(interpolated);

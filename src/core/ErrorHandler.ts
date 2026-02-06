@@ -8,6 +8,7 @@ export class ErrorHandler implements ErrorHandlerContract {
   private fatalCallbacks = new Set<(error: AppError) => void>();
   private history: AppError[] = [];
   private maxHistory = MAX_ERROR_HISTORY;
+  private disposed = false;
 
   static getInstance(): ErrorHandler {
     ErrorHandler.instance ??= new ErrorHandler();
@@ -17,8 +18,7 @@ export class ErrorHandler implements ErrorHandlerContract {
 
   static resetInstance(): void {
     if (ErrorHandler.instance) {
-      ErrorHandler.instance.history = [];
-      ErrorHandler.instance.fatalCallbacks.clear();
+      ErrorHandler.instance.dispose();
     }
     ErrorHandler.instance = null;
   }
@@ -40,21 +40,39 @@ export class ErrorHandler implements ErrorHandlerContract {
   }
 
   clearHistory(): void {
+    if (this.disposed) {
+      console.warn('ErrorHandler already disposed');
+      return;
+    }
     this.history = [];
   }
 
   createCodedError(code: ErrorCode, context: string, originalError?: Error): AppError {
+    const recoveryOptions = this.suggestRecovery(
+      originalError ?? new Error(getErrorMessage(code)),
+      ErrorSeverity.ERROR
+    );
+
     return this.createError(code, getErrorMessage(code), {
       context,
-      originalError,
-      recoveryOptions: this.suggestRecovery(
-        originalError ?? new Error(getErrorMessage(code)),
-        ErrorSeverity.ERROR
-      ),
+      ...(originalError ? { originalError } : {}),
+      ...(recoveryOptions ? { recoveryOptions } : {}),
     });
   }
 
   createError(code: string, message: string, options?: Partial<AppError>): AppError {
+    if (this.disposed) {
+      console.warn('ErrorHandler has been disposed, cannot create new error');
+      return {
+        code: 'DISPOSED',
+        message: 'ErrorHandler has been disposed',
+        severity: ErrorSeverity.ERROR,
+        context: 'disposed',
+        timestamp: Date.now(),
+        recoverable: false,
+      };
+    }
+
     return {
       code,
       message,
@@ -62,19 +80,24 @@ export class ErrorHandler implements ErrorHandlerContract {
       context: options?.context ?? 'unknown',
       timestamp: Date.now(),
       recoverable: options?.recoverable ?? true,
-      recoveryOptions: options?.recoveryOptions,
-      originalError: options?.originalError,
+      ...(options?.recoveryOptions ? { recoveryOptions: options.recoveryOptions } : {}),
+      ...(options?.originalError ? { originalError: options.originalError } : {}),
     };
   }
 
   private emitEvent(error: AppError): void {
-    const eventType = error.severity === ErrorSeverity.FATAL ? 'error:fatal' : 'error:occurred';
+    try {
+      const eventType = error.severity === ErrorSeverity.FATAL ? 'error:fatal' : 'error:occurred';
 
-    getEventBus().emit(eventType, {
-      type: error.code,
-      message: error.message,
-      context: { severity: error.severity, recoverable: error.recoverable },
-    });
+      getEventBus().emit(eventType, {
+        type: error.code,
+        message: error.message,
+        context: { severity: error.severity, recoverable: error.recoverable },
+      });
+    } catch {
+      // 避免事件总线错误导致二次崩溃
+      console.error('Failed to emit error event:', error);
+    }
   }
 
   private extractErrorCode(error: Error): ErrorCode | null {
@@ -91,11 +114,17 @@ export class ErrorHandler implements ErrorHandlerContract {
     return null;
   }
 
+  /** 获取错误历史记录的只读副本 */
   getHistory(): AppError[] {
     return [...this.history];
   }
 
   handle(error: Error | AppError, context?: { context?: string }): AppError {
+    if (this.disposed) {
+      console.warn('ErrorHandler has been disposed, error not recorded:', error);
+      return this.createError('DISPOSED', 'ErrorHandler disposed', { ...(context?.context ? { context: context.context } : {}) });
+    }
+
     const appError = this.normalizeError(error, context?.context);
 
     this.recordError(appError);
@@ -125,6 +154,8 @@ export class ErrorHandler implements ErrorHandlerContract {
 
     const severity = this.categorizeSeverity(error);
 
+    const recoveryOptions = this.suggestRecovery(error, severity);
+
     return {
       code: error.name || 'UNKNOWN_ERROR',
       message: error.message,
@@ -132,9 +163,9 @@ export class ErrorHandler implements ErrorHandlerContract {
       context: context ?? 'unknown',
       timestamp: Date.now(),
       recoverable: severity !== ErrorSeverity.FATAL,
-      recoveryOptions: this.suggestRecovery(error, severity),
-      originalError: error,
-    };
+      ...(recoveryOptions ? { recoveryOptions } : {}),
+      originalError: error as Error,
+    } as AppError;
   }
 
   private notifyFatalCallbacks(error: AppError): void {
@@ -148,6 +179,11 @@ export class ErrorHandler implements ErrorHandlerContract {
   }
 
   onFatalError(callback: (error: AppError) => void): () => void {
+    if (this.disposed) {
+      console.warn('Adding fatal callback to disposed ErrorHandler');
+      return () => {};
+    }
+
     this.fatalCallbacks.add(callback);
 
     return () => this.fatalCallbacks.delete(callback);
@@ -156,6 +192,7 @@ export class ErrorHandler implements ErrorHandlerContract {
   private recordError(error: AppError): void {
     this.history.push(error);
     if (this.history.length > this.maxHistory) {
+      // 只保留最近的错误历史
       this.history = this.history.slice(-this.maxHistory);
     }
   }
@@ -170,13 +207,21 @@ export class ErrorHandler implements ErrorHandlerContract {
         {
           label: '使用云端AI模式',
           action: () => {
-            getEventBus().emit('ai:switch-to-gemini', {});
+            try {
+              getEventBus().emit('ai:switch-to-gemini', {});
+            } catch {
+              console.warn('Failed to switch to Gemini AI mode');
+            }
           },
         },
         {
           label: '重试加载',
           action: () => {
-            getEventBus().emit('ai:retry-tensorflow', {});
+            try {
+              getEventBus().emit('ai:retry-tensorflow', {});
+            } catch {
+              console.warn('Failed to retry TensorFlow loading');
+            }
           },
         },
       ];
@@ -190,13 +235,21 @@ export class ErrorHandler implements ErrorHandlerContract {
             {
               label: '重试加载',
               action: () => {
-                getEventBus().emit('asset:retry', {});
+                try {
+                  getEventBus().emit('asset:retry', {});
+                } catch {
+                  console.warn('Failed to retry asset loading');
+                }
               },
             },
             {
               label: '选择其他文件',
               action: () => {
-                getEventBus().emit('ui:open-upload', {});
+                try {
+                  getEventBus().emit('ui:open-upload', {});
+                } catch {
+                  console.warn('Failed to open upload dialog');
+                }
               },
             },
           ];
@@ -205,7 +258,11 @@ export class ErrorHandler implements ErrorHandlerContract {
             {
               label: '选择较小文件',
               action: () => {
-                getEventBus().emit('ui:open-upload', {});
+                try {
+                  getEventBus().emit('ui:open-upload', {});
+                } catch {
+                  console.warn('Failed to open upload dialog');
+                }
               },
             },
           ];
@@ -225,13 +282,21 @@ export class ErrorHandler implements ErrorHandlerContract {
             {
               label: '重试AI处理',
               action: () => {
-                getEventBus().emit('ai:retry', {});
+                try {
+                  getEventBus().emit('ai:retry', {});
+                } catch {
+                  console.warn('Failed to retry AI processing');
+                }
               },
             },
             {
               label: '跳过AI处理',
               action: () => {
-                getEventBus().emit('ai:skip', {});
+                try {
+                  getEventBus().emit('ai:skip', {});
+                } catch {
+                  console.warn('Failed to skip AI processing');
+                }
               },
             },
           ];
@@ -254,6 +319,25 @@ export class ErrorHandler implements ErrorHandlerContract {
 
     return undefined;
   }
+
+  /** 释放 ErrorHandler 资源 */
+  dispose(): void {
+    if (this.disposed) {
+      return;
+    }
+
+    this.disposed = true;
+    this.fatalCallbacks.clear();
+    this.history = [];
+    ErrorHandler.instance = null;
+
+    console.info('ErrorHandler disposed');
+  }
+
+  /** 检查是否已释放 */
+  isDisposed(): boolean {
+    return this.disposed;
+  }
 }
 
 export interface AppError {
@@ -272,6 +356,8 @@ export interface ErrorHandlerContract {
   getHistory(): AppError[];
   handle(error: Error | AppError, context?: { context?: string }): AppError;
   onFatalError(callback: (error: AppError) => void): () => void;
+  dispose(): void;
+  isDisposed(): boolean;
 }
 export interface RecoveryOption {
   action: () => void | Promise<void>;

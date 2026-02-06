@@ -180,16 +180,16 @@ const DEPTH_JPEG_QUALITY = 0.9;
 const getARPortraitDepthModelConfig = (
   _depthEstimation: DepthEstimationModuleExtended
 ): unknown => {
-  const depthModelUrl = import.meta.env.VITE_TF_DEPTH_MODEL_URL;
-  const segmentationModelUrl = import.meta.env.VITE_TF_SEGMENTATION_MODEL_URL;
+  const depthModelUrl = import.meta.env['VITE_TF_DEPTH_MODEL_URL'];
+  const segmentationModelUrl = import.meta.env['VITE_TF_SEGMENTATION_MODEL_URL'];
   const config: Record<string, string> = {};
 
   if (typeof depthModelUrl === 'string' && depthModelUrl.length > 0) {
-    config.depthModelUrl = depthModelUrl;
+    config['depthModelUrl'] = depthModelUrl;
   }
 
   if (typeof segmentationModelUrl === 'string' && segmentationModelUrl.length > 0) {
-    config.segmentationModelUrl = segmentationModelUrl;
+    config['segmentationModelUrl'] = segmentationModelUrl;
   }
 
   return config;

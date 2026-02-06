@@ -1,6 +1,6 @@
-import { Vector3 } from 'three';
 import { getEventBus } from '@/core/EventBus';
 import { createLogger } from '@/core/Logger';
+import { Vector3 } from 'three';
 
 const logger = createLogger({ module: 'MeasurementService' });
 
@@ -85,7 +85,8 @@ class MeasurementService {
         });
       } else if (this.currentPoints.length === 2) {
         // 计算距离
-        const [p1, p2] = this.currentPoints;
+        const p1 = this.currentPoints[0]!;
+        const p2 = this.currentPoints[1]!;
         const distance = p1.distanceTo(p2);
 
         const measurement: Measurement = {
@@ -111,7 +112,9 @@ class MeasurementService {
         });
       } else if (this.currentPoints.length === 3) {
         // 计算角度
-        const [p1, p2, p3] = this.currentPoints;
+        const p1 = this.currentPoints[0]!;
+        const p2 = this.currentPoints[1]!;
+        const p3 = this.currentPoints[2]!;
         const v1 = p1.clone().sub(p2);
         const v2 = p3.clone().sub(p2);
         const angle = v1.angleTo(v2);

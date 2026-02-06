@@ -1,31 +1,31 @@
+import type { SceneConfig } from '@/shared/types';
+import { RenderStyle } from '@/shared/types';
 import { Layers, Moon, Palette, Sparkles, Sun } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
-import type { SceneConfig } from '@/shared/types';
-import { RenderStyle } from '@/shared/types';
 import {
-  AnimeStyleControls,
-  Btn,
-  CardBtn,
-  CelStyleControls,
-  CollapsibleSection,
-  CrystalStyleControls,
-  HologramStyleControls,
-  InkWashStyleControls,
-  MatrixStyleControls,
-  RecordingSettings,
-  RetroPixelStyleControls,
-  Slider,
-  Toggle,
+    AnimeStyleControls,
+    Btn,
+    CardBtn,
+    CelStyleControls,
+    CollapsibleSection,
+    CrystalStyleControls,
+    HologramStyleControls,
+    InkWashStyleControls,
+    MatrixStyleControls,
+    RecordingSettings,
+    RetroPixelStyleControls,
+    Slider,
+    Toggle,
 } from './components';
 import { COLOR_GRADES, EXPOSURE_PRESETS, PARTICLE_TYPES, RENDER_STYLES } from './constants';
 import {
-  BRIGHTNESS,
-  CONTRAST,
-  EXPOSURE,
-  LIGHT_INTENSITY,
-  MATERIAL,
-  SATURATION,
+    BRIGHTNESS,
+    CONTRAST,
+    EXPOSURE,
+    LIGHT_INTENSITY,
+    MATERIAL,
+    SATURATION,
 } from './EffectsTab.constants';
 
 interface EffectsTabProps {
@@ -43,7 +43,7 @@ const ColorGradeSection = memo<{
   toggleSection: (key: string) => void;
 }>(({ config, set, expandedSections, toggleSection }) => (
   <CollapsibleSection
-    expanded={expandedSections.color}
+    expanded={!!expandedSections['color']}
     icon={<Moon className="w-3.5 h-3.5" />}
     onToggle={() => toggleSection('color')}
     title="色彩滤镜"
@@ -189,7 +189,7 @@ const LightingSection = memo<{
   toggleSection: (key: string) => void;
 }>(({ config, set, expandedSections, toggleSection }) => (
   <CollapsibleSection
-    expanded={expandedSections.lighting}
+    expanded={!!expandedSections['lighting']}
     icon={<Sun className="w-3.5 h-3.5" />}
     onToggle={() => toggleSection('lighting')}
     title="光影调节"
@@ -272,7 +272,7 @@ const RenderStyleSection = memo<{
   toggleSection: (key: string) => void;
 }>(({ config, set, expandedSections, toggleSection }) => (
   <CollapsibleSection
-    expanded={expandedSections.style}
+    expanded={!!expandedSections['style']}
     icon={<Palette className="w-3.5 h-3.5" />}
     onToggle={() => toggleSection('style')}
     title="渲染风格"

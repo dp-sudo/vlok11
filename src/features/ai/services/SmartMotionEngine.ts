@@ -1,11 +1,11 @@
 import type { CameraPose, Vec3 } from '@/shared/types';
 
 import {
-  lightSceneAnalyzer,
-  type MotionStyle,
-  type SceneMood,
-  type SimpleInsight,
-  type SimpleSceneType,
+    lightSceneAnalyzer,
+    type MotionStyle,
+    type SceneMood,
+    type SimpleInsight,
+    type SimpleSceneType,
 } from './LightSceneAnalyzer';
 
 export interface MotionWaypoint {
@@ -350,7 +350,7 @@ export class SmartMotionEngine {
     const options = easingMap[style] || easingMap.cinematic;
     const index = Math.round((1 - smoothness) * (options.length - 1));
 
-    return options[Math.min(index, options.length - 1)];
+    return options[Math.min(index, options.length - 1)]!;
   }
 
   getRecommendedCameraDistance(insight: SimpleInsight): number {

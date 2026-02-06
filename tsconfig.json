@@ -27,6 +27,7 @@
       "@/stores/*": ["src/stores/*"]
     },
 
+    // === Strict Mode (严格模式) ===
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -37,17 +38,24 @@
     "alwaysStrict": true,
     "useUnknownInCatchVariables": true,
 
+    // === Type Checking (类型检查) ===
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": false,
+    "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true,
+
+    // === Code Quality (代码质量) ===
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
 
+    // === Build Options (构建选项) ===
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "lf"
   },
   "include": [
     "src/**/*.ts",

@@ -1,7 +1,7 @@
+import type { SceneConfig } from '@/shared/types';
 import { Info, Layers, Maximize2, Sliders, Sun } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
-import type { SceneConfig } from '@/shared/types';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from '../components';
 import { DEPTH_PRESETS, MIRROR_MODES, PROJECTIONS } from '../constants';
 
@@ -49,7 +49,7 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
       </div>
 
       <CollapsibleSection
-        expanded={expandedSections.projection}
+        expanded={!!expandedSections['projection']}
         icon={<Layers className="w-3.5 h-3.5" />}
         onToggle={() => toggleSection('projection')}
         title="投影模式"
@@ -89,7 +89,7 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
       </CollapsibleSection>
 
       <CollapsibleSection
-        expanded={expandedSections.depth}
+        expanded={!!expandedSections['depth']}
         icon={<Sliders className="w-3.5 h-3.5" />}
         onToggle={() => toggleSection('depth')}
         title="深度控制"
@@ -163,3 +163,4 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
 SceneTab.displayName = 'SceneTab';
 
 export type { SceneTabProps };
+

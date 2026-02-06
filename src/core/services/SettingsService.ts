@@ -22,7 +22,7 @@ export class SettingsService {
     this.store = createStore<SettingsStore>()(
       persist(
         (set) => ({
-          geminiApiKey: import.meta.env.VITE_GEMINI_API_KEY ?? '',
+          geminiApiKey: import.meta.env['VITE_GEMINI_API_KEY'] ?? '',
           performanceMode: 'quality',
           useLocalAi: false,
 

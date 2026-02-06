@@ -7,11 +7,11 @@ import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import { CAMERA_TRANSITION, PERSPECTIVE_ORTHO } from '@/shared/constants/camera';
 import type {
-  AnimationHandle,
-  CameraStateSnapshot,
-  CameraTransitionConfig,
-  ProjectionCameraPreset,
-  Vec3,
+    AnimationHandle,
+    CameraStateSnapshot,
+    CameraTransitionConfig,
+    ProjectionCameraPreset,
+    Vec3,
 } from '@/shared/types';
 import { CameraMode, ProjectionMode } from '@/shared/types';
 import { useCameraStore, useSceneStore } from '@/stores/index';
@@ -364,8 +364,8 @@ class CameraTransitionServiceImpl implements LifecycleAware {
         });
 
         callbacks?.onProgress?.(progress, {
-          fov: toMode === CameraMode.PERSPECTIVE ? syncResult.perspectiveFov : undefined,
-          zoom: toMode === CameraMode.ORTHOGRAPHIC ? syncResult.orthoZoom : undefined,
+          ...(toMode === CameraMode.PERSPECTIVE ? { fov: syncResult.perspectiveFov } : {}),
+          ...(toMode === CameraMode.ORTHOGRAPHIC ? { zoom: syncResult.orthoZoom } : {}),
         });
       },
       onComplete: () => {

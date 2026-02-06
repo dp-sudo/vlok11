@@ -1,12 +1,12 @@
 import {
-  ChevronLeft,
-  ChevronRight,
-  Gauge,
-  Pause,
-  Play,
-  Repeat,
-  Volume2,
-  VolumeX,
+    ChevronLeft,
+    ChevronRight,
+    Gauge,
+    Pause,
+    Play,
+    Repeat,
+    Volume2,
+    VolumeX,
 } from 'lucide-react';
 import type React from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -40,9 +40,9 @@ interface PlayButtonProps {
 const PlayButton = memo<PlayButtonProps>(({ isPlaying, onClick }) => (
   <button
     className={`
-      relative w-14 h-14 rounded-full flex items-center justify-center 
+      relative w-14 h-14 rounded-full flex items-center justify-center
       bg-gradient-to-br from-cyan-400 to-teal-500 hover:from-cyan-300 hover:to-teal-400
-      active:scale-95 transition-all duration-300 ease-out 
+      active:scale-95 transition-all duration-300 ease-out
       shadow-[0_8px_20px_rgba(6,182,212,0.4)] hover:shadow-[0_12px_24px_rgba(6,182,212,0.5)]
       border border-white/20 ring-4 ring-cyan-500/10
     `}
@@ -274,6 +274,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
         onDragStart();
 
         const touch = e.touches[0];
+        if (!touch) return;
         const time = calculateTimeFromPosition(touch.clientX);
 
         onSliderChange(time);
@@ -289,6 +290,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
       const handleTouchMove = (e: TouchEvent) => {
         e.preventDefault();
         const touch = e.touches[0];
+        if (!touch) return;
         const time = calculateTimeFromPosition(touch.clientX);
 
         onSliderChange(time);
@@ -324,14 +326,14 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
       const rates = [0.5, 1.0, 2.0];
       const nextIdx = (rates.indexOf(playbackRate) + 1) % rates.length;
 
-      onSetPlaybackRate(rates[nextIdx]);
+      onSetPlaybackRate(rates[nextIdx] ?? 1.0);
     }, [playbackRate, onSetPlaybackRate]);
 
     return (
       <div className="px-4 py-4 border-b border-slate-700/50 bg-gradient-to-b from-slate-900 to-slate-800 select-none">
         {/* Top Controls: Play/Pause/Seek + Volume */}
         <div className="flex items-center gap-4 mb-3">
-          <PlayButton isPlaying={videoState.isPlaying} onClick={onTogglePlay} />
+          <PlayButton isPlaying={videoState.isPlaying} {...(onTogglePlay ? { onClick: onTogglePlay } : {})} />
 
           {/* 快进/快退按钮 - 每次跳跃5秒 */}
           <div className="flex items-center gap-1">

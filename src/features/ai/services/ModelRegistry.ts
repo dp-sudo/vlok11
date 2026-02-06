@@ -215,6 +215,10 @@ class ModelRegistryImpl {
     const minInferenceTime = Math.min(...times);
     const maxInferenceTime = Math.max(...times);
 
+    const gpu = this.detectGPU();
+    const memory = (performance as unknown as { memory?: { jsHeapSizeLimit: number } }).memory
+      ?.jsHeapSizeLimit;
+
     const result: ModelBenchmarkResult = {
       modelId,
       avgInferenceTime,
@@ -224,9 +228,8 @@ class ModelRegistryImpl {
       timestamp: Date.now(),
       deviceInfo: {
         platform: navigator.platform,
-        memory: (performance as unknown as { memory?: { jsHeapSizeLimit: number } }).memory
-          ?.jsHeapSizeLimit,
-        gpu: this.detectGPU(),
+        ...(memory !== undefined ? { memory } : {}),
+        ...(gpu ? { gpu } : {}),
       },
     };
 

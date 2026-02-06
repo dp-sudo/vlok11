@@ -68,9 +68,9 @@ const buildAsset = (
   const baseAsset = {
     id: generateUUID(),
     sourceUrl: imageUrl,
-    width: (stageInput.metadata?.width as number) ?? ASSET_DEFAULTS.WIDTH,
-    height: (stageInput.metadata?.height as number) ?? ASSET_DEFAULTS.HEIGHT,
-    aspectRatio: (stageInput.metadata?.aspectRatio as number) ?? ASSET_DEFAULTS.ASPECT_RATIO,
+    width: ((stageInput.metadata as Record<string, unknown>)?.['width'] as number) ?? ASSET_DEFAULTS.WIDTH,
+    height: ((stageInput.metadata as Record<string, unknown>)?.['height'] as number) ?? ASSET_DEFAULTS.HEIGHT,
+    aspectRatio: ((stageInput.metadata as Record<string, unknown>)?.['aspectRatio'] as number) ?? ASSET_DEFAULTS.ASPECT_RATIO,
     createdAt: Date.now(),
   };
 
@@ -78,7 +78,7 @@ const buildAsset = (
     return {
       ...baseAsset,
       type: 'video' as const,
-      duration: (stageInput.metadata?.duration as number) ?? ASSET_DEFAULTS.DURATION,
+      duration: ((stageInput.metadata as Record<string, unknown>)?.['duration'] as number) ?? ASSET_DEFAULTS.DURATION,
       thumbnailUrl: imageUrl,
       sourceUrl: stageInput.videoUrl ?? imageUrl,
     };
@@ -142,7 +142,11 @@ class UploadPipelineImpl implements UploadPipelineInterface {
 
     this.unsubscriptions.push(
       getEventBus().on('pipeline:stage-started', (payload) => {
-        const { stage, index, total, progress } = payload as Record<string, unknown>;
+        const p = payload as Record<string, unknown>;
+        const stage = p['stage'];
+        const index = p['index'];
+        const total = p['total'];
+        const progress = p['progress'];
 
         // Prevent infinite loop: ignore events that already have progress (re-emitted by this pipeline)
         if (typeof progress !== 'undefined') return;
@@ -150,7 +154,9 @@ class UploadPipelineImpl implements UploadPipelineInterface {
         this.emitStageStart(String(stage), Number(index), Number(total));
       }),
       getEventBus().on('pipeline:stage-completed', (payload) => {
-        const { stage, progress } = payload as Record<string, unknown>;
+        const p = payload as Record<string, unknown>;
+        const stage = p['stage'];
+        const progress = p['progress'];
 
         // Prevent infinite loop: ignore events that already have progress (re-emitted by this pipeline)
         if (typeof progress !== 'undefined') return;
@@ -178,7 +184,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
       analysis: buildAnalysisResult(analysis),
       depthMapUrl: depthUrl,
       imageUrl,
-      backgroundUrl: stageInput.backgroundUrl,
+      ...(stageInput.backgroundUrl ? { backgroundUrl: stageInput.backgroundUrl } : {}),
       processingTime,
     };
 
@@ -239,7 +245,8 @@ class UploadPipelineImpl implements UploadPipelineInterface {
         type: s.name,
         order: i,
         enabled: true,
-        dependsOn: i > 0 ? [arr[i - 1].name] : undefined,
+
+        ...(i > 0 ? { dependsOn: [arr[i - 1]!.name] } : {}),
       })),
     };
 
@@ -249,7 +256,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
       const output = await this.engine.execute<StageInput>(
         stageInput,
         config,
-        this.abortController.signal
+        this.abortController!.signal
       );
 
       const finalOutput = output as StageOutput;
@@ -382,3 +389,4 @@ class UploadPipelineImpl implements UploadPipelineInterface {
 }
 
 export { UploadPipelineImpl as UploadPipeline };
+

@@ -117,11 +117,11 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
 
         <ControlPanelHeader
           isExporting={isExporting}
-          isRecording={isRecording}
-          onDownloadSnapshot={onDownloadSnapshot}
-          onExportScene={onExportScene}
+          {...(isRecording !== undefined ? { isRecording } : {})}
+          {...(onDownloadSnapshot ? { onDownloadSnapshot } : {})}
+          {...(onExportScene ? { onExportScene } : {})}
           onReset={resetConfig}
-          onToggleRecording={onToggleRecording}
+          {...(onToggleRecording ? { onToggleRecording } : {})}
         />
 
         <ControlPanelTabBar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -131,12 +131,12 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
             isLooping={videoState.isLooping}
             onDragEnd={() => setDragging(false)}
             onDragStart={() => setDragging(true)}
-            onSeek={onVideoSeek}
+            {...(onVideoSeek ? { onSeek: onVideoSeek } : {})}
             onSetPlaybackRate={setPlaybackRate}
             onSliderChange={setSliderValue}
             onToggleLoop={toggleVideoLoop}
             onToggleMute={() => set('videoMuted', !config.videoMuted)}
-            onTogglePlay={onVideoTogglePlay}
+            {...(onVideoTogglePlay ? { onTogglePlay: onVideoTogglePlay } : {})}
             playbackRate={videoState.playbackRate}
             sliderValue={sliderValue}
             videoMuted={config.videoMuted}
@@ -160,11 +160,11 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
 
             {activeTab === 'camera' && (
               <CameraTab
-                activeCameraView={activeCameraView}
+                {...(activeCameraView ? { activeCameraView } : {})}
                 activeMotion={activeMotion}
                 config={config}
                 expandedSections={expandedSections}
-                onSetCameraView={onSetCameraView}
+                {...(onSetCameraView ? { onSetCameraView } : {})}
                 set={set}
                 toggleSection={toggleSection}
               />

@@ -117,7 +117,7 @@ class ProjectService implements Disposable {
       assets: {
         sourceType: session.currentAsset!.type,
         sourcePath: session.currentAsset!.sourceUrl,
-        depthMapPath: session.result?.depthMapUrl,
+        ...(session.result?.depthMapUrl ? { depthMapPath: session.result.depthMapUrl } : {}),
       },
       scene: sceneState,
     };

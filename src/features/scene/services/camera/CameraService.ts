@@ -1,5 +1,3 @@
-import type { Camera } from 'three';
-import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import { getEventBus } from '@/core/EventBus';
 import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
@@ -18,7 +16,9 @@ import type {
 } from '@/shared/types';
 import { lerpVec3 } from '@/shared/utils';
 import { useCameraPoseStore } from '@/stores/cameraStore';
-import { type CameraPresetType, calculateDistance, calculatePresetPose } from './CameraPresets';
+import type { Camera } from 'three';
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import { calculateDistance, calculatePresetPose, type CameraPresetType } from './CameraPresets';
 import {
   calculateOrthoPresetPose,
   emitOrthoPresetApplied,
@@ -170,9 +170,9 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
       position: lerpVec3(from.position, to.position, t),
       target: lerpVec3(from.target, to.target, t),
       up: lerpVec3(from.up, to.up, t),
-      fov: from.fov + (to.fov - from.fov) * t,
-      near: from.near,
-      far: from.far,
+      fov: (from.fov ?? 45) + ((to.fov ?? 45) - (from.fov ?? 45)) * t,
+      near: from.near ?? 0.1,
+      far: from.far ?? 1000,
     };
   }
 

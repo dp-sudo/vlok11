@@ -165,7 +165,7 @@ class ConfigPresetManagerImpl {
       id: generateId(),
       name,
       config: { ...config },
-      thumbnail,
+      ...(thumbnail ? { thumbnail } : {}),
       createdAt: now,
       updatedAt: now,
     };

@@ -35,7 +35,7 @@ export async function processPipeline(
 
   return {
     ...result,
-    videoUrl,
+    ...(videoUrl ? { videoUrl } : {}),
   };
 }
 
@@ -44,3 +44,4 @@ export type ProcessCallback = (stage: string, progress: number, message?: string
 export * from './pipeline';
 export { StatusDisplay } from './StatusDisplay';
 export { UploadPanel } from './UploadPanel';
+

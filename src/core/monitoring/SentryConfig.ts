@@ -54,10 +54,10 @@ class SentryIntegration {
 
     try {
       Sentry.addBreadcrumb({
-        category: breadcrumb.category,
+        ...(breadcrumb.category ? { category: breadcrumb.category } : {}),
         message: breadcrumb.message,
-        level: breadcrumb.level,
-        data: breadcrumb.data,
+        ...(breadcrumb.level ? { level: breadcrumb.level } : {}),
+        ...(breadcrumb.data ? { data: breadcrumb.data } : {}),
       });
       this.logger.debug('Breadcrumb added', breadcrumb);
     } catch (error) {
@@ -161,10 +161,12 @@ class SentryIntegration {
       });
 
       Sentry.init({
-        dsn: this.config.dsn,
-        environment: this.config.environment,
-        sampleRate: this.config.sampleRate,
-        tracesSampleRate: this.config.tracesSampleRate,
+        ...(this.config.dsn ? { dsn: this.config.dsn } : {}),
+        ...(this.config.environment ? { environment: this.config.environment } : {}),
+        ...(this.config.sampleRate !== undefined ? { sampleRate: this.config.sampleRate } : {}),
+        ...(this.config.tracesSampleRate !== undefined
+          ? { tracesSampleRate: this.config.tracesSampleRate }
+          : {}),
         integrations: [
           Sentry.browserTracingIntegration(),
           Sentry.replayIntegration({

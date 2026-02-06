@@ -1,33 +1,33 @@
-import {
-  ArrowDown,
-  ArrowRight,
-  Box,
-  Camera,
-  Eye,
-  Focus,
-  Grid3X3,
-  Move3D,
-  Ruler,
-  Sliders,
-} from 'lucide-react';
-import type React from 'react';
-import { memo } from 'react';
 import type { OrthoViewPresetType } from '@/features/scene/services/camera/OrthographicPresets';
 import { getOrthoPresetDisplayInfo } from '@/features/scene/services/camera/OrthographicPresets';
 import { getMeasurementService } from '@/features/scene/services/measurement/MeasurementService';
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { CameraMode, CameraMotionType } from '@/shared/types';
 import {
-  CAMERA_MODE_LABELS,
-  CAMERA_VIEWS,
-  CONTROL_PARAMS,
-  FOV,
-  MOTION_RESUME_DELAY,
-  MOTION_RESUME_TRANSITION,
-  MOTION_SPEED,
-  ORBIT,
-  ORTHO_ZOOM,
-  SPIRAL,
+    ArrowDown,
+    ArrowRight,
+    Box,
+    Camera,
+    Eye,
+    Focus,
+    Grid3X3,
+    Move3D,
+    Ruler,
+    Sliders,
+} from 'lucide-react';
+import type React from 'react';
+import { memo } from 'react';
+import {
+    CAMERA_MODE_LABELS,
+    CAMERA_VIEWS,
+    CONTROL_PARAMS,
+    FOV,
+    MOTION_RESUME_DELAY,
+    MOTION_RESUME_TRANSITION,
+    MOTION_SPEED,
+    ORBIT,
+    ORTHO_ZOOM,
+    SPIRAL,
 } from './CameraTab.constants';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from './components';
 import { FOV_PRESETS, getCameraViewLabel, MOTIONS } from './constants';
@@ -130,18 +130,19 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
       </div>
 
       <CameraViewSection
-        activeCameraView={activeCameraView}
         expandedSections={expandedSections}
-        onSetCameraView={onSetCameraView}
         toggleSection={toggleSection}
+        {...(activeCameraView !== undefined ? { activeCameraView } : {})}
+        {...(onSetCameraView ? { onSetCameraView } : {})}
       />
       <CameraModeSection config={config} set={set} />
+
       <OrthoPresetSection
-        activePreset={activeOrthoPreset}
         config={config}
         expandedSections={expandedSections}
-        onSetPreset={onSetOrthoPreset}
         toggleSection={toggleSection}
+        {...(onSetOrthoPreset ? { onSetPreset: onSetOrthoPreset } : {})}
+        {...(activeOrthoPreset !== undefined ? { activePreset: activeOrthoPreset } : {})}
       />
       <MotionSection
         config={config}
@@ -160,7 +161,7 @@ const CameraViewSection = memo<{
   toggleSection: (key: string) => void;
 }>(({ expandedSections, toggleSection, activeCameraView, onSetCameraView }) => (
   <CollapsibleSection
-    expanded={expandedSections.camera}
+    expanded={!!expandedSections['camera']}
     icon={<Focus className="w-3.5 h-3.5" />}
     onToggle={() => toggleSection('camera')}
     title="快捷视角"
@@ -221,7 +222,7 @@ const MotionSection = memo<{
   toggleSection: (key: string) => void;
 }>(({ config, set, expandedSections, toggleSection }) => (
   <CollapsibleSection
-    expanded={expandedSections.motion}
+    expanded={!!expandedSections['motion']}
     icon={<Move3D className="w-3.5 h-3.5" />}
     onToggle={() => toggleSection('motion')}
     title="自动运镜"
@@ -351,7 +352,7 @@ const OrthoPresetSection = memo<{
 
   return (
     <CollapsibleSection
-      expanded={expandedSections.orthoPresets}
+      expanded={!!expandedSections['orthoPresets']}
       icon={<Grid3X3 className="w-3.5 h-3.5" />}
       onToggle={() => toggleSection('orthoPresets')}
       title="正交视图"

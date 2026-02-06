@@ -1,7 +1,7 @@
+import type { SceneConfig } from '@/shared/types';
 import { Brain, CloudSun } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
-import type { SceneConfig } from '@/shared/types';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from './components';
 import { AI_MOTION_STYLES, WEATHER_EFFECTS } from './constants';
 
@@ -20,7 +20,7 @@ const AIMotionSection = memo<{
   toggleSection: (key: string) => void;
 }>(({ config, set, expandedSections, toggleSection }) => (
   <CollapsibleSection
-    expanded={expandedSections.aiMotion}
+    expanded={!!expandedSections['aiMotion']}
     icon={<Brain className="w-3.5 h-3.5" />}
     onToggle={() => toggleSection('aiMotion')}
     title="AI智能运镜"
@@ -75,7 +75,7 @@ const WeatherSection = memo<{
   toggleSection: (key: string) => void;
 }>(({ config, set, expandedSections, toggleSection }) => (
   <CollapsibleSection
-    expanded={expandedSections.weather}
+    expanded={!!expandedSections['weather']}
     icon={<CloudSun className="w-3.5 h-3.5" />}
     onToggle={() => toggleSection('weather')}
     title="天气氛围"

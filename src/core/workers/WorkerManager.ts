@@ -34,6 +34,7 @@ export class WorkerManager implements Disposable {
   private poolSize: number;
   private workerPools = new Map<string, Worker[]>();
   private workerRoundRobin = new Map<string, number>();
+  private disposed = false;
 
   constructor(poolSize: number = DEFAULT_POOL_SIZE) {
     this.poolSize = poolSize;
@@ -71,14 +72,34 @@ export class WorkerManager implements Disposable {
   }
 
   async dispose(): Promise<void> {
+    if (this.disposed) {
+      logger.warn('WorkerManager already disposed');
+      return;
+    }
+
+    this.disposed = true;
+    const errors: Error[] = [];
+
     for (const [name, pool] of this.workerPools) {
       for (const worker of pool) {
-        worker.terminate();
+        try {
+          worker.terminate();
+        } catch (error) {
+          errors.push(error as Error);
+        }
       }
       logger.info(`Terminated ${pool.length} workers for: ${name}`);
     }
+
     this.workerPools.clear();
     this.pendingTasks.clear();
+    workerManagerInstance = null;
+
+    if (errors.length > 0) {
+      logger.error('Some workers failed to terminate', { errors });
+    }
+
+    logger.info('WorkerManager disposed');
   }
 
   execute<T, R>(
@@ -87,6 +108,10 @@ export class WorkerManager implements Disposable {
     payload: T,
     transfer?: Transferable[]
   ): Promise<R> {
+    if (this.disposed) {
+      return Promise.reject(new Error('WorkerManager has been disposed'));
+    }
+
     const taskId = generateUUID();
 
     return new Promise<R>((resolve, reject) => {
@@ -95,13 +120,18 @@ export class WorkerManager implements Disposable {
       const message: WorkerTask<T> = {
         id: taskId,
         payload,
-        transfer,
+        ...(transfer ? { transfer } : {}),
         type: taskType,
       };
 
       const worker = this.getNextWorker(workerName);
 
-      worker.postMessage(message, transfer ?? []);
+      try {
+        worker.postMessage(message, transfer ?? []);
+      } catch (error) {
+        this.pendingTasks.delete(taskId);
+        reject(error);
+      }
     });
   }
 
@@ -112,7 +142,7 @@ export class WorkerManager implements Disposable {
 
     const pool = this.workerPools.get(name)!;
     const currentIndex = this.workerRoundRobin.get(name) ?? 0;
-    const worker = pool[currentIndex % pool.length];
+    const worker = pool[currentIndex % pool.length]!;
 
     this.workerRoundRobin.set(name, currentIndex + 1);
 
@@ -126,12 +156,32 @@ export class WorkerManager implements Disposable {
 
     const pool: Worker[] = [];
 
-    for (let i = 0; i < this.poolSize; i++) {
-      pool.push(this.createWorker(name));
+    try {
+      for (let i = 0; i < this.poolSize; i++) {
+        const worker = this.createWorker(name);
+        pool.push(worker);
+      }
+    } catch (error) {
+      // 清理已创建的 worker
+      pool.forEach((w) => w.terminate());
+      logger.error(`Failed to warm up pool for ${name}`, { error });
+      throw error;
     }
+
     this.workerPools.set(name, pool);
     this.workerRoundRobin.set(name, 0);
     logger.info(`Warmed up pool for ${name} with ${this.poolSize} workers`);
+  }
+
+  /** 获取指定 worker pool 的状态信息 */
+  getPoolStatus(name: string): { workerCount: number; pendingTasks: number } | null {
+    const pool = this.workerPools.get(name);
+    if (!pool) return null;
+
+    return {
+      workerCount: pool.length,
+      pendingTasks: this.pendingTasks.size,
+    };
   }
 }
 

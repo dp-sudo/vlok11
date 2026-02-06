@@ -320,18 +320,18 @@ export function updatePointCloudMaterial(
   material: ShaderMaterial,
   updates: Partial<PointCloudMaterialConfig>
 ): void {
-  if (updates.map !== undefined) material.uniforms.map.value = updates.map;
+  if (updates.map !== undefined) material.uniforms['map']!.value = updates.map;
   if (updates.displacementMap !== undefined)
-    material.uniforms.displacementMap.value = updates.displacementMap;
-  if (updates.pointSize !== undefined) material.uniforms.pointSize.value = updates.pointSize;
+    material.uniforms['displacementMap']!.value = updates.displacementMap;
+  if (updates.pointSize !== undefined) material.uniforms['pointSize']!.value = updates.pointSize;
   if (updates.displacementScale !== undefined)
-    material.uniforms.displacementScale.value = updates.displacementScale;
-  if (updates.opacity !== undefined) material.uniforms.opacity.value = updates.opacity;
+    material.uniforms['displacementScale']!.value = updates.displacementScale;
+  if (updates.opacity !== undefined) material.uniforms['opacity']!.value = updates.opacity;
   if (updates.lightIntensity !== undefined)
-    material.uniforms.lightIntensity.value = updates.lightIntensity;
-  if (updates.saturation !== undefined) material.uniforms.saturation.value = updates.saturation;
-  if (updates.contrast !== undefined) material.uniforms.contrast.value = updates.contrast;
-  if (updates.brightness !== undefined) material.uniforms.brightness.value = updates.brightness;
+    material.uniforms['lightIntensity']!.value = updates.lightIntensity;
+  if (updates.saturation !== undefined) material.uniforms['saturation']!.value = updates.saturation;
+  if (updates.contrast !== undefined) material.uniforms['contrast']!.value = updates.contrast;
+  if (updates.brightness !== undefined) material.uniforms['brightness']!.value = updates.brightness;
   if (updates.colorGrading !== undefined)
-    material.uniforms.colorGrading.value = updates.colorGrading;
+    material.uniforms['colorGrading']!.value = updates.colorGrading;
 }

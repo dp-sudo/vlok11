@@ -166,7 +166,7 @@ export function getLODLevel(
   const distance = cameraPosition.distanceTo(targetPosition);
 
   for (let i = config.levels.length - 1; i >= 0; i--) {
-    if (distance >= config.levels[i].distance) {
+    if (distance >= config.levels[i]!.distance) {
       return i;
     }
   }

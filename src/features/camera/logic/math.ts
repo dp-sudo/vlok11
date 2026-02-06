@@ -41,8 +41,8 @@ export function interpolatePose(from: CameraPose, to: CameraPose, t: number): Ca
     position: lerpVec3(from.position, to.position, t),
     target: lerpVec3(from.target, to.target, t),
     up: lerpVec3(from.up, to.up, t),
-    fov: lerp(from.fov, to.fov, t),
-    near: from.near,
-    far: from.far,
+    fov: lerp(from.fov ?? 45, to.fov ?? 45, t),
+    near: from.near ?? 0.1,
+    far: from.far ?? 1000,
   };
 }

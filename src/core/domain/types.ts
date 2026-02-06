@@ -6,13 +6,13 @@ export function isValidAnalysisResult(obj: unknown): obj is AnalysisResult {
   const a = obj as Record<string, unknown>;
 
   return (
-    typeof a.sceneType === 'string' &&
-    Object.values(SceneType).includes(a.sceneType as SceneType) &&
-    typeof a.description === 'string' &&
-    typeof a.estimatedDepthScale === 'number' &&
-    typeof a.recommendedFov === 'number' &&
-    typeof a.recommendedPipeline === 'string' &&
-    typeof a.reasoning === 'string'
+    typeof a['sceneType'] === 'string' &&
+    Object.values(SceneType).includes(a['sceneType'] as SceneType) &&
+    typeof a['description'] === 'string' &&
+    typeof a['estimatedDepthScale'] === 'number' &&
+    typeof a['recommendedFov'] === 'number' &&
+    typeof a['recommendedPipeline'] === 'string' &&
+    typeof a['reasoning'] === 'string'
   );
 }
 export function isValidAsset(obj: unknown): obj is Asset {
@@ -20,13 +20,13 @@ export function isValidAsset(obj: unknown): obj is Asset {
   const a = obj as Record<string, unknown>;
 
   return (
-    typeof a.id === 'string' &&
-    typeof a.sourceUrl === 'string' &&
-    (a.type === 'image' || a.type === 'video') &&
-    typeof a.width === 'number' &&
-    typeof a.height === 'number' &&
-    typeof a.aspectRatio === 'number' &&
-    typeof a.createdAt === 'number'
+    typeof a['id'] === 'string' &&
+    typeof a['sourceUrl'] === 'string' &&
+    (a['type'] === 'image' || a['type'] === 'video') &&
+    typeof a['width'] === 'number' &&
+    typeof a['height'] === 'number' &&
+    typeof a['aspectRatio'] === 'number' &&
+    typeof a['createdAt'] === 'number'
   );
 }
 export function isValidProcessedAsset(obj: unknown): obj is ProcessedAsset {
@@ -34,11 +34,11 @@ export function isValidProcessedAsset(obj: unknown): obj is ProcessedAsset {
   const p = obj as Record<string, unknown>;
 
   return (
-    isValidAsset(p.asset) &&
-    typeof p.depthMapUrl === 'string' &&
-    typeof p.imageUrl === 'string' &&
-    isValidAnalysisResult(p.analysis) &&
-    typeof p.processingTime === 'number'
+    isValidAsset(p['asset']) &&
+    typeof p['depthMapUrl'] === 'string' &&
+    typeof p['imageUrl'] === 'string' &&
+    isValidAnalysisResult(p['analysis']) &&
+    typeof p['processingTime'] === 'number'
   );
 }
 export function isValidStatusTransition(from: SessionStatus, to: SessionStatus): boolean {

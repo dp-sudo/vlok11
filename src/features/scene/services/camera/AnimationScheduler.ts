@@ -2,14 +2,14 @@ import { getEventBus } from '@/core/EventBus';
 import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import type {
-  AnimationHandle,
-  AnimationInfo,
-  AnimationOptions,
-  AnimationService,
-  EasingFunction,
-  EasingType,
-  QueuedAnimation,
-  Vec3,
+    AnimationHandle,
+    AnimationInfo,
+    AnimationOptions,
+    AnimationService,
+    EasingFunction,
+    EasingType,
+    QueuedAnimation,
+    Vec3,
 } from '@/shared/types';
 import { EASING_BOUNCE, EASING_COMMON, EASING_ELASTIC } from './AnimationScheduler.constants';
 
@@ -172,8 +172,8 @@ class AnimationSchedulerImpl implements AnimationService, LifecycleAware {
 
         onUpdate?.(value, progress);
       },
-      onComplete,
-      onCancel,
+      ...(onComplete ? { onComplete } : {}),
+      ...(onCancel ? { onCancel } : {}),
     };
 
     this.activeAnimations.set(id, animation);

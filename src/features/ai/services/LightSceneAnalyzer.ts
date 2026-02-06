@@ -30,10 +30,10 @@ export class LightSceneAnalyzer {
     const colors: { r: number; g: number; b: number }[] = [];
 
     for (let i = 0; i < data.length; i += 4 * sampleRate) {
-      const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      const brightness = (data[i]! + data[i + 1]! + data[i + 2]!) / 3;
 
       samples.push(brightness);
-      colors.push({ r: data[i], g: data[i + 1], b: data[i + 2] });
+      colors.push({ r: data[i]!, g: data[i + 1]!, b: data[i + 2]! });
     }
 
     const avgBrightness = this.calcAverage(samples);

@@ -29,11 +29,12 @@ class EventBusImpl implements EventBus {
   private subscribers = new Map<string, Subscriber[]>();
 
   constructor() {
-    this.history = new Array<EventRecord | null>(this.maxHistory).fill(null);
+    // 使用空数组而非预填充 null，节省内存
+    this.history = [];
   }
 
   clearEventHistory(): void {
-    this.history = new Array<EventRecord | null>(this.maxHistory).fill(null);
+    this.history = [];
     this.historyHead = 0;
     this.historySize = 0;
   }
@@ -58,11 +59,14 @@ class EventBusImpl implements EventBus {
       subscriberCount: subscribers.length,
     };
 
-    this.history[this.historyHead] = record;
-    this.historyHead = (this.historyHead + 1) % this.maxHistory;
-    if (this.historySize < this.maxHistory) {
-      this.historySize++;
+    // 环形缓冲区实现
+    if (this.history.length < this.maxHistory) {
+      this.history.push(record);
+    } else {
+      this.history[this.historyHead] = record;
+      this.historyHead = (this.historyHead + 1) % this.maxHistory;
     }
+    this.historySize = Math.min(this.historySize + 1, this.maxHistory);
 
     for (const sub of subscribers) {
       try {
@@ -88,11 +92,10 @@ class EventBusImpl implements EventBus {
   getEventHistory(limit?: number): EventRecord[] {
     const result: EventRecord[] = [];
     const count = limit === undefined ? this.historySize : Math.min(limit, this.historySize);
-    const start = (this.historyHead - count + this.maxHistory) % this.maxHistory;
+    const start = this.history.length - count;
 
     for (let i = 0; i < count; i++) {
-      const idx = (start + i) % this.maxHistory;
-      const record = this.history[idx];
+      const record = this.history[start + i];
 
       if (record) {
         result.push(record);
@@ -179,7 +182,7 @@ class EventBusImpl implements EventBus {
     const subCount = this.getTotalSubscriberCount();
 
     this.subscribers.clear();
-    this.history = new Array<EventRecord | null>(this.maxHistory).fill(null);
+    this.history = [];
     this.historyHead = 0;
     this.historySize = 0;
     logger.info(`EventBus reset - cleared ${subCount} subscribers`);

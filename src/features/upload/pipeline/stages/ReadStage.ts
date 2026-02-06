@@ -1,9 +1,9 @@
 import { createLogger } from '@/core/Logger';
 import {
-  ALLOWED_IMAGE_TYPES,
-  ALLOWED_VIDEO_TYPES,
-  BYTES_PER_KB,
-  MAX_FILE_SIZE_MB,
+    ALLOWED_IMAGE_TYPES,
+    ALLOWED_VIDEO_TYPES,
+    BYTES_PER_KB,
+    MAX_FILE_SIZE_MB,
 } from '@/shared/constants';
 import { extractFrameFromVideo, validateUrl } from '@/shared/utils';
 
@@ -66,9 +66,9 @@ export class ReadStage implements PipelineStage {
           ...input,
           imageBase64,
           imageUrl,
-          videoUrl,
-          metadata: {
-            ...input.metadata,
+            ...(videoUrl ? { videoUrl } : {}),
+            metadata: {
+              ...input.metadata,
             aspectRatio,
             fileName: this.sanitizeFileName(file.name),
             fileSize: file.size,
@@ -121,7 +121,7 @@ export class ReadStage implements PipelineStage {
           ...input,
           imageBase64,
           imageUrl,
-          videoUrl,
+          ...(videoUrl ? { videoUrl } : {}),
           metadata: { ...input.metadata, aspectRatio, isUrl: true, isVideo },
           success: true,
         };
@@ -173,7 +173,7 @@ export class ReadStage implements PipelineStage {
     return name.replace(/[/\\:*?"<>|]/g, '_').slice(0, MAX_FILENAME_LENGTH);
   }
   private async urlToBase64(url: string, signal?: AbortSignal): Promise<string> {
-    const response = await fetch(url, { signal });
+    const response = await fetch(url, { ...(signal ? { signal } : {}) });
 
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status}`);

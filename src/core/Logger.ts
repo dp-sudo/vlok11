@@ -19,8 +19,8 @@ export class Logger implements LoggerContract {
   private static history: LogEntry[] = [];
   private static maxHistory = MAX_LOG_HISTORY;
 
-  private correlationId?: string;
-  private localLevel?: LogLevel;
+  private correlationId: string | undefined;
+  private localLevel: LogLevel | undefined;
   private module: string;
 
   constructor(options: LoggerOptions) {
@@ -91,8 +91,8 @@ export class Logger implements LoggerContract {
       module: this.module,
       message,
       timestamp: Date.now(),
-      correlationId: this.correlationId,
-      context,
+      ...(this.correlationId !== undefined ? { correlationId: this.correlationId } : {}),
+      ...(context ? { context } : {}),
     };
 
     Logger.history.push(entry);

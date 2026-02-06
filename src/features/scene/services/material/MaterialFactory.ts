@@ -1,25 +1,25 @@
 import {
-  AdditiveBlending,
-  Color,
-  DoubleSide,
-  type Material,
-  MeshStandardMaterial,
-  type ShaderMaterial,
-  type Texture,
-  type WebGLProgramParametersWithUniforms,
+    AdditiveBlending,
+    Color,
+    DoubleSide,
+    type Material,
+    MeshStandardMaterial,
+    type ShaderMaterial,
+    type Texture,
+    type WebGLProgramParametersWithUniforms,
 } from 'three';
 
 import { createLogger } from '@/core/Logger';
 import { RenderStyle } from '@/shared/types';
 
 import {
-  AnimeMaterialClass,
-  CelMaterialClass,
-  CrystalMaterialClass,
-  HologramV2MaterialClass,
-  InkWashMaterialClass,
-  MatrixMaterialClass,
-  RetroPixelMaterialClass,
+    AnimeMaterialClass,
+    CelMaterialClass,
+    CrystalMaterialClass,
+    HologramV2MaterialClass,
+    InkWashMaterialClass,
+    MatrixMaterialClass,
+    RetroPixelMaterialClass,
 } from '../../materials';
 
 import { STANDARD_MATERIAL } from './MaterialFactory.constants';
@@ -70,8 +70,8 @@ function createShaderMaterial<T extends ShaderMaterial>(
   return mat;
 }
 function injectEdgeFade(shader: WebGLProgramParametersWithUniforms): void {
-  shader.uniforms.uSeamCorrection = { value: EDGE_FADE.SEAM_CORRECTION_DEFAULT };
-  shader.uniforms.uEdgeFade = { value: EDGE_FADE.EDGE_FADE_DEFAULT };
+  shader.uniforms['uSeamCorrection'] = { value: EDGE_FADE.SEAM_CORRECTION_DEFAULT };
+  shader.uniforms['uEdgeFade'] = { value: EDGE_FADE.EDGE_FADE_DEFAULT };
   shader.vertexShader = `uniform float uSeamCorrection;\nuniform float uEdgeFade;\n${shader.vertexShader}`;
 
   const edgeFadeFunc = `
@@ -203,7 +203,7 @@ class MaterialFactoryImpl {
 
     mat.onBeforeCompile = (shader) => {
       injectEdgeFade(shader);
-      mat.userData.shader = shader;
+      mat.userData['shader'] = shader;
     };
 
     return mat;

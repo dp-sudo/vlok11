@@ -3,13 +3,13 @@ import { getSentry } from './SentryConfig';
 export async function initializeSentry(): Promise<void> {
   const sentry = getSentry();
 
-  const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined;
-  const environment = import.meta.env.MODE;
+  const dsn = import.meta.env['VITE_SENTRY_DSN'] as string | undefined;
+  const environment = import.meta.env['MODE'];
 
   await sentry.initialize({
-    dsn,
+    ...(dsn ? { dsn } : {}),
     environment,
-    enabled: import.meta.env.PROD && !!dsn,
+    enabled: import.meta.env['PROD'] && !!dsn,
     sampleRate: 1.0,
     tracesSampleRate: 0.1,
   });
@@ -21,7 +21,7 @@ export function reportError(error: Error, context?: Record<string, unknown>): vo
   if (sentry.isEnabled()) {
     sentry.captureError({
       error,
-      context,
+      ...(context ? { context } : {}),
       level: 'error',
     });
   }
@@ -47,7 +47,7 @@ export function addBreadcrumb(
       message,
       category,
       level: 'info',
-      data,
+      ...(data ? { data } : {}),
     });
   }
 }

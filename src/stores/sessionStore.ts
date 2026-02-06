@@ -4,10 +4,10 @@ import { isValidStatusTransition } from '@/core/domain/types';
 import type { AIService } from '@/features/ai/services/AIService';
 import { createUploadPipeline, type UploadPipeline } from '@/features/upload/pipeline';
 import type {
-  Asset,
-  ExportStateInfo,
-  ProcessingResult,
-  ProcessingStatus,
+    Asset,
+    ExportStateInfo,
+    ProcessingResult,
+    ProcessingStatus,
 } from '@/shared/domain/types';
 
 /**
@@ -18,10 +18,10 @@ function isProcessingResult(obj: unknown): obj is ProcessingResult {
   const result = obj as Record<string, unknown>;
 
   return (
-    typeof result.depthMapUrl === 'string' &&
-    typeof result.imageUrl === 'string' &&
-    result.asset !== undefined &&
-    typeof (result.asset as Record<string, unknown>).id === 'string'
+    typeof result['depthMapUrl'] === 'string' &&
+    typeof result['imageUrl'] === 'string' &&
+    result['asset'] !== undefined &&
+    typeof (result['asset'] as Record<string, unknown>)['id'] === 'string'
   );
 }
 

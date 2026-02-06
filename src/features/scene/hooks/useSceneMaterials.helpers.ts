@@ -141,9 +141,9 @@ export const updateStandardMaterial = (
   mat.roughness = config.roughness;
   mat.metalness = config.metalness;
   mat.envMapIntensity = config.lightIntensity * MATERIAL_DEFAULTS.ENV_MAP_INTENSITY;
-  if (mat.userData.shader) {
-    mat.userData.shader.uniforms.uSeamCorrection.value = seamCorrectionValue;
-    mat.userData.shader.uniforms.uEdgeFade.value = config.edgeFade;
+  if (mat.userData['shader']) {
+    mat.userData['shader'].uniforms.uSeamCorrection.value = seamCorrectionValue;
+    mat.userData['shader'].uniforms.uEdgeFade.value = config.edgeFade;
   }
   if (mat.map !== activeMap || mat.displacementMap !== displacementMap) {
     mat.map = activeMap;

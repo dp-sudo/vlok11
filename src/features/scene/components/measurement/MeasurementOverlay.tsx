@@ -1,7 +1,7 @@
+import { getEventBus } from '@/core/EventBus';
 import { Html } from '@react-three/drei';
 import { memo, useEffect, useState } from 'react';
 import type { Vector3 } from 'three';
-import { getEventBus } from '@/core/EventBus';
 import {
   getMeasurementService,
   type Measurement,
@@ -80,7 +80,8 @@ const MeasurementOverlayComponent: React.FC<MeasurementOverlayProps> = ({ visibl
 // 单个测量项组件
 const MeasurementItem: React.FC<{ measurement: Measurement }> = memo(({ measurement }) => {
   if (measurement.type === 'distance') {
-    const [p1, p2] = measurement.points;
+    const p1 = measurement.points[0]!;
+    const p2 = measurement.points[1]!;
 
     // 计算中点用于显示标签
     const midpoint = p1.clone().add(p2).multiplyScalar(0.5);
@@ -120,7 +121,9 @@ const MeasurementItem: React.FC<{ measurement: Measurement }> = memo(({ measurem
   }
 
   if (measurement.type === 'angle' && measurement.points.length === 3) {
-    const [p1, p2, p3] = measurement.points;
+    const p1 = measurement.points[0]!;
+    const p2 = measurement.points[1]!;
+    const p3 = measurement.points[2]!;
 
     return (
       <group>
@@ -130,7 +133,7 @@ const MeasurementItem: React.FC<{ measurement: Measurement }> = memo(({ measurem
             <bufferAttribute
               attach="attributes-position"
               count={3}
-              args={[new Float32Array([...p1.toArray(), ...p2.toArray(), ...p3.toArray()]), 3]}
+              args={[new Float32Array([...p1!.toArray(), ...p2!.toArray(), ...p3!.toArray()]), 3]}
             />
           </bufferGeometry>
           <lineBasicMaterial color="#ff8800" linewidth={2} />
@@ -145,7 +148,7 @@ const MeasurementItem: React.FC<{ measurement: Measurement }> = memo(({ measurem
         ))}
 
         {/* 角度标签 */}
-        <Html position={measurement.points[1].toArray()} center>
+        <Html position={measurement.points[1]!.toArray()} center>
           <div className="px-2 py-1 bg-black/80 text-orange-400 text-xs rounded border border-orange-500/50 whitespace-nowrap">
             {measurement.label}
           </div>
@@ -168,7 +171,7 @@ const CurrentMeasurementPoints: React.FC<{ points: Vector3[] }> = memo(({ points
             <bufferAttribute
               attach="attributes-position"
               count={2}
-              args={[new Float32Array([...points[0].toArray(), ...points[1].toArray()]), 3]}
+              args={[new Float32Array([...points[0]!.toArray(), ...points[1]!.toArray()]), 3]}
             />
           </bufferGeometry>
           <lineBasicMaterial color="#00aaff" linewidth={2} transparent opacity={0.7} />

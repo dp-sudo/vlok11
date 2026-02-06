@@ -129,11 +129,15 @@ export function mapMediaPixelToDisplacedWorldPoint(params: {
     pixel: params.pixel,
     mediaWidth: params.mediaWidth,
     mediaHeight: params.mediaHeight,
-    flipX: params.flipX,
-    flipY: params.flipY,
+    flipX: !!params.flipX,
+    flipY: !!params.flipY,
   });
 
-  const depth01 = sampleImageDataGray01({ image: params.depthImage, uv, mode: params.sampleMode });
+  const depth01 = sampleImageDataGray01({
+    image: params.depthImage,
+    uv,
+    ...(params.sampleMode ? { mode: params.sampleMode } : {}),
+  });
   const world = uvAndDepthToWorldPointOnPlane({
     uv,
     depth01,
@@ -155,7 +159,7 @@ export function mediaPixelToScreenUv(params: {
 }): UvCoord {
   const uv = pixelToUv(params.pixel, params.mediaWidth, params.mediaHeight);
 
-  return clampUv(flipUv(uv, { flipX: params.flipX, flipY: params.flipY }));
+  return clampUv(flipUv(uv, { flipX: !!params.flipX, flipY: !!params.flipY }));
 }
 export function pickFirstIntersectionFromElementPoint(params: {
   camera: Camera;
@@ -263,7 +267,7 @@ export function raycastFromPointerEvent(params: {
     element: params.element,
     camera: params.camera,
     objects: params.objects,
-    recursive: params.recursive,
+    ...(params.recursive !== undefined ? { recursive: params.recursive } : {}),
   });
 }
 export function sampleImageDataGray01(params: {
@@ -319,7 +323,7 @@ export function screenUvToMediaPixel(params: {
   mediaWidth: number;
   uv: UvCoord;
 }): PixelCoord {
-  const uv = flipUv(clampUv(params.uv), { flipX: params.flipX, flipY: params.flipY });
+  const uv = flipUv(clampUv(params.uv), { flipX: !!params.flipX, flipY: !!params.flipY });
 
   return uvToPixel(uv, params.mediaWidth, params.mediaHeight);
 }

@@ -18,7 +18,7 @@ export class GeminiProvider implements AIProvider {
         ? (base64Image.split(',')[1] ?? base64Image)
         : base64Image;
 
-      const configuredModel = import.meta.env.VITE_GEMINI_MODEL?.trim();
+      const configuredModel = import.meta.env['VITE_GEMINI_MODEL']?.trim();
       const settingsService = getSettingsService();
       const { performanceMode } = settingsService.store.getState();
 
@@ -113,8 +113,8 @@ export class GeminiProvider implements AIProvider {
       }
 
       const { GoogleGenAI } = module;
-      const baseUrl = import.meta.env.VITE_GEMINI_BASE_URL?.trim();
-      const apiVersion = import.meta.env.VITE_GEMINI_API_VERSION?.trim();
+      const baseUrl = import.meta.env['VITE_GEMINI_BASE_URL']?.trim();
+      const apiVersion = import.meta.env['VITE_GEMINI_API_VERSION']?.trim();
 
       const httpOptions =
         baseUrl && (baseUrl.startsWith('http://') || baseUrl.startsWith('https://'))
@@ -144,7 +144,7 @@ export class GeminiProvider implements AIProvider {
   async initialize(): Promise<void> {
     const settingsService = getSettingsService();
     const settings = settingsService.store.getState();
-    const allowInProd = import.meta.env.VITE_GEMINI_ENABLE_IN_PROD === 'true';
+    const allowInProd = import.meta.env['VITE_GEMINI_ENABLE_IN_PROD'] === 'true';
 
     if (settings.useLocalAi) {
       logger.info('Gemini disabled by user (Force Local AI)');
@@ -160,7 +160,7 @@ export class GeminiProvider implements AIProvider {
       return;
     }
 
-    const apiKey = settings.geminiApiKey || import.meta.env.VITE_GEMINI_API_KEY;
+    const apiKey = settings.geminiApiKey || import.meta.env['VITE_GEMINI_API_KEY'];
 
     if (!apiKey) {
       logger.warn('Gemini API Key 未配置');

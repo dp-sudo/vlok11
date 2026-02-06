@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { memo, useMemo, useRef } from 'react';
 import type { Points } from 'three';
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, PointsMaterial } from 'three';
+import { AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, Color, PointsMaterial } from 'three';
 import { ANIMATION, PARTICLE, PARTICLE_COLORS, STAR } from './constants';
 
 export type ParticleType = 'dust' | 'snow' | 'stars' | 'firefly' | 'rain' | 'leaves';
@@ -10,6 +10,8 @@ interface AtmosphereParticlesProps {
   enabled?: boolean;
   particleType?: ParticleType;
   density?: number;
+  color?: string;
+  speedFactor?: number;
 }
 
 interface ParticleData {
@@ -21,7 +23,12 @@ interface ParticleData {
   velocities: Float32Array;
 }
 
-const createParticleData = (count: number, type: ParticleType, density: number): ParticleData => {
+const createParticleData = (
+  count: number,
+  type: ParticleType,
+  density: number,
+  overrideColor?: string
+): ParticleData => {
   const finalCount = Math.floor(count * density);
   const positions = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
   const velocities = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
@@ -42,7 +49,7 @@ const createParticleData = (count: number, type: ParticleType, density: number):
 
     phases[i] = Math.random() * Math.PI * ANIMATION.PHASE_TWO_PI;
 
-    initializeParticle(type, i, i3, velocities, colors, sizes);
+    initializeParticle(type, i, i3, velocities, colors, sizes, overrideColor);
   }
 
   geometry.setAttribute('position', new BufferAttribute(positions, ANIMATION.BUFFER_STRIDE_3));
@@ -57,16 +64,22 @@ const initDust = (
   index: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array
+  sizes: Float32Array,
+  overrideColor?: string
 ): void => {
   const color = new Color();
 
   velocities[i3] = (Math.random() - ANIMATION.HALF) * ANIMATION.DUST_BROWNIAN_STRENGTH;
   velocities[i3 + 1] = Math.random() * ANIMATION.DUST_BROWNIAN_STRENGTH;
   velocities[i3 + 2] = (Math.random() - ANIMATION.HALF) * ANIMATION.DUST_BROWNIAN_STRENGTH;
-  color.set(
-    Math.random() > ANIMATION.HALF ? PARTICLE_COLORS.DUST.BASE : PARTICLE_COLORS.DUST.VARIANT1
-  );
+
+  if (overrideColor) {
+    color.set(overrideColor);
+  } else {
+    color.set(
+      Math.random() > ANIMATION.HALF ? PARTICLE_COLORS.DUST.BASE : PARTICLE_COLORS.DUST.VARIANT1
+    );
+  }
   colors[i3] = color.r;
   colors[i3 + 1] = color.g;
   colors[i3 + 2] = color.b;
@@ -193,11 +206,12 @@ const initializeParticle = (
   i3: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array
+  sizes: Float32Array,
+  overrideColor?: string
 ): void => {
   switch (type) {
     case 'dust':
-      initDust(i3, index, velocities, colors, sizes);
+      initDust(i3, index, velocities, colors, sizes, overrideColor);
       break;
     case 'snow':
       initSnow(i3, index, velocities, colors, sizes);
@@ -364,16 +378,39 @@ const updateParticleByType = (
   setPos({ posX, posY, posZ });
 };
 
-const RAIN_COUNT = 600;
+// --- Soft Particle Texture Generation ---
+const getSoftParticleTexture = (() => {
+  let texture: CanvasTexture | null = null;
+  return () => {
+    if (texture) return texture;
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 32, 32);
+    }
+    texture = new CanvasTexture(canvas);
+    return texture;
+  };
+})();
+
+const RAIN_COUNT = 1500; // Increased base count allowing density scaling
 const MATERIAL_SIZE_RAIN = 0.08;
-const MATERIAL_SIZE_DEFAULT = 0.2;
-const MATERIAL_OPACITY_RAIN = 0.6;
-const MATERIAL_OPACITY_DEFAULT = 0.8;
+const MATERIAL_SIZE_DEFAULT = 0.3; // Slightly larger for soft texture
+const MATERIAL_OPACITY_RAIN = 0.8;
+const MATERIAL_OPACITY_DEFAULT = 0.9;
 
 const AtmosphereParticlesComponent = ({
   enabled = true,
   particleType = 'dust',
   density = 1.0,
+  color,
+  speedFactor = 0.5,
 }: AtmosphereParticlesProps) => {
   const pointsRef = useRef<Points>(null);
   const count = particleType === 'rain' ? RAIN_COUNT : PARTICLE.COUNT;
@@ -381,26 +418,31 @@ const AtmosphereParticlesComponent = ({
     particleType === 'stars' ? PARTICLE.SPREAD * PARTICLE.STARS_SPREAD_MULTIPLIER : PARTICLE.SPREAD;
 
   const particleData = useMemo(
-    () => createParticleData(count, particleType, density),
-    [count, particleType, density]
+    () => createParticleData(count, particleType, density, color),
+    [count, particleType, density, color]
   );
 
   const material = useMemo(() => {
     return new PointsMaterial({
-      size: particleType === 'rain' ? MATERIAL_SIZE_RAIN : MATERIAL_SIZE_DEFAULT,
+      size: (particleType === 'rain' ? MATERIAL_SIZE_RAIN : MATERIAL_SIZE_DEFAULT) * (1 + (speedFactor - 0.5) * 0.5),
       vertexColors: true,
       transparent: true,
       opacity: particleType === 'rain' ? MATERIAL_OPACITY_RAIN : MATERIAL_OPACITY_DEFAULT,
       blending: AdditiveBlending,
       depthWrite: false,
       sizeAttenuation: true,
+      map: getSoftParticleTexture(),
+      alphaTest: 0.01,
     });
-  }, [particleType]);
+  }, [particleType, speedFactor]);
 
   useFrame(({ clock }) => {
     if (!enabled || !pointsRef.current) return;
 
-    const time = clock.getElapsedTime();
+    // Use speedFactor to modulate time/speed
+    // e.g., speedFactor 0.5 is 1x speed. 1.0 is 2x speed.
+    const dynamicSpeed = 0.5 + speedFactor;
+    const time = clock.getElapsedTime() * dynamicSpeed;
 
 
     // We pass the actual count of particles created (which is scaled by density)

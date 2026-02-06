@@ -76,6 +76,7 @@ export interface PostProcessConfig {
   lightAngleY: number;
   lightIntensity: number;
   particleType: string;
+  particleColor: string;
   particleDensity: number;
   saturation: number;
   vignetteStrength: number;
@@ -168,6 +169,7 @@ export interface AIImmersiveConfig {
   weatherEnabled: boolean;
   weatherEffect: 'sunny' | 'rain' | 'fog' | 'snow';
   weatherIntensity: number;
+  weatherParticleDensity: number;
 }
 
 // 录制配置

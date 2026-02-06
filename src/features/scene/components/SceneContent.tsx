@@ -118,8 +118,11 @@ export const SceneContent = memo((props: SceneContentProps) => {
       />
 
       <AtmosphereParticles
+        key={config.particleColor}
+        color={config.particleColor}
         density={config.particleDensity ?? 1.0}
         enabled={config.enableParticles}
+        speedFactor={config.weatherIntensity}
         {...(particleType ? { particleType } : {})}
       />
 

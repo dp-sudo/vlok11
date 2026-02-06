@@ -1,11 +1,11 @@
 import type { SceneConfig } from '@/shared/types';
 import {
-  CameraMode,
-  CameraMotionType,
-  ColorGradePreset,
-  MirrorMode,
-  ProjectionMode,
-  RenderStyle,
+    CameraMode,
+    CameraMotionType,
+    ColorGradePreset,
+    MirrorMode,
+    ProjectionMode,
+    RenderStyle,
 } from '@/shared/types';
 
 /**
@@ -103,6 +103,8 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   lightAngleY: 35,
   vignetteStrength: 0,
   particleType: 'dust',
+  particleColor: '',
+  particleDensity: 0.5,
 
   colorGrade: ColorGradePreset.CINEMATIC,
   saturation: 1.1,
@@ -122,6 +124,7 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   weatherEnabled: false,
   weatherEffect: 'sunny',
   weatherIntensity: 0.5,
+  weatherParticleDensity: 0.5,
 
   recordingQuality: 'medium',
 };

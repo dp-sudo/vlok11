@@ -103,12 +103,20 @@ const WeatherSection = memo<{
           ))}
         </div>
         <Slider
-          label="强度"
+          label="环境强度"
           max={1}
           min={0.1}
           onChange={(v) => set('weatherIntensity', v)}
           step={0.05}
           value={config.weatherIntensity}
+        />
+        <Slider
+          label="粒子密度"
+          max={1}
+          min={0}
+          onChange={(v) => set('weatherParticleDensity', v)}
+          step={0.05}
+          value={config.weatherParticleDensity ?? 0.5}
         />
       </>
     ) : null}

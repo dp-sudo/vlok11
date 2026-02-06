@@ -4,30 +4,30 @@ import { getMeasurementService } from '@/features/scene/services/measurement/Mea
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { CameraMode, CameraMotionType } from '@/shared/types';
 import {
-    ArrowDown,
-    ArrowRight,
-    Box,
-    Camera,
-    Eye,
-    Focus,
-    Grid3X3,
-    Move3D,
-    Ruler,
-    Sliders,
+  ArrowDown,
+  ArrowRight,
+  Box,
+  Camera,
+  Eye,
+  Focus,
+  Grid3X3,
+  Move3D,
+  Ruler,
+  Sliders,
 } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
 import {
-    CAMERA_MODE_LABELS,
-    CAMERA_VIEWS,
-    CONTROL_PARAMS,
-    FOV,
-    MOTION_RESUME_DELAY,
-    MOTION_RESUME_TRANSITION,
-    MOTION_SPEED,
-    ORBIT,
-    ORTHO_ZOOM,
-    SPIRAL,
+  CAMERA_MODE_LABELS,
+  CAMERA_VIEWS,
+  CONTROL_PARAMS,
+  FOV,
+  MOTION_RESUME_DELAY,
+  MOTION_RESUME_TRANSITION,
+  MOTION_SPEED,
+  ORBIT,
+  ORTHO_ZOOM,
+  SPIRAL,
 } from './CameraTab.constants';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from './components';
 import { FOV_PRESETS, getCameraViewLabel, MOTIONS } from './constants';
@@ -166,7 +166,7 @@ const CameraViewSection = memo<{
     onToggle={() => toggleSection('camera')}
     title="快捷视角"
   >
-    <div className="grid grid-cols-5 gap-1.5">
+    <div className="grid grid-cols-3 gap-1.5">
       {CAMERA_VIEWS.map((v) => (
         <CardBtn active={activeCameraView === v} key={v} onClick={() => onSetCameraView?.(v)} small>
           {getCameraViewLabel(v)}

@@ -9,6 +9,7 @@ export type ParticleType = 'dust' | 'snow' | 'stars' | 'firefly' | 'rain' | 'lea
 interface AtmosphereParticlesProps {
   enabled?: boolean;
   particleType?: ParticleType;
+  density?: number;
 }
 
 interface ParticleData {
@@ -20,18 +21,19 @@ interface ParticleData {
   velocities: Float32Array;
 }
 
-const createParticleData = (count: number, type: ParticleType): ParticleData => {
-  const positions = new Float32Array(count * ANIMATION.BUFFER_STRIDE_3);
-  const velocities = new Float32Array(count * ANIMATION.BUFFER_STRIDE_3);
-  const colors = new Float32Array(count * ANIMATION.BUFFER_STRIDE_3);
-  const sizes = new Float32Array(count);
-  const phases = new Float32Array(count);
+const createParticleData = (count: number, type: ParticleType, density: number): ParticleData => {
+  const finalCount = Math.floor(count * density);
+  const positions = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
+  const velocities = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
+  const colors = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
+  const sizes = new Float32Array(finalCount);
+  const phases = new Float32Array(finalCount);
   const geometry = new BufferGeometry();
 
   const spread =
     type === 'stars' ? PARTICLE.SPREAD * PARTICLE.STARS_SPREAD_MULTIPLIER : PARTICLE.SPREAD;
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < finalCount; i++) {
     const i3 = i * ANIMATION.BUFFER_STRIDE_3;
 
     positions[i3] = (Math.random() - ANIMATION.HALF) * spread;
@@ -371,6 +373,7 @@ const MATERIAL_OPACITY_DEFAULT = 0.8;
 const AtmosphereParticlesComponent = ({
   enabled = true,
   particleType = 'dust',
+  density = 1.0,
 }: AtmosphereParticlesProps) => {
   const pointsRef = useRef<Points>(null);
   const count = particleType === 'rain' ? RAIN_COUNT : PARTICLE.COUNT;
@@ -378,8 +381,8 @@ const AtmosphereParticlesComponent = ({
     particleType === 'stars' ? PARTICLE.SPREAD * PARTICLE.STARS_SPREAD_MULTIPLIER : PARTICLE.SPREAD;
 
   const particleData = useMemo(
-    () => createParticleData(count, particleType),
-    [count, particleType]
+    () => createParticleData(count, particleType, density),
+    [count, particleType, density]
   );
 
   const material = useMemo(() => {
@@ -399,7 +402,13 @@ const AtmosphereParticlesComponent = ({
 
     const time = clock.getElapsedTime();
 
-    updateParticles(particleData, count, time, spread, particleType);
+
+    // We pass the actual count of particles created (which is scaled by density)
+    // createParticleData returns arrays sized by finalCount, so we should allow updateParticles
+    // to iterate up to the length of the arrays it created.
+    // However, updateParticles currently takes 'count' which is the base count.
+    // We should fix updateParticles or just pass particleData.phases.length
+    updateParticles(particleData, particleData.phases.length, time, spread, particleType);
 
     const positionAttr = particleData.geometry.getAttribute('position');
     const sizeAttr = particleData.geometry.getAttribute('size');

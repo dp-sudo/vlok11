@@ -1,10 +1,10 @@
 import type {
-  CameraMode,
-  CameraMotionType,
-  ColorGradePreset,
-  MirrorMode,
-  ProjectionMode,
-  RenderStyle,
+    CameraMode,
+    CameraMotionType,
+    ColorGradePreset,
+    MirrorMode,
+    ProjectionMode,
+    RenderStyle,
 } from '@/core/domain/types';
 import type { BlendMode } from './index';
 
@@ -76,6 +76,7 @@ export interface PostProcessConfig {
   lightAngleY: number;
   lightIntensity: number;
   particleType: string;
+  particleDensity: number;
   saturation: number;
   vignetteStrength: number;
 }

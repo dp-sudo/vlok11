@@ -128,7 +128,7 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
       </CollapsibleSection>
 
       <CollapsibleSection icon={<Maximize2 className="w-3.5 h-3.5" />} title="镜像模式">
-        <div className="grid grid-cols-4 gap-1.5">
+        <div className="grid grid-cols-2 gap-1.5">
           {MIRROR_MODES.map((m) => (
             <Btn
               active={config.mirrorMode === m.mode}

@@ -60,7 +60,7 @@ export const Btn: React.FC<BtnProps> = ({ active, onClick, children, small, disa
     <button
       className={`
       ${small ? 'py-1.5 px-3 text-[12px]' : 'py-2.5 px-4 text-[13px]'}
-      rounded-lg border font-semibold tracking-wide transition-all duration-200
+      rounded-lg border font-semibold tracking-wide transition-all duration-200 whitespace-nowrap
       ${getBtnStateClasses()}
       active:scale-[0.96]
       disabled:cursor-not-allowed
@@ -99,7 +99,7 @@ export const CardBtn: React.FC<CardBtnProps> = ({
       className={`
       ${small ? 'py-2.5 px-2 min-h-[4.5rem]' : 'py-3 px-2.5 min-h-[6rem]'}
       rounded-xl border-2 transition-all duration-300
-      flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group
+      flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group whitespace-nowrap
       ${getCardBtnStateClasses()}
       active:scale-[0.98] active:translate-y-0
     `}
@@ -237,10 +237,10 @@ export const Slider: React.FC<SliderProps> = ({
           onTouchStart={() => setIsDragging(true)}
           step={step}
           style={{
-            background: `linear-gradient(to right, 
-            #06b6d4 0%, 
-            #2dd4bf ${percentage}%, 
-            #27272a ${percentage}%, 
+            background: `linear-gradient(to right,
+            #06b6d4 0%,
+            #2dd4bf ${percentage}%,
+            #27272a ${percentage}%,
             #27272a 100%)`,
           }}
           type="range"

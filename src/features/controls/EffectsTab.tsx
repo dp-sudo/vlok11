@@ -4,28 +4,28 @@ import { Layers, Moon, Palette, Sparkles, Sun } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
 import {
-    AnimeStyleControls,
-    Btn,
-    CardBtn,
-    CelStyleControls,
-    CollapsibleSection,
-    CrystalStyleControls,
-    HologramStyleControls,
-    InkWashStyleControls,
-    MatrixStyleControls,
-    RecordingSettings,
-    RetroPixelStyleControls,
-    Slider,
-    Toggle,
+  AnimeStyleControls,
+  Btn,
+  CardBtn,
+  CelStyleControls,
+  CollapsibleSection,
+  CrystalStyleControls,
+  HologramStyleControls,
+  InkWashStyleControls,
+  MatrixStyleControls,
+  RecordingSettings,
+  RetroPixelStyleControls,
+  Slider,
+  Toggle,
 } from './components';
 import { COLOR_GRADES, EXPOSURE_PRESETS, PARTICLE_TYPES, RENDER_STYLES } from './constants';
 import {
-    BRIGHTNESS,
-    CONTRAST,
-    EXPOSURE,
-    LIGHT_INTENSITY,
-    MATERIAL,
-    SATURATION,
+  BRIGHTNESS,
+  CONTRAST,
+  EXPOSURE,
+  LIGHT_INTENSITY,
+  MATERIAL,
+  SATURATION,
 } from './EffectsTab.constants';
 
 interface EffectsTabProps {
@@ -160,7 +160,7 @@ const EffectsToggleSection = memo<{
         onChange={(v) => set('enableParticles', v)}
       />
       {config.enableParticles ? (
-        <div className="ml-4 grid grid-cols-5 gap-1 mt-1 mb-2">
+        <div className="ml-4 grid grid-cols-3 gap-1 mt-1 mb-2">
           {PARTICLE_TYPES.map((p) => (
             <Btn
               active={config.particleType === p.type}

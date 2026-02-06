@@ -9,17 +9,17 @@ import type { ParticleType } from './effects';
 
 import { AtmosphereParticles, ParallaxRig, SceneGeometry, VideoManager } from './index';
 import {
-    AXES_HELPER_SIZE,
-    BACKGROUND_SPHERE_SCALE,
-    BACKGROUND_SPHERE_SEGMENTS,
-    DIRECTIONAL_LIGHT_INTENSITY_MULTIPLIER,
-    DIRECTIONAL_LIGHT_POSITION,
-    GRID_COLOR_CENTER,
-    GRID_COLOR_GRID,
-    GRID_DIVISIONS,
-    GRID_SIZE,
-    SCENE_BASE_WIDTH,
-    WRAPPED_PROJECTION_ANGLE_THRESHOLD,
+  AXES_HELPER_SIZE,
+  BACKGROUND_SPHERE_SCALE,
+  BACKGROUND_SPHERE_SEGMENTS,
+  DIRECTIONAL_LIGHT_INTENSITY_MULTIPLIER,
+  DIRECTIONAL_LIGHT_POSITION,
+  GRID_COLOR_CENTER,
+  GRID_COLOR_GRID,
+  GRID_DIVISIONS,
+  GRID_SIZE,
+  SCENE_BASE_WIDTH,
+  WRAPPED_PROJECTION_ANGLE_THRESHOLD,
 } from './SceneContent.constants';
 
 interface SceneContentProps {
@@ -117,7 +117,11 @@ export const SceneContent = memo((props: SceneContentProps) => {
         position={DIRECTIONAL_LIGHT_POSITION}
       />
 
-      <AtmosphereParticles enabled={config.enableParticles} {...(particleType ? { particleType } : {})} />
+      <AtmosphereParticles
+        density={config.particleDensity ?? 1.0}
+        enabled={config.enableParticles}
+        {...(particleType ? { particleType } : {})}
+      />
 
       {config.showGrid ? (
         <gridHelper args={[GRID_SIZE, GRID_DIVISIONS, GRID_COLOR_CENTER, GRID_COLOR_GRID]} />

@@ -76,15 +76,12 @@ export const StatusDisplay = memo(({ processingState, onRetry, onCancel }: Statu
 
     const getStepStatus = (stepId: string): ProcessingStep['status'] => {
       const stepOrder = ['upload', 'analyze', 'depth', 'scene'];
-      const currentIndex = stepOrder.indexOf(
-        currentStatus === 'uploading'
-          ? 'upload'
-          : currentStatus === 'analyzing'
-            ? 'analyze'
-            : currentStatus === 'processing_depth'
-              ? 'depth'
-              : 'scene'
-      );
+      let currentStep = 'scene';
+
+      if (currentStatus === 'uploading') currentStep = 'upload';
+      else if (currentStatus === 'analyzing') currentStep = 'analyze';
+      else if (currentStatus === 'processing_depth') currentStep = 'depth';
+      const currentIndex = stepOrder.indexOf(currentStep);
       const stepIndex = stepOrder.indexOf(stepId);
 
       if (stepIndex < currentIndex) return 'completed';
@@ -161,37 +158,36 @@ export const StatusDisplay = memo(({ processingState, onRetry, onCancel }: Statu
               const isActive = step.status === 'active';
               const isCompleted = step.status === 'completed';
 
+              const getDivClass = () => {
+                if (isActive) return 'bg-cyan-950/30 border-cyan-500/30';
+                if (isCompleted) return 'bg-zinc-800/50 border-zinc-700/50';
+
+                return 'bg-zinc-900/50 border-zinc-800/30 opacity-50';
+              };
+              const getIconClass = () => {
+                if (isActive) return 'text-cyan-400';
+                if (isCompleted) return 'text-green-400';
+
+                return 'text-zinc-500';
+              };
+              const getLabelClass = () => {
+                if (isActive) return 'text-cyan-300';
+                if (isCompleted) return 'text-zinc-300';
+
+                return 'text-zinc-500';
+              };
+
               return (
                 <div
                   key={step.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
-                    isActive
-                      ? 'bg-cyan-950/30 border-cyan-500/30'
-                      : isCompleted
-                        ? 'bg-zinc-800/50 border-zinc-700/50'
-                        : 'bg-zinc-900/50 border-zinc-800/30 opacity-50'
-                  }`}
+                  className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${getDivClass()}`}
                 >
-                  <div
-                    className={`${
-                      isActive ? 'text-cyan-400' : isCompleted ? 'text-green-400' : 'text-zinc-500'
-                    }`}
-                  >
+                  <div className={getIconClass()}>
                     {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : step.icon}
                   </div>
                   <div className="flex-1 text-left">
                     <div className="flex items-center justify-between">
-                      <span
-                        className={`text-sm font-medium ${
-                          isActive
-                            ? 'text-cyan-300'
-                            : isCompleted
-                              ? 'text-zinc-300'
-                              : 'text-zinc-500'
-                        }`}
-                      >
-                        {step.label}
-                      </span>
+                      <span className={`text-sm font-medium ${getLabelClass()}`}>{step.label}</span>
                       {isActive && <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />}
                     </div>
                     <p className="text-xs text-zinc-500 mt-0.5">{step.description}</p>

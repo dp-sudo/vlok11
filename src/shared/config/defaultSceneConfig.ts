@@ -1,11 +1,11 @@
 import type { SceneConfig } from '@/shared/types';
 import {
-    CameraMode,
-    CameraMotionType,
-    ColorGradePreset,
-    MirrorMode,
-    ProjectionMode,
-    RenderStyle,
+  CameraMode,
+  CameraMotionType,
+  ColorGradePreset,
+  MirrorMode,
+  ProjectionMode,
+  RenderStyle,
 } from '@/shared/types';
 
 /**

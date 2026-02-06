@@ -1,7 +1,7 @@
-import type { SceneConfig } from '@/shared/types';
 import { Brain, CloudSun } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
+import type { SceneConfig } from '@/shared/types';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from './components';
 import { AI_MOTION_STYLES, WEATHER_EFFECTS } from './constants';
 

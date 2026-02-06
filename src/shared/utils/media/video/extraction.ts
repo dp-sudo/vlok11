@@ -3,8 +3,7 @@ import Hls from 'hls.js';
 import { createLogger } from '@/core/Logger';
 import { VIDEO_PROCESSING } from '@/shared/constants/utils';
 
-import { findVideoUrlInHtml } from '../image/analysis';
-import { fetchWebPageHtmlViaProxies, validateUrl } from '../image/loading';
+import { validateUrl } from '../image/loading';
 
 const drawFrameToCanvas = (video: HTMLVideoElement, scaleMax: number, quality: number): string => {
   const { videoWidth: width, videoHeight: height } = video;
@@ -177,7 +176,9 @@ export const extractFrameFromVideo = (
       hls.loadSource(videoUrl);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch(() => {});
+        video.play().catch((err) => {
+          logger.warn('Auto-play blocked:', err);
+        });
       });
       hls.on(Hls.Events.ERROR, (_event, data) => {
         if (data.fatal) {
@@ -195,21 +196,3 @@ export const extractFrameFromVideo = (
     }
   });
 const logger = createLogger({ module: 'Utils' });
-
-export const resolveWebPageVideoUrl = async (pageUrl: string): Promise<string> => {
-  const validation = validateUrl(pageUrl);
-
-  if (!validation.valid) throw new Error(validation.error);
-  try {
-    const html = await fetchWebPageHtmlViaProxies(pageUrl);
-    const normalizedHtml = html.replace(/\\\r?\n/g, '');
-    const url = findVideoUrlInHtml(normalizedHtml, pageUrl);
-
-    if (!url) throw new Error('Could not find a valid video URL (.m3u8 or .mp4) on the page.');
-
-    return url;
-  } catch (error) {
-    logger.error('Video resolution failed', { error: String(error) });
-    throw error;
-  }
-};

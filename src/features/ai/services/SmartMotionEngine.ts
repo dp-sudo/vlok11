@@ -1,11 +1,11 @@
 import type { CameraPose, Vec3 } from '@/shared/types';
 
 import {
-    lightSceneAnalyzer,
-    type MotionStyle,
-    type SceneMood,
-    type SimpleInsight,
-    type SimpleSceneType,
+  lightSceneAnalyzer,
+  type MotionStyle,
+  type SceneMood,
+  type SimpleInsight,
+  type SimpleSceneType,
 } from './LightSceneAnalyzer';
 
 export interface MotionWaypoint {

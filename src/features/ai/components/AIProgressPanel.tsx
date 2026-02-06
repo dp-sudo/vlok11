@@ -46,7 +46,7 @@ export const AIProgressPanel = memo(() => {
         stage,
         progress: p,
         isProcessing,
-        message: STAGE_MESSAGES[stage] || stage,
+        message: STAGE_MESSAGES[stage] ?? stage,
       });
 
       setIsVisible(isProcessing || p === 100);
@@ -69,7 +69,7 @@ export const AIProgressPanel = memo(() => {
 
   if (!isVisible) return null;
 
-  const emoji = STAGE_EMOJIS[progress.stage] || '🤖';
+  const emoji = STAGE_EMOJIS[progress.stage] ?? '🤖';
 
   return (
     <div className="bg-slate-900/80 backdrop-blur-md rounded-lg p-4 border border-slate-300/50 shadow-xl">

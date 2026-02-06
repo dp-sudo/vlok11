@@ -1,8 +1,3 @@
-import type { OrthoViewPresetType } from '@/features/scene/services/camera/OrthographicPresets';
-import { getOrthoPresetDisplayInfo } from '@/features/scene/services/camera/OrthographicPresets';
-import { getMeasurementService } from '@/features/scene/services/measurement/MeasurementService';
-import type { CameraViewPreset, SceneConfig } from '@/shared/types';
-import { CameraMode, CameraMotionType } from '@/shared/types';
 import {
   ArrowDown,
   ArrowRight,
@@ -17,6 +12,11 @@ import {
 } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
+import type { OrthoViewPresetType } from '@/features/scene/services/camera/OrthographicPresets';
+import { getOrthoPresetDisplayInfo } from '@/features/scene/services/camera/OrthographicPresets';
+import { getMeasurementService } from '@/features/scene/services/measurement/MeasurementService';
+import type { CameraViewPreset, SceneConfig } from '@/shared/types';
+import { CameraMode, CameraMotionType } from '@/shared/types';
 import {
   CAMERA_MODE_LABELS,
   CAMERA_VIEWS,

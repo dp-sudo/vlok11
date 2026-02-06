@@ -1,11 +1,10 @@
+// Re-export animation durations from index.ts for backward compatibility
+// Values are synchronized with @/shared/constants ANIMATION_DURATION
+export { ANIMATION_DURATION } from './index';
+
 export const CAMERA_LIMITS = {
   NEAR: 0.1,
   FAR: 1000,
-} as const;
-
-export const CAMERA_ANIMATION = {
-  PRESET: 700,
-  BOOKMARK: 900,
 } as const;
 
 export const CAMERA_ANIMATOR = {

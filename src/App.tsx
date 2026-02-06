@@ -2,12 +2,10 @@ import { Loader2 } from 'lucide-react';
 import { lazy, memo, Suspense, useRef, useState } from 'react';
 import { getErrorHandler } from '@/core/ErrorHandler';
 import { createLogger } from '@/core/Logger';
-import { ModelManager } from '@/features/ai/components/ModelManager';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import { ControlPanel } from '@/features/controls';
 import { FloatingControls } from '@/features/controls/FloatingControls';
 import type { SceneViewerHandle } from '@/features/scene';
-import { SettingsModal } from '@/features/settings/components/SettingsModal';
 import { StatusDisplay, UploadPanel } from '@/features/upload';
 import { MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
@@ -18,9 +16,21 @@ import { useWeatherEffect } from '@/shared/hooks/useWeatherEffect';
 import type { CameraViewPreset, ProcessingState } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
 
-// Lazy load SceneViewer to optimize initial bundle size
+// Lazy load heavy components to optimize initial bundle size
 const SceneViewer = lazy(() =>
   import('@/features/scene').then((module) => ({ default: module.SceneViewer }))
+);
+
+const ModelManagerLazy = lazy(() =>
+  import('@/features/ai/components/ModelManager').then((module) => ({
+    default: module.ModelManager,
+  }))
+);
+
+const SettingsModalLazy = lazy(() =>
+  import('@/features/settings/components/SettingsModal').then((module) => ({
+    default: module.SettingsModal,
+  }))
 );
 
 const logger = createLogger({ module: 'App' });
@@ -216,8 +226,8 @@ const App = memo(() => {
         {vm.showScene ? <ControlPanel {...controlPanelProps} /> : null}
       </MobileDrawer>
 
-      <ModelManager isOpen={modelManagerOpen} onClose={() => setModelManagerOpen(false)} />
-      {settingsOpen ? <SettingsModal onClose={() => setSettingsOpen(false)} /> : null}
+      <ModelManagerLazy isOpen={modelManagerOpen} onClose={() => setModelManagerOpen(false)} />
+      {settingsOpen ? <SettingsModalLazy onClose={() => setSettingsOpen(false)} /> : null}
     </div>
   );
 });

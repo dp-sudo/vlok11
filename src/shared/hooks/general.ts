@@ -462,7 +462,7 @@ export {
   useMotionService,
 } from '@/features/scene/services/camera';
 export {
-  useCameraController,
   type CameraControllerOptions,
   type CameraControllerReturn,
+  useCameraController,
 } from '@/shared/hooks/useCameraController';

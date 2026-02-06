@@ -1,7 +1,7 @@
-import type { SceneConfig } from '@/shared/types';
 import { Info, Layers, Maximize2, Sliders, Sun } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
+import type { SceneConfig } from '@/shared/types';
 import { Btn, CardBtn, CollapsibleSection, Slider, Toggle } from '../components';
 import { DEPTH_PRESETS, MIRROR_MODES, PROJECTIONS } from '../constants';
 
@@ -163,4 +163,3 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
 SceneTab.displayName = 'SceneTab';
 
 export type { SceneTabProps };
-

@@ -1,5 +1,3 @@
-import { createLogger } from '@/core/Logger';
-
 export function constrainImageDimensions(
   width: number,
   height: number,
@@ -23,28 +21,7 @@ export function constrainImageDimensions(
 
   return { width: Math.round(w), height: Math.round(h) };
 }
-export async function fetchWebPageHtmlViaProxies(pageUrl: string): Promise<string> {
-  const html = (await tryFetchAllOriginsHtml(pageUrl)) || (await tryFetchCorsProxyHtml(pageUrl));
 
-  if (!html) {
-    throw new Error('Failed to fetch page content via proxies.');
-  }
-
-  return html;
-}
-export async function getImageDimensions(url: string): Promise<ImageDimensions> {
-  try {
-    const img = await safeLoadImage(url);
-
-    return {
-      width: img.width,
-      height: img.height,
-      aspectRatio: img.width / img.height,
-    };
-  } catch {
-    throw new Error('Failed to get image dimensions. Invalid link, not an image, or CORS blocked.');
-  }
-}
 export function safeLoadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const validation = validateUrl(url);
@@ -62,44 +39,7 @@ export function safeLoadImage(url: string): Promise<HTMLImageElement> {
     img.src = url;
   });
 }
-export function toAbsoluteUrl(url: string, pageUrl: string): string {
-  try {
-    if (url.startsWith('//')) return `https:${url}`;
-    if (!url.startsWith('http')) return new URL(url, pageUrl).href;
 
-    return url;
-  } catch {
-    return url;
-  }
-}
-export async function tryFetchAllOriginsHtml(pageUrl: string): Promise<string> {
-  try {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(pageUrl)}`;
-    const response = await fetch(proxyUrl);
-
-    if (!response.ok) return '';
-    const data = await response.json();
-
-    return data.contents ?? '';
-  } catch (e) {
-    logger.warn('AllOrigins proxy failed', { error: String(e) });
-
-    return '';
-  }
-}
-export async function tryFetchCorsProxyHtml(pageUrl: string): Promise<string> {
-  try {
-    const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(pageUrl)}`);
-
-    if (!response.ok) return '';
-
-    return await response.text();
-  } catch (e) {
-    logger.warn('CorsProxy failed', { error: String(e) });
-
-    return '';
-  }
-}
 export function validateUrl(url: string): UrlValidationResult {
   try {
     if (url.startsWith('data:') || url.startsWith('blob:')) {
@@ -124,11 +64,6 @@ export function validateUrl(url: string): UrlValidationResult {
   }
 }
 
-export interface ImageDimensions {
-  aspectRatio: number;
-  height: number;
-  width: number;
-}
 export interface UrlValidationResult {
   error?: string;
   valid: boolean;
@@ -163,4 +98,3 @@ const BLOCKED_HOSTS = [
   'metadata.aws',
   '169.254.169.254',
 ];
-const logger = createLogger({ module: 'ImageLoading' });

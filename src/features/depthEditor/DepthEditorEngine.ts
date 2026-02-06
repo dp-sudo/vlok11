@@ -269,7 +269,7 @@ export class DepthEditorEngine {
     const queue: QueueItem[] = [[startX, startY]];
     // 使用 Uint8Array 替代 Set<string>，内存效率更高
     const visited = new Uint8Array(this.width * this.height);
-    const width = this.width;
+    const { width } = this;
 
     while (queue.length > 0) {
       const [cx, cy] = queue.shift()!;
@@ -343,7 +343,15 @@ export class DepthEditorEngine {
       if (!stroke) continue;
 
       for (const point of stroke.points) {
-        this.applyStrokeToData(data, originalData, stroke.tool, point.x, point.y, stroke.settings, point.pressure);
+        this.applyStrokeToData(
+          data,
+          originalData,
+          stroke.tool,
+          point.x,
+          point.y,
+          stroke.settings,
+          point.pressure
+        );
       }
     }
 

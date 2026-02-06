@@ -1,0 +1,10 @@
+
+> immersa-3d-scene-viewer@1.0.0 biome:check
+> biome check src
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 130.
+Checked 247 files in 124ms. No fixes applied.
+Found 52 errors.
+Found 5 warnings.
+Found 93 infos.

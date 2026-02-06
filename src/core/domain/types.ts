@@ -1,46 +1,56 @@
 export function isImageAsset(asset: Asset): asset is ImageAsset {
   return asset.type === 'image';
 }
-export function isValidAnalysisResult(obj: unknown): obj is AnalysisResult {
-  if (!obj || typeof obj !== 'object') return false;
-  const a = obj as Record<string, unknown>;
+
+export const isValidAnalysisResult = (analysis: unknown): analysis is AnalysisResult => {
+  if (typeof analysis !== 'object' || analysis === null) return false;
+
+  const a = analysis as Partial<AnalysisResult>;
 
   return (
-    typeof a['sceneType'] === 'string' &&
-    Object.values(SceneType).includes(a['sceneType'] as SceneType) &&
-    typeof a['description'] === 'string' &&
-    typeof a['estimatedDepthScale'] === 'number' &&
-    typeof a['recommendedFov'] === 'number' &&
-    typeof a['recommendedPipeline'] === 'string' &&
-    typeof a['reasoning'] === 'string'
+    typeof a.sceneType === 'string' &&
+    Object.values(SceneType).includes(a.sceneType) &&
+    typeof a.description === 'string' &&
+    typeof a.estimatedDepthScale === 'number' &&
+    Array.isArray(a.keywords)
   );
-}
+};
+
 export function isValidAsset(obj: unknown): obj is Asset {
   if (!obj || typeof obj !== 'object') return false;
-  const a = obj as Record<string, unknown>;
+  const a = obj as Partial<Asset>;
 
   return (
-    typeof a['id'] === 'string' &&
-    typeof a['sourceUrl'] === 'string' &&
-    (a['type'] === 'image' || a['type'] === 'video') &&
-    typeof a['width'] === 'number' &&
-    typeof a['height'] === 'number' &&
-    typeof a['aspectRatio'] === 'number' &&
-    typeof a['createdAt'] === 'number'
+    typeof a.id === 'string' &&
+    typeof a.sourceUrl === 'string' &&
+    (a.type === 'image' || a.type === 'video') &&
+    typeof a.width === 'number' &&
+    typeof a.height === 'number' &&
+    typeof a.aspectRatio === 'number' &&
+    typeof a.createdAt === 'number'
   );
 }
-export function isValidProcessedAsset(obj: unknown): obj is ProcessedAsset {
-  if (!obj || typeof obj !== 'object') return false;
-  const p = obj as Record<string, unknown>;
+export const isValidProcessedResult = (result: unknown): result is ProcessedAsset => {
+  if (typeof result !== 'object' || result === null) return false;
+
+  const r = result as Partial<ProcessedAsset>;
+  const asset = r.asset as Partial<Asset> | undefined;
+
+  const isValidAsset =
+    typeof asset === 'object' &&
+    asset !== null &&
+    typeof asset.id === 'string' &&
+    typeof asset.type === 'string' &&
+    typeof asset.sourceUrl === 'string';
 
   return (
-    isValidAsset(p['asset']) &&
-    typeof p['depthMapUrl'] === 'string' &&
-    typeof p['imageUrl'] === 'string' &&
-    isValidAnalysisResult(p['analysis']) &&
-    typeof p['processingTime'] === 'number'
+    isValidAsset &&
+    typeof r.imageUrl === 'string' &&
+    typeof r.depthMapUrl === 'string' &&
+    isValidAnalysisResult(r.analysis) &&
+    typeof r.processingTime === 'number'
   );
-}
+};
 export function isValidStatusTransition(from: SessionStatus, to: SessionStatus): boolean {
   return SESSION_STATUS_TRANSITIONS[from]?.includes(to) ?? false;
 }

@@ -1,0 +1,32 @@
+
+A:\3d\src\features\ai\components\AIProgressPanel.tsx
+  49:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  72:46  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+A:\3d\src\features\scene\components\effects\AtmosphereParticles.tsx
+  448:5  warning  Do not nest ternary expressions  no-nested-ternary
+
+A:\3d\src\features\upload\StatusDisplay.tsx
+   80:9   warning  Do not nest ternary expressions  no-nested-ternary
+   82:13  warning  Do not nest ternary expressions  no-nested-ternary
+  168:21  warning  Do not nest ternary expressions  no-nested-ternary
+  177:23  warning  Do not nest ternary expressions  no-nested-ternary
+  186:27  warning  Do not nest ternary expressions  no-nested-ternary
+
+A:\3d\src\features\upload\UploadPanel.tsx
+  242:43  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  250:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  284:43  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  292:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  516:22  warning  Do not nest ternary expressions                                                                            no-nested-ternary
+
+A:\3d\src\features\upload\pipeline\UploadPipeline.ts
+  154:15  warning  Use object destructuring  prefer-destructuring
+  155:15  warning  Use object destructuring  prefer-destructuring
+  156:15  warning  Use object destructuring  prefer-destructuring
+  157:15  warning  Use object destructuring  prefer-destructuring
+  166:15  warning  Use object destructuring  prefer-destructuring
+  167:15  warning  Use object destructuring  prefer-destructuring
+
+✖ 19 problems (0 errors, 19 warnings)
+

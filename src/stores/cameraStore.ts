@@ -1,3 +1,6 @@
+import type { StateCreator } from 'zustand';
+import { create } from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 import { getEventBus } from '@/core/EventBus';
 import {
   type CameraPresetType,
@@ -5,9 +8,6 @@ import {
   calculatePresetPose,
 } from '@/features/scene/services/camera/CameraPresets';
 import { CAMERA } from '@/shared/constants';
-import type { StateCreator } from 'zustand';
-import { create } from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
 
 import type {
   InteractionType,
@@ -200,6 +200,7 @@ const createInteractionActions = (
   captureBasePose: (pose: CameraPose) => {
     if (!isValidPose(pose)) {
       console.warn('Invalid pose received in captureBasePose');
+
       return;
     }
     set({ basePose: { ...pose } });
@@ -264,6 +265,7 @@ const createMotionActions = (
   updateMotionProgress: (progress: number) => {
     // 确保 progress 在有效范围内 [0, 1]
     const clampedProgress = Math.max(0, Math.min(1, progress));
+
     set((state) => ({
       motion: { ...state.motion, progress: clampedProgress },
     }));
@@ -278,6 +280,7 @@ const createPoseActions = (
     // 验证姿态数据
     if (!isValidPose(newPose)) {
       console.warn('Invalid pose data in setPose:', newPose);
+
       return;
     }
 
@@ -303,6 +306,7 @@ const createPoseActions = (
   },
   setFov: (fov: number) => {
     const clampedFov = Math.max(CAMERA.FOV_MIN, Math.min(CAMERA.FOV_MAX, fov));
+
     get().setPose({ fov: clampedFov }, 'user');
   },
   addBookmark: (name: string) => {
@@ -310,6 +314,7 @@ const createPoseActions = (
 
     if (!name || name.trim().length === 0) {
       console.warn('Cannot add bookmark with empty name');
+
       return;
     }
 
@@ -385,6 +390,7 @@ const createOrthoActions = (
     const clampedZoom = Number.isFinite(zoom)
       ? Math.max(1, Math.min(100, zoom))
       : DEFAULT_ORTHO_ZOOM;
+
     set({ orthoZoomMemory: clampedZoom });
   },
 
@@ -392,6 +398,7 @@ const createOrthoActions = (
     const clampedFov = Number.isFinite(fov)
       ? Math.max(CAMERA.FOV_MIN, Math.min(CAMERA.FOV_MAX, fov))
       : DEFAULT_FOV;
+
     set({ perspectiveFovMemory: clampedFov });
   },
 

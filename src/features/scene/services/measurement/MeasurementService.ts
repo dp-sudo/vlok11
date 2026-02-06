@@ -1,6 +1,6 @@
+import { Vector3 } from 'three';
 import { getEventBus } from '@/core/EventBus';
 import { createLogger } from '@/core/Logger';
-import { Vector3 } from 'three';
 
 const logger = createLogger({ module: 'MeasurementService' });
 

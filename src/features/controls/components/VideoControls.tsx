@@ -1,12 +1,12 @@
 import {
-    ChevronLeft,
-    ChevronRight,
-    Gauge,
-    Pause,
-    Play,
-    Repeat,
-    Volume2,
-    VolumeX,
+  ChevronLeft,
+  ChevronRight,
+  Gauge,
+  Pause,
+  Play,
+  Repeat,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import type React from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -274,6 +274,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
         onDragStart();
 
         const touch = e.touches[0];
+
         if (!touch) return;
         const time = calculateTimeFromPosition(touch.clientX);
 
@@ -290,6 +291,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
       const handleTouchMove = (e: TouchEvent) => {
         e.preventDefault();
         const touch = e.touches[0];
+
         if (!touch) return;
         const time = calculateTimeFromPosition(touch.clientX);
 
@@ -333,7 +335,10 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
       <div className="px-4 py-4 border-b border-slate-700/50 bg-gradient-to-b from-slate-900 to-slate-800 select-none">
         {/* Top Controls: Play/Pause/Seek + Volume */}
         <div className="flex items-center gap-4 mb-3">
-          <PlayButton isPlaying={videoState.isPlaying} {...(onTogglePlay ? { onClick: onTogglePlay } : {})} />
+          <PlayButton
+            isPlaying={videoState.isPlaying}
+            {...(onTogglePlay ? { onClick: onTogglePlay } : {})}
+          />
 
           {/* 快进/快退按钮 - 每次跳跃5秒 */}
           <div className="flex items-center gap-1">

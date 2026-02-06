@@ -35,7 +35,10 @@ export interface PipelineOptions {
 }
 
 class LegacyStageAdapter implements CorePipelineStage<StageInput, StageOutput> {
-  constructor(private legacyStage: LegacyPipelineStage) {}
+  constructor(
+    private legacyStage: LegacyPipelineStage,
+    private onStageOutput: (output: StageOutput) => void
+  ) {}
 
   async execute(input: StageInput, context: StageContext<StageInput>): Promise<StageOutput> {
     const inputWithContext = { ...input, signal: context.signal, runId: context.runId };
@@ -44,7 +47,15 @@ class LegacyStageAdapter implements CorePipelineStage<StageInput, StageOutput> {
       return { ...inputWithContext, success: true };
     }
 
-    return this.legacyStage.execute(inputWithContext);
+    const output = await this.legacyStage.execute(inputWithContext);
+
+    this.onStageOutput(output);
+
+    if (!output.success) {
+      throw output.error ?? new Error(`Stage ${this.name} failed without explicit error`);
+    }
+
+    return output;
   }
 
   get name(): string {
@@ -68,9 +79,15 @@ const buildAsset = (
   const baseAsset = {
     id: generateUUID(),
     sourceUrl: imageUrl,
-    width: ((stageInput.metadata as Record<string, unknown>)?.['width'] as number) ?? ASSET_DEFAULTS.WIDTH,
-    height: ((stageInput.metadata as Record<string, unknown>)?.['height'] as number) ?? ASSET_DEFAULTS.HEIGHT,
-    aspectRatio: ((stageInput.metadata as Record<string, unknown>)?.['aspectRatio'] as number) ?? ASSET_DEFAULTS.ASPECT_RATIO,
+    width:
+      ((stageInput.metadata as Record<string, unknown>)?.['width'] as number) ??
+      ASSET_DEFAULTS.WIDTH,
+    height:
+      ((stageInput.metadata as Record<string, unknown>)?.['height'] as number) ??
+      ASSET_DEFAULTS.HEIGHT,
+    aspectRatio:
+      ((stageInput.metadata as Record<string, unknown>)?.['aspectRatio'] as number) ??
+      ASSET_DEFAULTS.ASPECT_RATIO,
     createdAt: Date.now(),
   };
 
@@ -78,7 +95,9 @@ const buildAsset = (
     return {
       ...baseAsset,
       type: 'video' as const,
-      duration: ((stageInput.metadata as Record<string, unknown>)?.['duration'] as number) ?? ASSET_DEFAULTS.DURATION,
+      duration:
+        ((stageInput.metadata as Record<string, unknown>)?.['duration'] as number) ??
+        ASSET_DEFAULTS.DURATION,
       thumbnailUrl: imageUrl,
       sourceUrl: stageInput.videoUrl ?? imageUrl,
     };
@@ -105,7 +124,7 @@ const logger = createLogger({ module: 'UploadPipeline' });
 
 class UploadPipelineImpl implements UploadPipelineInterface {
   private abortController: AbortController | null = null;
-  private blobUrls: string[] = []; // Track created blob URLs for cleanup
+  private blobUrls: Set<string> = new Set(); // Track created blob URLs for cleanup
   private completeCallbacks = new Set<CompleteCallback>();
   private currentProgress: PipelineProgress = {
     stage: '',
@@ -137,16 +156,15 @@ class UploadPipelineImpl implements UploadPipelineInterface {
     ].sort((a, b) => a.order - b.order);
 
     this.legacyStages.forEach((stage) => {
-      this.engine.registerStage(stage.name, new LegacyStageAdapter(stage));
+      this.engine.registerStage(
+        stage.name,
+        new LegacyStageAdapter(stage, (output) => this.trackBlobUrlsFromStageInput(output))
+      );
     });
 
     this.unsubscriptions.push(
       getEventBus().on('pipeline:stage-started', (payload) => {
-        const p = payload as Record<string, unknown>;
-        const stage = p['stage'];
-        const index = p['index'];
-        const total = p['total'];
-        const progress = p['progress'];
+        const { stage, index, total, progress } = payload as Record<string, unknown>;
 
         // Prevent infinite loop: ignore events that already have progress (re-emitted by this pipeline)
         if (typeof progress !== 'undefined') return;
@@ -154,9 +172,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
         this.emitStageStart(String(stage), Number(index), Number(total));
       }),
       getEventBus().on('pipeline:stage-completed', (payload) => {
-        const p = payload as Record<string, unknown>;
-        const stage = p['stage'];
-        const progress = p['progress'];
+        const { stage, progress } = payload as Record<string, unknown>;
 
         // Prevent infinite loop: ignore events that already have progress (re-emitted by this pipeline)
         if (typeof progress !== 'undefined') return;
@@ -256,7 +272,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
       const output = await this.engine.execute<StageInput>(
         stageInput,
         config,
-        this.abortController!.signal
+        this.abortController.signal
       );
 
       const finalOutput = output as StageOutput;
@@ -274,6 +290,9 @@ class UploadPipelineImpl implements UploadPipelineInterface {
         error instanceof Error ? error : new Error(String(error)),
         stageInput
       );
+      // We throw a silent internal exception to break out of process() cleanly without
+      // spamming the console stack trace, because handleStageError has already communicated the issue.
+      throw new Error('Pipeline Execution Interrupted');
     }
   }
 
@@ -311,7 +330,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
     stageName: string,
     error: Error | undefined,
     stageInput: StageInput
-  ): never {
+  ): void {
     const err = error ?? new Error(`Stage ${stageName} failed`);
     const recoveryOptions = this.getRecoveryOptions(stageName, stageInput);
 
@@ -322,8 +341,10 @@ class UploadPipelineImpl implements UploadPipelineInterface {
       stage: stageName,
       error: err.message,
     });
-    throw err;
+    // Removed external throw to prevent unhandled rejection spam:
+    // Error is fully propagated via callbacks/events now.
   }
+
   onComplete(callback: CompleteCallback): () => void {
     this.completeCallbacks.add(callback);
 
@@ -350,12 +371,17 @@ class UploadPipelineImpl implements UploadPipelineInterface {
     this.eventEmitter.emit(PipelineEvents.STARTED, { inputType });
     let stageInput = createStageInput(input, this.abortController.signal, this.currentRunId);
 
-    stageInput = await this.executeStages(stageInput);
+    try {
+      stageInput = await this.executeStages(stageInput);
 
-    // Track blob URLs created during processing for cleanup
-    this.trackBlobUrlsFromStageInput(stageInput);
+      this.trackBlobUrlsFromStageInput(stageInput);
 
-    return this.buildResult(stageInput);
+      return this.buildResult(stageInput);
+    } catch (error) {
+      // In case of abort or pipeline error, we ensure any blobs created mid-flight are revoked to prevent leak
+      this.releaseBlobUrls();
+      throw error;
+    }
   }
 
   private trackBlobUrlsFromStageInput(stageInput: StageInput): void {
@@ -365,7 +391,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
       (url): url is string => typeof url === 'string' && url.startsWith('blob:')
     );
 
-    this.blobUrls.push(...urlsToTrack);
+    urlsToTrack.forEach((url) => this.blobUrls.add(url));
   }
 
   private releaseBlobUrls(): void {
@@ -377,7 +403,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
         logger.warn('Failed to revoke blob URL', { url, error: String(error) });
       }
     }
-    this.blobUrls = [];
+    this.blobUrls.clear();
   }
 
   private updateProgress(progress: PipelineProgress): void {
@@ -389,4 +415,3 @@ class UploadPipelineImpl implements UploadPipelineInterface {
 }
 
 export { UploadPipelineImpl as UploadPipeline };
-

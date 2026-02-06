@@ -256,20 +256,14 @@ export interface QueuedAnimation {
   id: string;
   priority?: number;
 }
+export interface RecoveryOption {
+  action: () => void | Promise<void>;
+  label: string;
+}
 export type {
   AIImmersiveConfig,
   AnimeStyleConfig,
   CameraControlConfig,
-  CelStyleConfig,
-  CrystalStyleConfig,
-  HologramStyleConfig,
-  InkWashStyleConfig,
-  MatrixStyleConfig,
-  MotionParamsConfig,
-  PostProcessConfig,
-  RecordingConfig,
-  RenderMeshConfig,
-  RetroStyleConfig,
   SceneConfig,
   StyleEffectsConfig,
   UIDisplayConfig,
@@ -314,7 +308,7 @@ export {
   isImageAsset,
   isValidAnalysisResult,
   isValidAsset,
-  isValidProcessedAsset,
+  isValidProcessedResult,
   isValidStatusTransition,
   isVideoAsset,
   MirrorMode,

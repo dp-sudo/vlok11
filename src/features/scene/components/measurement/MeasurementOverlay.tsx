@@ -1,7 +1,7 @@
-import { getEventBus } from '@/core/EventBus';
 import { Html } from '@react-three/drei';
 import { memo, useEffect, useState } from 'react';
 import type { Vector3 } from 'three';
+import { getEventBus } from '@/core/EventBus';
 import {
   getMeasurementService,
   type Measurement,
@@ -133,7 +133,7 @@ const MeasurementItem: React.FC<{ measurement: Measurement }> = memo(({ measurem
             <bufferAttribute
               attach="attributes-position"
               count={3}
-              args={[new Float32Array([...p1!.toArray(), ...p2!.toArray(), ...p3!.toArray()]), 3]}
+              args={[new Float32Array([...p1.toArray(), ...p2.toArray(), ...p3.toArray()]), 3]}
             />
           </bufferGeometry>
           <lineBasicMaterial color="#ff8800" linewidth={2} />

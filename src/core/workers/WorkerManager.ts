@@ -74,6 +74,7 @@ export class WorkerManager implements Disposable {
   async dispose(): Promise<void> {
     if (this.disposed) {
       logger.warn('WorkerManager already disposed');
+
       return;
     }
 
@@ -159,6 +160,7 @@ export class WorkerManager implements Disposable {
     try {
       for (let i = 0; i < this.poolSize; i++) {
         const worker = this.createWorker(name);
+
         pool.push(worker);
       }
     } catch (error) {
@@ -176,6 +178,7 @@ export class WorkerManager implements Disposable {
   /** 获取指定 worker pool 的状态信息 */
   getPoolStatus(name: string): { workerCount: number; pendingTasks: number } | null {
     const pool = this.workerPools.get(name);
+
     if (!pool) return null;
 
     return {

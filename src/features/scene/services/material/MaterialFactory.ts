@@ -1,25 +1,25 @@
 import {
-    AdditiveBlending,
-    Color,
-    DoubleSide,
-    type Material,
-    MeshStandardMaterial,
-    type ShaderMaterial,
-    type Texture,
-    type WebGLProgramParametersWithUniforms,
+  AdditiveBlending,
+  Color,
+  DoubleSide,
+  type Material,
+  MeshStandardMaterial,
+  type ShaderMaterial,
+  type Texture,
+  type WebGLProgramParametersWithUniforms,
 } from 'three';
 
 import { createLogger } from '@/core/Logger';
 import { RenderStyle } from '@/shared/types';
 
 import {
-    AnimeMaterialClass,
-    CelMaterialClass,
-    CrystalMaterialClass,
-    HologramV2MaterialClass,
-    InkWashMaterialClass,
-    MatrixMaterialClass,
-    RetroPixelMaterialClass,
+  AnimeMaterialClass,
+  CelMaterialClass,
+  CrystalMaterialClass,
+  HologramV2MaterialClass,
+  InkWashMaterialClass,
+  MatrixMaterialClass,
+  RetroPixelMaterialClass,
 } from '../../materials';
 
 import { STANDARD_MATERIAL } from './MaterialFactory.constants';

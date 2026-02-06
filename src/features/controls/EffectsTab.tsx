@@ -1,8 +1,8 @@
-import type { SceneConfig } from '@/shared/types';
-import { RenderStyle } from '@/shared/types';
 import { Layers, Moon, Palette, Sparkles, Sun } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
+import type { SceneConfig } from '@/shared/types';
+import { RenderStyle } from '@/shared/types';
 import {
   AnimeStyleControls,
   Btn,

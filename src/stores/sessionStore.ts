@@ -4,10 +4,10 @@ import { isValidStatusTransition } from '@/core/domain/types';
 import type { AIService } from '@/features/ai/services/AIService';
 import { createUploadPipeline, type UploadPipeline } from '@/features/upload/pipeline';
 import type {
-    Asset,
-    ExportStateInfo,
-    ProcessingResult,
-    ProcessingStatus,
+  Asset,
+  ExportStateInfo,
+  ProcessingResult,
+  ProcessingStatus,
 } from '@/shared/domain/types';
 
 /**
@@ -128,7 +128,12 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       try {
         const p = ensurePipeline();
 
-        void p.process(input);
+        p.process(input).catch((error) => {
+          // Rejection now caught and delegated cleanly to error handler
+          get().uploadError(
+            error instanceof Error ? error.message : 'Pipeline aborted or threw unexpectedly'
+          );
+        });
       } catch (error) {
         get().uploadError(error instanceof Error ? error.message : 'Unknown initialization error');
       }

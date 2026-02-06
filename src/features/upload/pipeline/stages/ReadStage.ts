@@ -1,9 +1,9 @@
 import { createLogger } from '@/core/Logger';
 import {
-    ALLOWED_IMAGE_TYPES,
-    ALLOWED_VIDEO_TYPES,
-    BYTES_PER_KB,
-    MAX_FILE_SIZE_MB,
+  ALLOWED_IMAGE_TYPES,
+  ALLOWED_VIDEO_TYPES,
+  BYTES_PER_KB,
+  MAX_FILE_SIZE_MB,
 } from '@/shared/constants';
 import { extractFrameFromVideo, validateUrl } from '@/shared/utils';
 
@@ -23,69 +23,79 @@ export class ReadStage implements PipelineStage {
         if (file.size > MAX_FILE_SIZE) {
           throw new Error(`文件过大，最大允许 ${MAX_FILE_SIZE / BYTES_PER_KB / BYTES_PER_KB}MB`);
         }
-        const isValidType = ALLOWED_MIME_TYPES.some(
-          (type) =>
-            file.type === type || file.type.startsWith('image/') || file.type.startsWith('video/')
-        );
+        const validImageTypes = ALLOWED_IMAGE_TYPES as readonly string[];
+        const validVideoTypes = ALLOWED_VIDEO_TYPES as readonly string[];
+        const isValidType =
+          validImageTypes.includes(file.type) ||
+          validVideoTypes.includes(file.type) ||
+          file.type === 'video/x-msvideo' ||
+          file.type.startsWith('image/') ||
+          file.type.startsWith('video/');
 
         if (!isValidType && file.type) {
           throw new Error(`不支持的文件类型: ${file.type}`);
         }
 
         const fileUrl = URL.createObjectURL(file);
-        const isVideo = isVideoFile(file);
 
-        let imageBase64: string;
-        let imageUrl: string;
-        let aspectRatio: number;
-        let videoUrl: string | undefined;
+        try {
+          const isVideo = isVideoFile(file);
 
-        if (isVideo) {
-          const frameResult = await extractFrameFromVideo(fileUrl);
+          let imageBase64: string;
+          let imageUrl: string;
+          let aspectRatio: number;
+          let videoUrl: string | undefined;
 
-          throwIfAborted(input.signal);
-          imageBase64 = frameResult.base64;
-          imageUrl = frameResult.base64;
-          ({ aspectRatio } = frameResult);
-          videoUrl = fileUrl;
+          if (isVideo) {
+            const frameResult = await extractFrameFromVideo(fileUrl);
 
-          Object.assign(input, {
-            metadata: {
-              ...input.metadata,
-              duration: frameResult.duration,
-            },
-          });
-        } else {
-          imageBase64 = await this.fileToBase64(file);
-          throwIfAborted(input.signal);
-          imageUrl = fileUrl;
-          aspectRatio = await this.getImageAspectRatio(fileUrl);
-        }
+            throwIfAborted(input.signal);
+            imageBase64 = frameResult.base64;
+            imageUrl = frameResult.base64;
+            ({ aspectRatio } = frameResult);
+            videoUrl = fileUrl;
 
-        const result = {
-          ...input,
-          imageBase64,
-          imageUrl,
+            Object.assign(input, {
+              metadata: {
+                ...input.metadata,
+                duration: frameResult.duration,
+              },
+            });
+          } else {
+            imageBase64 = await this.fileToBase64(file);
+            throwIfAborted(input.signal);
+            imageUrl = fileUrl;
+            aspectRatio = await this.getImageAspectRatio(fileUrl);
+          }
+
+          const result = {
+            ...input,
+            imageBase64,
+            imageUrl,
             ...(videoUrl ? { videoUrl } : {}),
             metadata: {
               ...input.metadata,
-            aspectRatio,
-            fileName: this.sanitizeFileName(file.name),
-            fileSize: file.size,
-            fileType: file.type,
-            isVideo,
+              aspectRatio,
+              fileName: this.sanitizeFileName(file.name),
+              fileSize: file.size,
+              fileType: file.type,
+              isVideo,
 
-            duration: (input.metadata as { duration?: number })?.duration,
-          },
-          success: true,
-        };
+              duration: (input.metadata as { duration?: number })?.duration,
+            },
+            success: true,
+          };
 
-        logger.info('ReadStage output (file)', {
-          hasImageUrl: !!result.imageUrl,
-          imageUrl: result.imageUrl?.substring(0, 50),
-        });
+          logger.info('ReadStage output (file)', {
+            hasImageUrl: !!result.imageUrl,
+            imageUrl: typeof result.imageUrl === 'string' ? result.imageUrl.substring(0, 50) : '',
+          });
 
-        return result;
+          return result;
+        } catch (innerError) {
+          URL.revokeObjectURL(fileUrl);
+          throw innerError;
+        }
       } else if (input.url) {
         throwIfAborted(input.signal);
         const validation = validateUrl(input.url);
@@ -188,7 +198,6 @@ export class ReadStage implements PipelineStage {
   }
 }
 
-const ALLOWED_MIME_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES, 'video/x-msvideo'];
 const isVideoFile = (file: File): boolean => file.type.startsWith('video/');
 const isVideoUrl = (url: string): boolean => /\.(mp4|webm|mov|m3u8|avi|mkv)(\?|$)/i.test(url);
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * BYTES_PER_KB * BYTES_PER_KB;

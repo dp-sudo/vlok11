@@ -1,4 +1,6 @@
-import type { CameraPose, Vec3 } from '@/shared/types';
+import type { CameraPose, MotionParams, MotionResult, Vec3 } from '@/shared/types';
+
+export type { MotionParams, MotionResult } from '@/shared/types';
 
 export type MotionType =
   | 'ORBIT'
@@ -8,29 +10,6 @@ export type MotionType =
   | 'SPIRAL'
   | 'TRACKING'
   | 'STATIC';
-
-export interface MotionResult {
-  fov: number;
-  position: Vec3;
-  target: Vec3;
-}
-
-export interface MotionParams {
-  arcAngle: number;
-  arcRhythm: number;
-  dollyIntensity: number;
-  dollyRange: number;
-  flyByHeight: number;
-  flyBySwing: number;
-  orbitRadius: number;
-  orbitTilt: number;
-  scale: number;
-  speed: number;
-  spiralHeight: number;
-  spiralLoops: number;
-  trackingDistance: number;
-  trackingOffset: number;
-}
 
 export const DEFAULT_MOTION_PARAMS: MotionParams = {
   arcAngle: 90,

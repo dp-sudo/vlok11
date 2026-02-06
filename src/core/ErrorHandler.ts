@@ -1,7 +1,10 @@
 import { MAX_ERROR_HISTORY } from '@/shared/constants';
+import type { RecoveryOption } from '@/shared/types';
 
 import { type ErrorCode, ErrorCodes, getErrorMessage } from './ErrorCodes';
 import { getEventBus } from './EventBus';
+
+export type { RecoveryOption };
 
 export class ErrorHandler implements ErrorHandlerContract {
   private static instance: ErrorHandler | null = null;
@@ -42,6 +45,7 @@ export class ErrorHandler implements ErrorHandlerContract {
   clearHistory(): void {
     if (this.disposed) {
       console.warn('ErrorHandler already disposed');
+
       return;
     }
     this.history = [];
@@ -63,6 +67,7 @@ export class ErrorHandler implements ErrorHandlerContract {
   createError(code: string, message: string, options?: Partial<AppError>): AppError {
     if (this.disposed) {
       console.warn('ErrorHandler has been disposed, cannot create new error');
+
       return {
         code: 'DISPOSED',
         message: 'ErrorHandler has been disposed',
@@ -122,7 +127,10 @@ export class ErrorHandler implements ErrorHandlerContract {
   handle(error: Error | AppError, context?: { context?: string }): AppError {
     if (this.disposed) {
       console.warn('ErrorHandler has been disposed, error not recorded:', error);
-      return this.createError('DISPOSED', 'ErrorHandler disposed', { ...(context?.context ? { context: context.context } : {}) });
+
+      return this.createError('DISPOSED', 'ErrorHandler disposed', {
+        ...(context?.context ? { context: context.context } : {}),
+      });
     }
 
     const appError = this.normalizeError(error, context?.context);
@@ -164,7 +172,7 @@ export class ErrorHandler implements ErrorHandlerContract {
       timestamp: Date.now(),
       recoverable: severity !== ErrorSeverity.FATAL,
       ...(recoveryOptions ? { recoveryOptions } : {}),
-      originalError: error as Error,
+      originalError: error,
     } as AppError;
   }
 
@@ -181,6 +189,7 @@ export class ErrorHandler implements ErrorHandlerContract {
   onFatalError(callback: (error: AppError) => void): () => void {
     if (this.disposed) {
       console.warn('Adding fatal callback to disposed ErrorHandler');
+
       return () => {};
     }
 
@@ -358,10 +367,6 @@ export interface ErrorHandlerContract {
   onFatalError(callback: (error: AppError) => void): () => void;
   dispose(): void;
   isDisposed(): boolean;
-}
-export interface RecoveryOption {
-  action: () => void | Promise<void>;
-  label: string;
 }
 
 export enum ErrorSeverity {

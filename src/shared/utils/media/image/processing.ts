@@ -155,47 +155,6 @@ function applyBlurAndComposite(
   }
 }
 
-/**
- * 调整图像尺寸
- */
-export async function resizeImage(
-  imageUrl: string,
-  maxDimension = IMAGE_PROCESSING.RESIZE_DEFAULT_MAX
-): Promise<string> {
-  const img = await safeLoadImage(imageUrl);
-  const { width, height } = calculateResizedDimensions(img.width, img.height, maxDimension);
-
-  const { canvas, ctx } = createCanvas(width, height);
-
-  ctx.drawImage(img, 0, 0, width, height);
-
-  return canvas.toDataURL('image/jpeg', IMAGE_PROCESSING.RESIZE_JPEG_QUALITY);
-}
-
-/**
- * 计算调整后的尺寸
- */
-function calculateResizedDimensions(
-  originalWidth: number,
-  originalHeight: number,
-  maxDimension: number
-): { width: number; height: number } {
-  let width = originalWidth;
-  let height = originalHeight;
-
-  if (width > height) {
-    if (width > maxDimension) {
-      height = Math.round(height * (maxDimension / width));
-      width = maxDimension;
-    }
-  } else if (height > maxDimension) {
-    width = Math.round(width * (maxDimension / height));
-    height = maxDimension;
-  }
-
-  return { width, height };
-}
-
 // ==================== 类型定义 ====================
 
 export interface ApplyDepthParams {

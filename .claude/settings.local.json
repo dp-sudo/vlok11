@@ -13,7 +13,9 @@
       "Bash(npm run build)",
       "Bash(rg:*)",
       "Bash(find:*)",
-      "mcp__fetch__fetch"
+      "mcp__fetch__fetch",
+      "Bash(npx knip)",
+      "Bash(npx depcheck)"
     ]
   },
   "enabledPlugins": {

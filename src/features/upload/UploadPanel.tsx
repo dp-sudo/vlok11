@@ -239,7 +239,7 @@ export const UploadPanel = memo(
         const result = validateFile(file, maxFileSize);
 
         if (!result.valid) {
-          setValidationError(result.error || '文件验证失败');
+          setValidationError(result.error ?? '文件验证失败');
           setSelectedFile(null);
           setValidationWarning(null);
 
@@ -247,7 +247,7 @@ export const UploadPanel = memo(
         }
 
         setValidationError(null);
-        setValidationWarning(result.warning || null);
+        setValidationWarning(result.warning ?? null);
         setSelectedFile(file);
 
         // 延迟一下让用户看到文件信息，然后上传
@@ -281,7 +281,7 @@ export const UploadPanel = memo(
         const result = validateFile(file, maxFileSize);
 
         if (!result.valid) {
-          setValidationError(result.error || '文件验证失败');
+          setValidationError(result.error ?? '文件验证失败');
           setSelectedFile(null);
           setValidationWarning(null);
 
@@ -289,7 +289,7 @@ export const UploadPanel = memo(
         }
 
         setValidationError(null);
-        setValidationWarning(result.warning || null);
+        setValidationWarning(result.warning ?? null);
         setSelectedFile(file);
 
         setTimeout(() => {
@@ -513,11 +513,11 @@ export const UploadPanel = memo(
                 <div className="bg-zinc-900/50 p-4 rounded-lg border border-white/5 mb-6">
                   <p className="text-xs text-cyan-400/80 mb-2 text-left font-mono flex items-center gap-2">
                     <span className="animate-pulse">_</span>
-                    {urlInput
-                      ? isUrlValid
-                        ? 'VALID URL FORMAT'
-                        : 'INVALID URL FORMAT'
-                      : 'WAITING FOR INPUT STREAM...'}
+                    {(() => {
+                      if (!urlInput) return 'WAITING FOR INPUT STREAM...';
+
+                      return isUrlValid ? 'VALID URL FORMAT' : 'INVALID URL FORMAT';
+                    })()}
                   </p>
 
                   {/* URL 验证状态 */}

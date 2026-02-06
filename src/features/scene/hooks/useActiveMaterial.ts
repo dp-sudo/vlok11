@@ -1,9 +1,9 @@
-import type { SceneConfig } from '@/shared/types';
-import { ProjectionMode } from '@/shared/types';
 import { useLoader } from '@react-three/fiber';
 import { useEffect, useMemo, useState } from 'react';
 import type { Material, ShaderMaterial, Texture, VideoTexture } from 'three';
 import { TextureLoader } from 'three';
+import type { SceneConfig } from '@/shared/types';
+import { ProjectionMode } from '@/shared/types';
 import { useMaterialUpdater } from './useMaterialUpdater';
 import { usePointCloudMaterial } from './usePointCloudMaterial';
 import { useSceneMaterials } from './useSceneMaterials';
@@ -32,9 +32,9 @@ export function useActiveMaterial(options: UseActiveMaterialOptions): UseActiveM
     const { uniforms } = pointCloudMaterial;
 
     if (uniforms['map'] && uniforms['displacementMap'] && uniforms['displacementScale']) {
-      uniforms['map']!.value = activeMap;
-      uniforms['displacementMap']!.value = displacementMap;
-      uniforms['displacementScale']!.value = config.displacementScale;
+      uniforms['map'].value = activeMap;
+      uniforms['displacementMap'].value = displacementMap;
+      uniforms['displacementScale'].value = config.displacementScale;
       activeMaterial = pointCloudMaterial;
     }
   }

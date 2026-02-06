@@ -1,4 +1,5 @@
 import type { AnalysisResult, ProcessedAsset } from '@/core/domain/types';
+import type { RecoveryOption } from '@/shared/types';
 
 export type CompleteCallback = (result: ProcessedResult) => void;
 export type ErrorCallback = (
@@ -22,10 +23,7 @@ export interface PipelineStage {
   readonly name: string;
   readonly order: number;
 }
-export interface RecoveryOption {
-  action: () => Promise<void>;
-  label: string;
-}
+export type { RecoveryOption };
 export interface RunContext {
   runId: string;
   signal: AbortSignal;

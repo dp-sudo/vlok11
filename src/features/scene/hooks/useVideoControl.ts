@@ -36,7 +36,9 @@ export function useVideoControl({
 
     // Apply Playback State
     if (isPlaying && video.paused) {
-      void video.play().catch(() => {});
+      void video.play().catch((err) => {
+        console.warn('Video auto-play blocked:', err);
+      });
     } else if (!isPlaying && !video.paused) {
       video.pause();
     }

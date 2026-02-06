@@ -72,7 +72,14 @@ const WEATHER_VISUAL_CONFIGS: Record<WeatherEffect, WeatherVisualConfig> = {
   },
 };
 
-type WeatherConfig = Pick<SceneConfig, 'weatherEnabled' | 'weatherEffect' | 'weatherIntensity' | 'weatherParticleDensity' | 'particleColor'>;
+type WeatherConfig = Pick<
+  SceneConfig,
+  | 'weatherEnabled'
+  | 'weatherEffect'
+  | 'weatherIntensity'
+  | 'weatherParticleDensity'
+  | 'particleColor'
+>;
 
 export function useWeatherEffect(config: WeatherConfig): void {
   const isFirstRender = useRef(true);
@@ -81,7 +88,8 @@ export function useWeatherEffect(config: WeatherConfig): void {
   const prevIntensity = useRef<number | null>(null);
   const prevParticleDensity = useRef<number | null>(null);
 
-  const { weatherEnabled, weatherEffect, weatherIntensity, weatherParticleDensity, particleColor } = config;
+  const { weatherEnabled, weatherEffect, weatherIntensity, weatherParticleDensity, particleColor } =
+    config;
 
   useEffect(() => {
     if (!weatherEnabled) {
@@ -112,14 +120,17 @@ export function useWeatherEffect(config: WeatherConfig): void {
 
     // Check if the current particle color matches the intended visual config color
     // This allows hot-reloading keys/colors in constants to apply immediately
-    const colorMismatch = visualConfig.particleColor && particleColor !== visualConfig.particleColor;
+    const colorMismatch =
+      visualConfig.particleColor && particleColor !== visualConfig.particleColor;
 
     const shouldApply =
       isFirstRender.current ||
       prevEnabled.current !== weatherEnabled ||
       prevEffect.current !== weatherEffect ||
-      (prevIntensity.current !== null && Math.abs(prevIntensity.current - weatherIntensity) > 0.01) ||
-      (prevParticleDensity.current !== null && Math.abs(prevParticleDensity.current - (weatherParticleDensity ?? 0.5)) > 0.01) ||
+      (prevIntensity.current !== null &&
+        Math.abs(prevIntensity.current - weatherIntensity) > 0.01) ||
+      (prevParticleDensity.current !== null &&
+        Math.abs(prevParticleDensity.current - (weatherParticleDensity ?? 0.5)) > 0.01) ||
       colorMismatch;
 
     if (shouldApply) {

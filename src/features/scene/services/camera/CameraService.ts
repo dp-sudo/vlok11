@@ -1,9 +1,11 @@
+import type { Camera } from 'three';
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import { getEventBus } from '@/core/EventBus';
 import type { LifecycleAware } from '@/core/LifecycleManager';
 import { createLogger } from '@/core/Logger';
 import { getAnimationScheduler } from '@/features/scene/services/camera/AnimationScheduler';
 import { ANIMATION_DURATION, DEFAULT_ANIMATION_DURATION } from '@/shared/constants';
-import { CAMERA_ANIMATION, CAMERA_LIMITS } from '@/shared/constants/camera';
+import { CAMERA_LIMITS } from '@/shared/constants/camera';
 import type {
   AnimationHandle,
   CameraBookmark,
@@ -16,9 +18,7 @@ import type {
 } from '@/shared/types';
 import { lerpVec3 } from '@/shared/utils';
 import { useCameraPoseStore } from '@/stores/cameraStore';
-import type { Camera } from 'three';
-import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
-import { calculateDistance, calculatePresetPose, type CameraPresetType } from './CameraPresets';
+import { type CameraPresetType, calculateDistance, calculatePresetPose } from './CameraPresets';
 import {
   calculateOrthoPresetPose,
   emitOrthoPresetApplied,
@@ -101,7 +101,7 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
 
     return new Promise((resolve) => {
       this.setPose(presetPose, {
-        duration: CAMERA_ANIMATION.PRESET,
+        duration: ANIMATION_DURATION.PRESET,
         easing: 'ease-in-out-cubic',
         onComplete: () => {
           getEventBus().emit('camera:preset-applied', { preset, pose: this.getPose() });
@@ -183,7 +183,7 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
 
     return new Promise((resolve) => {
       this.setPose(bookmark.pose, {
-        duration: CAMERA_ANIMATION.BOOKMARK,
+        duration: ANIMATION_DURATION.BOOKMARK,
         easing: 'ease-in-out-cubic',
         onComplete: () => {
           getEventBus().emit('camera:bookmark-loaded', { bookmark });
@@ -288,7 +288,7 @@ export class CameraServiceImpl implements CameraServiceType, LifecycleAware {
    */
   async applyOrthoPreset(
     presetType: OrthoViewPresetType,
-    duration = CAMERA_ANIMATION.PRESET
+    duration = ANIMATION_DURATION.PRESET
   ): Promise<void> {
     const result = calculateOrthoPresetPose(presetType, {
       useDefaultZoom: false,

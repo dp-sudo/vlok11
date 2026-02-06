@@ -1,7 +1,14 @@
 import { useFrame } from '@react-three/fiber';
 import { memo, useMemo, useRef } from 'react';
 import type { Points } from 'three';
-import { AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, Color, PointsMaterial } from 'three';
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  CanvasTexture,
+  Color,
+  PointsMaterial,
+} from 'three';
 import { ANIMATION, PARTICLE, PARTICLE_COLORS, STAR, STAR_COUNT } from './constants';
 
 export type ParticleType = 'dust' | 'snow' | 'stars' | 'firefly' | 'rain' | 'leaves';
@@ -132,7 +139,7 @@ const initStars = (
 
   // Power-law distribution for sizes: Many small stars, few large ones
   // Math.pow(Math.random(), 4.0) produces more values near 0, creating accurate star field look
-  scales[index] = STAR.SIZE_MIN + Math.pow(Math.random(), 4.0) * STAR.SIZE_RANGE * 1.5;
+  scales[index] = STAR.SIZE_MIN + Math.random() ** 4.0 * STAR.SIZE_RANGE * 1.5;
 };
 
 const initFirefly = (
@@ -318,10 +325,13 @@ const updateParticleByType = (
 
       // Simple Dust Twinkle
       {
-         const baseSize = ANIMATION.DUST_SIZE_BASE + (phase / (Math.PI * ANIMATION.PHASE_TWO_PI)) * ANIMATION.DUST_SIZE_RANGE;
-         const twinkle = 0.8 + 0.3 * Math.sin(time * 2.0 + phase) + 0.2 * Math.cos(time * 5.0 + phase * 2.0);
+        const baseSize =
+          ANIMATION.DUST_SIZE_BASE +
+          (phase / (Math.PI * ANIMATION.PHASE_TWO_PI)) * ANIMATION.DUST_SIZE_RANGE;
+        const twinkle =
+          0.8 + 0.3 * Math.sin(time * 2.0 + phase) + 0.2 * Math.cos(time * 5.0 + phase * 2.0);
 
-         scales[i] = baseSize * twinkle;
+        scales[i] = baseSize * twinkle;
       }
       break;
     case 'snow':
@@ -343,7 +353,7 @@ const updateParticleByType = (
           0.1 * Math.sin(time * 13.0 + phase * 3.0); // Fast flutter
 
         // Re-calculate base size to avoid drift (deterministic from phase)
-        const baseSizeProjection = Math.pow((phase / (Math.PI * ANIMATION.PHASE_TWO_PI)), 4.0);
+        const baseSizeProjection = (phase / (Math.PI * ANIMATION.PHASE_TWO_PI)) ** 4.0;
         const baseSize = STAR.SIZE_MIN + baseSizeProjection * STAR.SIZE_RANGE * 1.5;
 
         scales[i] = baseSize * Math.max(0.2, twinkle); // Ensure it doesn't invert
@@ -434,7 +444,12 @@ const AtmosphereParticlesComponent = ({
   speedFactor = 0.5,
 }: AtmosphereParticlesProps) => {
   const pointsRef = useRef<Points>(null);
-  const count = particleType === 'rain' ? RAIN_COUNT : (particleType === 'stars' ? STAR_COUNT : PARTICLE.COUNT);
+  const count = (() => {
+    if (particleType === 'rain') return RAIN_COUNT;
+    if (particleType === 'stars') return STAR_COUNT;
+
+    return PARTICLE.COUNT;
+  })();
   const spread =
     particleType === 'stars' ? PARTICLE.SPREAD * PARTICLE.STARS_SPREAD_MULTIPLIER : PARTICLE.SPREAD;
 
@@ -445,7 +460,9 @@ const AtmosphereParticlesComponent = ({
 
   const material = useMemo(() => {
     const m = new PointsMaterial({
-      size: (particleType === 'rain' ? MATERIAL_SIZE_RAIN : MATERIAL_SIZE_DEFAULT) * (1 + (speedFactor - 0.5) * 0.5),
+      size:
+        (particleType === 'rain' ? MATERIAL_SIZE_RAIN : MATERIAL_SIZE_DEFAULT) *
+        (1 + (speedFactor - 0.5) * 0.5),
       vertexColors: true,
       transparent: true,
       opacity: particleType === 'rain' ? MATERIAL_OPACITY_RAIN : MATERIAL_OPACITY_DEFAULT,
@@ -457,7 +474,7 @@ const AtmosphereParticlesComponent = ({
     });
 
     // Custom Shader Injection for per-vertex scaling
-    /* TEMPORARILY DISABLED FOR DEBUGGING
+
     m.onBeforeCompile = (shader) => {
       // Must manually declare custom attributes for PointsMaterial
       shader.vertexShader = `
@@ -465,32 +482,28 @@ const AtmosphereParticlesComponent = ({
         ${shader.vertexShader}
       `;
 
-      // Debug: Log original shader to match string
-      // console.log('Original Vertex Shader:', shader.vertexShader);
-
       // Inject scale multiplication into point size calculation
       const originalPointSize = 'gl_PointSize = size;';
       const replacementPointSize = 'gl_PointSize = size * scales;';
 
       if (shader.vertexShader.includes(originalPointSize)) {
-         shader.vertexShader = shader.vertexShader.replace(originalPointSize, replacementPointSize);
+        shader.vertexShader = shader.vertexShader.replace(originalPointSize, replacementPointSize);
       } else {
-         console.warn('AtmosphereParticles: Failed to inject scales into simple point size assignment');
+        console.warn(
+          'AtmosphereParticles: Failed to inject scales into simple point size assignment'
+        );
       }
 
       const originalAttenuation = 'gl_PointSize = size * ( scale / - mvPosition.z );';
       const replacementAttenuation = 'gl_PointSize = size * scales * ( scale / - mvPosition.z );';
 
       if (shader.vertexShader.includes(originalAttenuation)) {
-          shader.vertexShader = shader.vertexShader.replace(originalAttenuation, replacementAttenuation);
-      } else {
-          // This is expected if the simple replacement worked and attenuation is handled separately,
-          // OR if the string format is different.
-          // Let's print a part of shader to verify.
-          // console.log('Shader check:', shader.vertexShader.substring(shader.vertexShader.indexOf('void main'), shader.vertexShader.length));
+        shader.vertexShader = shader.vertexShader.replace(
+          originalAttenuation,
+          replacementAttenuation
+        );
       }
     };
-    */
     return m;
   }, [particleType, speedFactor]);
 

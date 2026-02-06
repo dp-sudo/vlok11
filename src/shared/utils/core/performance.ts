@@ -118,7 +118,12 @@ export const perfMark = {
         const measure = performance.getEntriesByName(name, 'measure')[0];
 
         if (measure) logger.debug(`${name}: ${measure.duration.toFixed(2)}ms`);
-      } catch {}
+      } catch (e) {
+        // Ignore performance measurement errors in dev mode
+        logger.warn(`Performance measurement failed for "${name}"`, {
+          error: e instanceof Error ? e.message : String(e),
+        });
+      }
     }
   },
   clear: () => {

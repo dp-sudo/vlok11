@@ -72,7 +72,7 @@ export const PARALLAX = {
   ROTATION_DIVISOR: 50,
 } as const;
 export const PARTICLE = {
-  COUNT: 400,
+  COUNT: 800,
   SPREAD: 45,
   STARS_SPREAD_MULTIPLIER: 3.5,
   DEPTH_OPACITY_FACTOR: 0.6,
@@ -143,6 +143,8 @@ export const STAR = {
   TWINKLE_AMPLITUDE: 0.6,
   SIZE_BASE_FACTOR: 0.25,
   SIZE_TWINKLE_FACTOR: 0.75,
-  TWINKLE_LAYER2_SPEED: 0.7,
   TWINKLE_LAYER2_AMPLITUDE: 0.3,
 } as const;
+
+// Separate count for stars to ensure high density
+export const STAR_COUNT = 3000;

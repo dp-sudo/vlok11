@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber';
 import { memo, useMemo, useRef } from 'react';
 import type { Points } from 'three';
 import { AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, Color, PointsMaterial } from 'three';
-import { ANIMATION, PARTICLE, PARTICLE_COLORS, STAR } from './constants';
+import { ANIMATION, PARTICLE, PARTICLE_COLORS, STAR, STAR_COUNT } from './constants';
 
 export type ParticleType = 'dust' | 'snow' | 'stars' | 'firefly' | 'rain' | 'leaves';
 
@@ -19,7 +19,7 @@ interface ParticleData {
   geometry: BufferGeometry;
   phases: Float32Array;
   positions: Float32Array;
-  sizes: Float32Array;
+  scales: Float32Array; // Renamed from sizes to avoid conflict with PointsMaterial size
   velocities: Float32Array;
 }
 
@@ -33,7 +33,7 @@ const createParticleData = (
   const positions = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
   const velocities = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
   const colors = new Float32Array(finalCount * ANIMATION.BUFFER_STRIDE_3);
-  const sizes = new Float32Array(finalCount);
+  const scales = new Float32Array(finalCount);
   const phases = new Float32Array(finalCount);
   const geometry = new BufferGeometry();
 
@@ -49,14 +49,14 @@ const createParticleData = (
 
     phases[i] = Math.random() * Math.PI * ANIMATION.PHASE_TWO_PI;
 
-    initializeParticle(type, i, i3, velocities, colors, sizes, overrideColor);
+    initializeParticle(type, i, i3, velocities, colors, scales, overrideColor);
   }
 
   geometry.setAttribute('position', new BufferAttribute(positions, ANIMATION.BUFFER_STRIDE_3));
   geometry.setAttribute('color', new BufferAttribute(colors, ANIMATION.BUFFER_STRIDE_3));
-  geometry.setAttribute('size', new BufferAttribute(sizes, ANIMATION.BUFFER_STRIDE_1));
+  geometry.setAttribute('scales', new BufferAttribute(scales, ANIMATION.BUFFER_STRIDE_1));
 
-  return { geometry, positions, velocities, colors, sizes, phases };
+  return { geometry, positions, velocities, colors, scales, phases };
 };
 
 const initDust = (
@@ -64,7 +64,7 @@ const initDust = (
   index: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array,
+  scales: Float32Array,
   overrideColor?: string
 ): void => {
   const color = new Color();
@@ -83,7 +83,7 @@ const initDust = (
   colors[i3] = color.r;
   colors[i3 + 1] = color.g;
   colors[i3 + 2] = color.b;
-  sizes[index] = ANIMATION.DUST_SIZE_BASE + Math.random() * ANIMATION.DUST_SIZE_RANGE;
+  scales[index] = ANIMATION.DUST_SIZE_BASE + Math.random() * ANIMATION.DUST_SIZE_RANGE;
 };
 
 const initSnow = (
@@ -91,7 +91,7 @@ const initSnow = (
   index: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array
+  scales: Float32Array
 ): void => {
   const color = new Color();
 
@@ -106,7 +106,7 @@ const initSnow = (
   colors[i3] = color.r;
   colors[i3 + 1] = color.g;
   colors[i3 + 2] = color.b;
-  sizes[index] = ANIMATION.SNOW_SIZE_BASE + Math.random() * ANIMATION.SNOW_SIZE_VARIATION;
+  scales[index] = ANIMATION.SNOW_SIZE_BASE + Math.random() * ANIMATION.SNOW_SIZE_VARIATION;
 };
 
 const initStars = (
@@ -114,7 +114,7 @@ const initStars = (
   index: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array
+  scales: Float32Array
 ): void => {
   const color = new Color();
 
@@ -129,7 +129,10 @@ const initStars = (
   colors[i3] = color.r;
   colors[i3 + 1] = color.g;
   colors[i3 + 2] = color.b;
-  sizes[index] = STAR.SIZE_MIN + Math.random() * STAR.SIZE_RANGE;
+
+  // Power-law distribution for sizes: Many small stars, few large ones
+  // Math.pow(Math.random(), 4.0) produces more values near 0, creating accurate star field look
+  scales[index] = STAR.SIZE_MIN + Math.pow(Math.random(), 4.0) * STAR.SIZE_RANGE * 1.5;
 };
 
 const initFirefly = (
@@ -137,7 +140,7 @@ const initFirefly = (
   index: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array
+  scales: Float32Array
 ): void => {
   const color = new Color();
 
@@ -152,7 +155,7 @@ const initFirefly = (
   colors[i3] = color.r;
   colors[i3 + 1] = color.g;
   colors[i3 + 2] = color.b;
-  sizes[index] = ANIMATION.FIREFLY_SIZE_BASE + Math.random() * ANIMATION.FIREFLY_SIZE_RANGE;
+  scales[index] = ANIMATION.FIREFLY_SIZE_BASE + Math.random() * ANIMATION.FIREFLY_SIZE_RANGE;
 };
 
 const initRain = (
@@ -160,7 +163,7 @@ const initRain = (
   index: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array
+  scales: Float32Array
 ): void => {
   const color = new Color();
 
@@ -173,7 +176,7 @@ const initRain = (
   colors[i3] = color.r;
   colors[i3 + 1] = color.g;
   colors[i3 + 2] = color.b;
-  sizes[index] = ANIMATION.RAIN_SIZE_BASE + Math.random() * ANIMATION.RAIN_SIZE_RANGE;
+  scales[index] = ANIMATION.RAIN_SIZE_BASE + Math.random() * ANIMATION.RAIN_SIZE_RANGE;
 };
 
 const initLeaves = (
@@ -181,7 +184,7 @@ const initLeaves = (
   index: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array
+  scales: Float32Array
 ): void => {
   const color = new Color();
 
@@ -197,7 +200,7 @@ const initLeaves = (
   colors[i3] = color.r;
   colors[i3 + 1] = color.g;
   colors[i3 + 2] = color.b;
-  sizes[index] = ANIMATION.LEAVES_SIZE_BASE + Math.random() * ANIMATION.LEAVES_SIZE_RANGE;
+  scales[index] = ANIMATION.LEAVES_SIZE_BASE + Math.random() * ANIMATION.LEAVES_SIZE_RANGE;
 };
 
 const initializeParticle = (
@@ -206,27 +209,27 @@ const initializeParticle = (
   i3: number,
   velocities: Float32Array,
   colors: Float32Array,
-  sizes: Float32Array,
+  scales: Float32Array,
   overrideColor?: string
 ): void => {
   switch (type) {
     case 'dust':
-      initDust(i3, index, velocities, colors, sizes, overrideColor);
+      initDust(i3, index, velocities, colors, scales, overrideColor);
       break;
     case 'snow':
-      initSnow(i3, index, velocities, colors, sizes);
+      initSnow(i3, index, velocities, colors, scales);
       break;
     case 'stars':
-      initStars(i3, index, velocities, colors, sizes);
+      initStars(i3, index, velocities, colors, scales);
       break;
     case 'firefly':
-      initFirefly(i3, index, velocities, colors, sizes);
+      initFirefly(i3, index, velocities, colors, scales);
       break;
     case 'rain':
-      initRain(i3, index, velocities, colors, sizes);
+      initRain(i3, index, velocities, colors, scales);
       break;
     case 'leaves':
-      initLeaves(i3, index, velocities, colors, sizes);
+      initLeaves(i3, index, velocities, colors, scales);
       break;
   }
 };
@@ -238,7 +241,7 @@ const updateParticles = (
   spread: number,
   type: ParticleType
 ): void => {
-  const { positions, velocities, phases, sizes } = data;
+  const { positions, velocities, phases, scales } = data;
   const halfSpread = spread / ANIMATION.PHASE_TWO_PI;
 
   for (let i = 0; i < count; i++) {
@@ -259,7 +262,7 @@ const updateParticles = (
       velX,
       velY,
       velZ,
-      sizes,
+      scales,
       i,
       { posX, posY, posZ },
       (p) => {
@@ -296,7 +299,7 @@ const updateParticleByType = (
   velX: number,
   velY: number,
   velZ: number,
-  sizes: Float32Array,
+  scales: Float32Array,
   i: number,
   pos: { posX: number; posY: number; posZ: number },
   setPos: (p: { posX: number; posY: number; posZ: number }) => void
@@ -312,6 +315,14 @@ const updateParticleByType = (
       posZ +=
         velZ +
         Math.sin(time * ANIMATION.DUST_TIME_FACTOR_Z + phase) * ANIMATION.DUST_BROWNIAN_STRENGTH;
+
+      // Simple Dust Twinkle
+      {
+         const baseSize = ANIMATION.DUST_SIZE_BASE + (phase / (Math.PI * ANIMATION.PHASE_TWO_PI)) * ANIMATION.DUST_SIZE_RANGE;
+         const twinkle = 0.8 + 0.3 * Math.sin(time * 2.0 + phase) + 0.2 * Math.cos(time * 5.0 + phase * 2.0);
+
+         scales[i] = baseSize * twinkle;
+      }
       break;
     case 'snow':
       posX += velX + Math.sin(time * ANIMATION.DUST_TIME_FACTOR_Z + phase) * ANIMATION.SNOW_DRIFT;
@@ -324,13 +335,18 @@ const updateParticleByType = (
       break;
     case 'stars':
       {
+        // Irregular Twinkle: Three sine waves with prime number frequencies + random phase
         const twinkle =
-          STAR.TWINKLE_BASE +
-          STAR.TWINKLE_AMPLITUDE * Math.sin(time * (1 + phase * ANIMATION.HALF) + phase);
+          0.7 + // Base brightness
+          0.3 * Math.sin(time * 3.0 + phase) + // Slow breathe
+          0.3 * Math.sin(time * 7.0 + phase * 2.0) + // Medium pulse
+          0.1 * Math.sin(time * 13.0 + phase * 3.0); // Fast flutter
 
-        sizes[i] =
-          (STAR.SIZE_MIN + (phase / (Math.PI * ANIMATION.PHASE_TWO_PI)) * STAR.SIZE_RANGE) *
-          (STAR.SIZE_BASE_FACTOR + STAR.SIZE_TWINKLE_FACTOR * twinkle);
+        // Re-calculate base size to avoid drift (deterministic from phase)
+        const baseSizeProjection = Math.pow((phase / (Math.PI * ANIMATION.PHASE_TWO_PI)), 4.0);
+        const baseSize = STAR.SIZE_MIN + baseSizeProjection * STAR.SIZE_RANGE * 1.5;
+
+        scales[i] = baseSize * Math.max(0.2, twinkle); // Ensure it doesn't invert
       }
       break;
     case 'firefly':
@@ -354,7 +370,7 @@ const updateParticleByType = (
             (ANIMATION.HALF +
               ANIMATION.HALF * Math.sin(time * ANIMATION.FIREFLY_PULSE_SPEED + phase));
 
-        sizes[i] =
+        scales[i] =
           (ANIMATION.FIREFLY_SIZE_BASE + Math.random() * ANIMATION.FIREFLY_SIZE_JITTER) * pulse;
       }
       break;
@@ -381,25 +397,30 @@ const updateParticleByType = (
 // --- Soft Particle Texture Generation ---
 const getSoftParticleTexture = (() => {
   let texture: CanvasTexture | null = null;
+
   return () => {
     if (texture) return texture;
     const canvas = document.createElement('canvas');
+
     canvas.width = 32;
     canvas.height = 32;
     const ctx = canvas.getContext('2d');
+
     if (ctx) {
       const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+
       gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
       gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 32, 32);
     }
     texture = new CanvasTexture(canvas);
+
     return texture;
   };
 })();
 
-const RAIN_COUNT = 1500; // Increased base count allowing density scaling
+const RAIN_COUNT = 2500; // Increased base count allowing density scaling
 const MATERIAL_SIZE_RAIN = 0.08;
 const MATERIAL_SIZE_DEFAULT = 0.3; // Slightly larger for soft texture
 const MATERIAL_OPACITY_RAIN = 0.8;
@@ -413,7 +434,7 @@ const AtmosphereParticlesComponent = ({
   speedFactor = 0.5,
 }: AtmosphereParticlesProps) => {
   const pointsRef = useRef<Points>(null);
-  const count = particleType === 'rain' ? RAIN_COUNT : PARTICLE.COUNT;
+  const count = particleType === 'rain' ? RAIN_COUNT : (particleType === 'stars' ? STAR_COUNT : PARTICLE.COUNT);
   const spread =
     particleType === 'stars' ? PARTICLE.SPREAD * PARTICLE.STARS_SPREAD_MULTIPLIER : PARTICLE.SPREAD;
 
@@ -423,7 +444,7 @@ const AtmosphereParticlesComponent = ({
   );
 
   const material = useMemo(() => {
-    return new PointsMaterial({
+    const m = new PointsMaterial({
       size: (particleType === 'rain' ? MATERIAL_SIZE_RAIN : MATERIAL_SIZE_DEFAULT) * (1 + (speedFactor - 0.5) * 0.5),
       vertexColors: true,
       transparent: true,
@@ -434,6 +455,43 @@ const AtmosphereParticlesComponent = ({
       map: getSoftParticleTexture(),
       alphaTest: 0.01,
     });
+
+    // Custom Shader Injection for per-vertex scaling
+    /* TEMPORARILY DISABLED FOR DEBUGGING
+    m.onBeforeCompile = (shader) => {
+      // Must manually declare custom attributes for PointsMaterial
+      shader.vertexShader = `
+        attribute float scales;
+        ${shader.vertexShader}
+      `;
+
+      // Debug: Log original shader to match string
+      // console.log('Original Vertex Shader:', shader.vertexShader);
+
+      // Inject scale multiplication into point size calculation
+      const originalPointSize = 'gl_PointSize = size;';
+      const replacementPointSize = 'gl_PointSize = size * scales;';
+
+      if (shader.vertexShader.includes(originalPointSize)) {
+         shader.vertexShader = shader.vertexShader.replace(originalPointSize, replacementPointSize);
+      } else {
+         console.warn('AtmosphereParticles: Failed to inject scales into simple point size assignment');
+      }
+
+      const originalAttenuation = 'gl_PointSize = size * ( scale / - mvPosition.z );';
+      const replacementAttenuation = 'gl_PointSize = size * scales * ( scale / - mvPosition.z );';
+
+      if (shader.vertexShader.includes(originalAttenuation)) {
+          shader.vertexShader = shader.vertexShader.replace(originalAttenuation, replacementAttenuation);
+      } else {
+          // This is expected if the simple replacement worked and attenuation is handled separately,
+          // OR if the string format is different.
+          // Let's print a part of shader to verify.
+          // console.log('Shader check:', shader.vertexShader.substring(shader.vertexShader.indexOf('void main'), shader.vertexShader.length));
+      }
+    };
+    */
+    return m;
   }, [particleType, speedFactor]);
 
   useFrame(({ clock }) => {
@@ -444,19 +502,16 @@ const AtmosphereParticlesComponent = ({
     const dynamicSpeed = 0.5 + speedFactor;
     const time = clock.getElapsedTime() * dynamicSpeed;
 
-
     // We pass the actual count of particles created (which is scaled by density)
     // createParticleData returns arrays sized by finalCount, so we should allow updateParticles
     // to iterate up to the length of the arrays it created.
-    // However, updateParticles currently takes 'count' which is the base count.
-    // We should fix updateParticles or just pass particleData.phases.length
     updateParticles(particleData, particleData.phases.length, time, spread, particleType);
 
     const positionAttr = particleData.geometry.getAttribute('position');
-    const sizeAttr = particleData.geometry.getAttribute('size');
+    const scaleAttr = particleData.geometry.getAttribute('scales');
 
     if (positionAttr) positionAttr.needsUpdate = true;
-    if (sizeAttr) sizeAttr.needsUpdate = true;
+    if (scaleAttr) scaleAttr.needsUpdate = true;
   });
 
   if (!enabled) return null;

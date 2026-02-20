@@ -1,6 +1,6 @@
+import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import glsl from 'vite-plugin-glsl';
 
 export default defineConfig(({ mode }) => {
@@ -60,7 +60,7 @@ export default defineConfig(({ mode }) => {
             vision: ['@mediapipe/face_detection'],
 
             // UI Components
-            ui: ['lucide-react', 'clsx', 'tailwind-merge', 'class-variance-authority'],
+            ui: ['lucide-react', 'clsx', 'tailwind-merge'],
 
             // Monitoring
             monitoring: ['@sentry/react'],

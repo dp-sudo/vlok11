@@ -126,15 +126,29 @@ export function useVideoControl({
     };
 
     attachIfNeeded();
-    // Use a ref to track the timeout/interval to avoid stale closures
-    const intervalId = window.setInterval(() => {
-      if (document.visibilityState !== 'hidden') {
+
+    // Use visibility change API to pause/resume interval more efficiently
+    let intervalId: number;
+    let isRunning = true;
+
+    const runInterval = () => {
+      if (isRunning && document.visibilityState !== 'hidden') {
         attachIfNeeded();
       }
-    }, VIDEO_ATTACH_CHECK_INTERVAL_MS);
+    };
+
+    intervalId = window.setInterval(runInterval, VIDEO_ATTACH_CHECK_INTERVAL_MS);
+
+    // Pause interval when page is hidden to save resources
+    const handleVisibilityChange = () => {
+      isRunning = document.visibilityState !== 'hidden';
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       cleanupRef.current?.();
       cleanupRef.current = null;
       boundVideoRef.current = null;

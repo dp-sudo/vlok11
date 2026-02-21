@@ -82,6 +82,11 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
       setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
     }, []);
 
+    // Memoized callbacks for VideoControls to prevent unnecessary re-renders
+    const handleDragStart = useCallback(() => setDragging(true), []);
+    const handleDragEnd = useCallback(() => setDragging(false), []);
+    const handleToggleMute = useCallback(() => set('videoMuted', !config.videoMuted), [config.videoMuted, set]);
+
     const activeProjection = useMemo(
       () => PROJECTIONS.find((p) => p.mode === config.projectionMode),
       [config.projectionMode]
@@ -129,13 +134,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
         {hasVideo && videoState ? (
           <VideoControls
             isLooping={videoState.isLooping}
-            onDragEnd={() => setDragging(false)}
-            onDragStart={() => setDragging(true)}
+            onDragEnd={handleDragEnd}
+            onDragStart={handleDragStart}
             {...(onVideoSeek ? { onSeek: onVideoSeek } : {})}
             onSetPlaybackRate={setPlaybackRate}
             onSliderChange={setSliderValue}
             onToggleLoop={toggleVideoLoop}
-            onToggleMute={() => set('videoMuted', !config.videoMuted)}
+            onToggleMute={handleToggleMute}
             {...(onVideoTogglePlay ? { onTogglePlay: onVideoTogglePlay } : {})}
             playbackRate={videoState.playbackRate}
             sliderValue={sliderValue}

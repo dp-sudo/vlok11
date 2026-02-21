@@ -12,6 +12,7 @@ import { COORDINATE_TRANSFORM, WEBCAM } from './constants';
 const logger = createLogger({ module: 'WebcamTracker' });
 const useFaceModel = (enabled: boolean) => {
   const [model, setModel] = useState<faceDetection.FaceDetector | null>(null);
+  const modelRef = useRef<faceDetection.FaceDetector | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.__TEST_MODE__ === true) {
@@ -19,6 +20,8 @@ const useFaceModel = (enabled: boolean) => {
     }
 
     if (!enabled) return;
+
+    let isCancelled = false;
 
     const initModel = async () => {
       try {
@@ -31,14 +34,29 @@ const useFaceModel = (enabled: boolean) => {
 
         const detector = await faceDetection.createDetector(modelType, detectorConfig);
 
-        setModel(detector);
-        logger.info('Face detection model loaded');
+        if (!isCancelled) {
+          modelRef.current = detector;
+          setModel(detector);
+          logger.info('Face detection model loaded');
+        }
       } catch (error) {
-        logger.warn('Failed to load face detection model (Head tracking disabled)', { error });
+        if (!isCancelled) {
+          logger.warn('Failed to load face detection model (Head tracking disabled)', { error });
+        }
       }
     };
 
     void initModel();
+
+    // Cleanup: dispose model when component unmounts or enabled changes
+    return () => {
+      isCancelled = true;
+      if (modelRef.current) {
+        modelRef.current.dispose();
+        modelRef.current = null;
+        setModel(null);
+      }
+    };
   }, [enabled]);
 
   return model;
@@ -76,12 +94,10 @@ const useWebcamStream = (videoRef: React.RefObject<HTMLVideoElement | null>) => 
           };
         } catch (error) {
           // Provide a cleaner warning for common "Device not found" vs generic errors
-          if (
-            (error as Error).name === 'NotFoundError' ||
-            (error as Error).name === 'NotAllowedError'
-          ) {
+          const err = error as Error;
+          if (err.name === 'NotFoundError' || err.name === 'NotAllowedError') {
             logger.warn('Webcam access failed (Device not found or denied)', {
-              reason: (error as Error).message,
+              reason: err.message,
             });
           } else {
             logger.error('Failed to access webcam', { error });

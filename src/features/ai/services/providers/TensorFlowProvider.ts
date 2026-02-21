@@ -3,7 +3,7 @@ import { loadDepthEstimationModel, loadTensorFlow } from '../AIModuleLoader';
 
 import type { AIProvider, DepthResult, ImageAnalysis } from '../types';
 
-type DepthEstimationModule = Awaited<ReturnType<typeof loadDepthEstimationModel>>;
+type DepthEstimationModule = DepthEstimationModuleExtended | null;
 
 // Depth estimator interface to avoid 'any' usage
 interface DepthEstimator {
@@ -137,17 +137,28 @@ export class TensorFlowProvider implements AIProvider {
 
     try {
       await loadTensorFlow();
-      this.depthEstimation = await loadDepthEstimationModel();
+      const loadedModule = await loadDepthEstimationModel();
 
-      const depthEstimationModule = this.depthEstimation as DepthEstimationModuleExtended;
-      const modelPromise = depthEstimationModule.createEstimator(
-        depthEstimationModule.SupportedModels.ARPortraitDepth,
-        getARPortraitDepthModelConfig(depthEstimationModule)
+      // Type guard to validate depth estimation module has required methods
+      const hasCreateEstimator = (mod: unknown): mod is DepthEstimationModuleExtended => {
+        return mod !== null && typeof mod === 'object' && 'createEstimator' in mod;
+      };
+
+      if (!hasCreateEstimator(loadedModule)) {
+        throw new Error('Depth estimation module not properly loaded');
+      }
+
+      this.depthEstimation = loadedModule;
+      const module = this.depthEstimation;
+      const modelPromise = module.createEstimator(
+        module.SupportedModels.ARPortraitDepth,
+        getARPortraitDepthModelConfig(module)
       );
 
       // Increase timeout to 30s and add better error context
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(
           () =>
             reject(
               new Error(
@@ -155,10 +166,17 @@ export class TensorFlowProvider implements AIProvider {
               )
             ),
           30000
-        )
-      );
+        );
+      });
 
-      this.estimator = await Promise.race([modelPromise, timeoutPromise]);
+      try {
+        this.estimator = await Promise.race([modelPromise, timeoutPromise]);
+        if (timeoutId) clearTimeout(timeoutId);
+      } catch (error) {
+        if (timeoutId) clearTimeout(timeoutId);
+        throw error;
+      }
+
       this._isAvailable = true;
       logger.info('TensorFlow depth model loaded');
     } catch (error) {

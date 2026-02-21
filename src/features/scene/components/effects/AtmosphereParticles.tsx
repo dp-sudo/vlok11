@@ -18,6 +18,11 @@ const logger = createLogger({ module: 'AtmosphereParticles' });
 // 优化2: 模块级 Color 对象池，避免每个粒子初始化时 new Color()
 const sharedColor = new Color();
 
+// Helper: 将颜色从sharedColor复制到颜色缓冲区 (减少重复代码)
+const copyColorToBuffer = (colors: Float32Array, i3: number): void => {
+  copyColorToBuffer(colors, i3);
+};
+
 export type ParticleType = 'dust' | 'snow' | 'stars' | 'firefly' | 'rain' | 'leaves';
 
 interface AtmosphereParticlesProps {
@@ -92,9 +97,7 @@ const initDust = (
       Math.random() > ANIMATION.HALF ? PARTICLE_COLORS.DUST.BASE : PARTICLE_COLORS.DUST.VARIANT1
     );
   }
-  colors[i3] = sharedColor.r;
-  colors[i3 + 1] = sharedColor.g;
-  colors[i3 + 2] = sharedColor.b;
+  copyColorToBuffer(colors, i3);
   scales[index] = ANIMATION.DUST_SIZE_BASE + Math.random() * ANIMATION.DUST_SIZE_RANGE;
 };
 
@@ -113,9 +116,7 @@ const initSnow = (
       ? PARTICLE_COLORS.SNOW.BASE
       : PARTICLE_COLORS.SNOW.SHADOW
   );
-  colors[i3] = sharedColor.r;
-  colors[i3 + 1] = sharedColor.g;
-  colors[i3 + 2] = sharedColor.b;
+  copyColorToBuffer(colors, i3);
   scales[index] = ANIMATION.SNOW_SIZE_BASE + Math.random() * ANIMATION.SNOW_SIZE_VARIATION;
 };
 
@@ -134,9 +135,7 @@ const initStars = (
   if (colorRand < ANIMATION.STAR_COLOR_BLUE_THRESHOLD) sharedColor.set(PARTICLE_COLORS.STAR.WHITE);
   else if (colorRand < ANIMATION.STAR_COLOR_WARM_THRESHOLD) sharedColor.set(PARTICLE_COLORS.STAR.BLUE);
   else sharedColor.set(PARTICLE_COLORS.STAR.WARM);
-  colors[i3] = sharedColor.r;
-  colors[i3 + 1] = sharedColor.g;
-  colors[i3 + 2] = sharedColor.b;
+  copyColorToBuffer(colors, i3);
 
   // Power-law distribution for sizes: Many small stars, few large ones
   scales[index] = STAR.SIZE_MIN + Math.random() ** 4.0 * STAR.SIZE_RANGE * 1.5;
@@ -157,9 +156,7 @@ const initFirefly = (
       ? PARTICLE_COLORS.FIREFLY.GLOW
       : PARTICLE_COLORS.FIREFLY.TRAIL
   );
-  colors[i3] = sharedColor.r;
-  colors[i3 + 1] = sharedColor.g;
-  colors[i3 + 2] = sharedColor.b;
+  copyColorToBuffer(colors, i3);
   scales[index] = ANIMATION.FIREFLY_SIZE_BASE + Math.random() * ANIMATION.FIREFLY_SIZE_RANGE;
 };
 
@@ -179,9 +176,7 @@ const initRain = (
   if (rainRand < 0.3) sharedColor.set('#cceeff');
   else if (rainRand < 0.6) sharedColor.set(PARTICLE_COLORS.RAIN.LIGHT);
   else sharedColor.set(PARTICLE_COLORS.RAIN.BASE);
-  colors[i3] = sharedColor.r;
-  colors[i3 + 1] = sharedColor.g;
-  colors[i3 + 2] = sharedColor.b;
+  copyColorToBuffer(colors, i3);
   // 雨丝尺寸：更大的基础值 + 更宽的变化范围
   scales[index] = ANIMATION.RAIN_SIZE_BASE + Math.random() * ANIMATION.RAIN_SIZE_RANGE;
 };
@@ -202,9 +197,7 @@ const initLeaves = (
   else if (leafRand < ANIMATION.LEAVES_YELLOW_THRESHOLD) sharedColor.set(PARTICLE_COLORS.LEAVES.YELLOW);
   else if (leafRand < ANIMATION.LEAVES_ORANGE_THRESHOLD) sharedColor.set(PARTICLE_COLORS.LEAVES.ORANGE);
   else sharedColor.set(PARTICLE_COLORS.LEAVES.RED);
-  colors[i3] = sharedColor.r;
-  colors[i3 + 1] = sharedColor.g;
-  colors[i3 + 2] = sharedColor.b;
+  copyColorToBuffer(colors, i3);
   scales[index] = ANIMATION.LEAVES_SIZE_BASE + Math.random() * ANIMATION.LEAVES_SIZE_RANGE;
 };
 

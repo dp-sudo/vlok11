@@ -106,7 +106,7 @@ export const ModelDetails = ({
           </div>
           {benchmark.deviceInfo.gpu ? (
             <div className="flex justify-between">
-              <span className="text-slate-400">GPU</span>
+              <span className="text-slate-400">显卡/GPU</span>
               <span className="text-slate-800 text-xs">{benchmark.deviceInfo.gpu}</span>
             </div>
           ) : null}

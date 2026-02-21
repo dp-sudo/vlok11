@@ -1,6 +1,6 @@
 import { Preload } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { forwardRef, memo, useImperativeHandle, useRef } from 'react';
+import { Suspense, forwardRef, memo, useImperativeHandle, useRef } from 'react';
 import type { Group, VideoTexture } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import type { CameraPresetType } from '@/features/scene/services/camera';
@@ -17,7 +17,7 @@ import { RenderStyle } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
 
 import type { ExporterRef, RecordingRef } from './components';
-import { CameraRig, SceneExporter, SceneRecorder } from './components';
+import { CameraRig, CanvasLoader, SceneExporter, SceneRecorder } from './components';
 import {
   CoordinateDebug,
   InputBindingEffect,
@@ -159,15 +159,17 @@ export const SceneViewer = memo(
               sceneGroupRef={sceneGroupRef}
             />
             <CameraRig config={config} controlsRef={controlsRef}>
-              <SceneContent
-                aspectRatio={aspectRatio}
-                backgroundUrl={backgroundUrl}
-                depthUrl={depthUrl}
-                imageUrl={imageUrl}
-                sceneGroupRef={sceneGroupRef}
-                videoTextureRef={videoTextureRef}
-                videoUrl={videoUrl}
-              />
+              <Suspense fallback={<CanvasLoader />}>
+                <SceneContent
+                  aspectRatio={aspectRatio}
+                  backgroundUrl={backgroundUrl}
+                  depthUrl={depthUrl}
+                  imageUrl={imageUrl}
+                  sceneGroupRef={sceneGroupRef}
+                  videoTextureRef={videoTextureRef}
+                  videoUrl={videoUrl}
+                />
+              </Suspense>
             </CameraRig>
             <SceneRecorder ref={recorderRef} videoTexture={videoTextureRef.current} />
             <SceneExporter ref={exporterRef} sceneGroupRef={sceneGroupRef} />

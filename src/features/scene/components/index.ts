@@ -1,6 +1,7 @@
 export { CameraMotionLogic, useUserInteraction } from './CameraMotionLogic';
 export type { CameraRigProps } from './CameraRig';
 export { default as CameraRig } from './CameraRig';
+export { CanvasLoader } from './CanvasLoader';
 export { AtmosphereParticles, ParallaxRig } from './effects';
 export { SceneCanvas } from './SceneCanvas';
 export { SceneContent } from './SceneContent';

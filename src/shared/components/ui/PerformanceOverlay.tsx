@@ -163,7 +163,7 @@ export const PerformanceOverlay = memo(
               <div
                 style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem' }}
               >
-                <span style={{ color: '#71717a' }}>Frame</span>
+                <span style={{ color: '#71717a' }}>帧耗时</span>
                 <span style={{ color: '#d4d4d8', fontFamily: 'monospace' }}>
                   {metrics.frameTime.toFixed(1)}ms
                 </span>
@@ -173,7 +173,7 @@ export const PerformanceOverlay = memo(
                 <div
                   style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem' }}
                 >
-                  <span style={{ color: '#71717a' }}>Memory</span>
+                  <span style={{ color: '#71717a' }}>内存</span>
                   <span style={{ color: '#d4d4d8', fontFamily: 'monospace' }}>
                     {formatMemory(metrics.memoryUsed)}
                   </span>

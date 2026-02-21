@@ -1,7 +1,10 @@
 import { BookOpen, Bot, FolderOpen, Save, Settings } from 'lucide-react';
 import type React from 'react';
 
+import { createLogger } from '@/core/Logger';
 import { projectService } from '@/core/services/ProjectService';
+
+const logger = createLogger({ module: 'TitleBar' });
 
 interface TitleBarProps {
   onOpenModelManager?: () => void;
@@ -77,7 +80,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
             type="button"
             onClick={() => {
               projectService.openProject().catch((err) => {
-                console.error('Failed to open project:', err);
+                logger.error('Failed to open project', { error: err });
               });
             }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-400 hover:text-cyan-300 hover:bg-cyan-950/30 border border-transparent hover:border-cyan-500/30 transition-all duration-200 group"
@@ -89,7 +92,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
             type="button"
             onClick={() => {
               projectService.saveProject().catch((err) => {
-                console.error('Failed to save project:', err);
+                logger.error('Failed to save project', { error: err });
               });
             }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-400 hover:text-purple-300 hover:bg-purple-950/30 border border-transparent hover:border-purple-500/30 transition-all duration-200 group"

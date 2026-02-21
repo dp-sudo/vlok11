@@ -1,6 +1,9 @@
 import { memo, useEffect, useState } from 'react';
 
+import { createLogger } from '@/core/Logger';
 import type { AppError } from '@/core/ErrorHandler';
+
+const logger = createLogger({ module: 'ErrorToast' });
 
 interface ErrorToastProps {
   error: AppError | null;
@@ -37,7 +40,7 @@ export const ErrorToast = memo(({ error, onClose, onRecovery }: ErrorToastProps)
       await action();
       handleClose();
     } catch (err) {
-      console.error('Recovery action failed:', err);
+      logger.error('Recovery action failed', { error: err });
     }
     if (onRecovery) {
       onRecovery(action);

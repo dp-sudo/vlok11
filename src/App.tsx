@@ -181,7 +181,7 @@ const App = memo(() => {
                     <div className="flex-1 flex items-center justify-center bg-zinc-950 text-cyan-500 gap-2">
                       <Loader2 className="w-6 h-6 animate-spin" />
                       <span className="font-mono text-sm tracking-widest">
-                        LOADING 3D ENGINE...
+                        正在加载 3D 引擎...
                       </span>
                     </div>
                   }

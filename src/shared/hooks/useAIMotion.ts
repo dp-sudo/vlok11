@@ -1,11 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { CameraMotionType } from '@/core/domain/types';
 import { getEventBus } from '@/core/EventBus';
+import { createLogger } from '@/core/Logger';
 import { lightSceneAnalyzer, type SimpleInsight } from '@/features/ai/services/LightSceneAnalyzer';
 import { type MotionPath, smartMotionEngine } from '@/features/ai/services/SmartMotionEngine';
 import type { SceneConfig } from '@/shared/types';
 import { useCameraPoseStore } from '@/stores/cameraStore';
 import { useSessionStore } from '@/stores/sharedStore';
+
+const logger = createLogger({ module: 'useAIMotion' });
 
 type AIMotionConfig = Pick<SceneConfig, 'aiMotionEnabled' | 'aiMotionStyle'>;
 
@@ -65,7 +68,7 @@ export function useAIMotion(config: AIMotionConfig): void {
           insight = lightSceneAnalyzer.analyze(img);
           cachedInsight.current = insight;
 
-          console.info('[AI Motion] Scene analyzed:', insight);
+          logger.info('Scene analyzed', { insight });
         } catch {
           insight = {
             type: 'indoor',
@@ -110,7 +113,7 @@ export function useAIMotion(config: AIMotionConfig): void {
         } as never
       );
 
-      console.info('[AI Motion] Path generated:', {
+      logger.info('Path generated', {
         style: aiMotionStyle,
         sceneType: insight.type,
         mood: insight.mood,

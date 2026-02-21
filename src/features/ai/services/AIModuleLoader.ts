@@ -244,7 +244,9 @@ export function preloadAIModules(): void {
       () => {
         logger.info('Preloading AI modules during idle time...');
         // Preload TensorFlow in background
-        loadTensorFlow().catch(() => {});
+        loadTensorFlow().catch((error) => {
+          logger.warn('Failed to preload TensorFlow', { error });
+        });
       },
       { timeout: 2000 }
     );

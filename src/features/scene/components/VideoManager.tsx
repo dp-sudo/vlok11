@@ -2,7 +2,10 @@ import Hls from 'hls.js';
 import { memo, useEffect, useRef, useState } from 'react';
 import { LinearFilter, LinearMipmapLinearFilter, SRGBColorSpace, VideoTexture } from 'three';
 
+import { createLogger } from '@/core/Logger';
 import { useSceneStore } from '@/stores/sharedStore';
+
+const logger = createLogger({ module: 'VideoManager' });
 
 interface VideoManagerProps {
   onTextureReady: (texture: VideoTexture | null) => void;
@@ -64,11 +67,11 @@ export const VideoManager = memo<VideoManagerProps>(({ videoUrl, onTextureReady 
       hls.loadSource(videoUrl);
       hls.attachMedia(vid);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        vid.play().catch((err) => console.warn('Video play failed:', err));
+        vid.play().catch((err) => logger.warn('Video play failed', { error: err }));
       });
     } else {
       vid.src = videoUrl;
-      vid.play().catch((err) => console.warn('Video play failed:', err));
+      vid.play().catch((err) => logger.warn('Video play failed', { error: err }));
     }
 
     return () => {

@@ -1,6 +1,9 @@
 import { memo } from 'react';
 
+import { createLogger } from '@/core/Logger';
 import type { AppError } from '@/core/ErrorHandler';
+
+const logger = createLogger({ module: 'ErrorModal' });
 
 interface ErrorModalProps {
   error: AppError;
@@ -25,7 +28,7 @@ export const ErrorModal = memo(({ error, isOpen, onClose, onRecovery }: ErrorMod
       await action();
       onClose();
     } catch (err) {
-      console.error('Recovery action failed:', err);
+      logger.error('Recovery action failed', { error: err });
     }
     if (onRecovery) {
       onRecovery(action);

@@ -82,7 +82,7 @@ export const ApiKeySettings = memo(() => {
             htmlFor="gemini-api-key"
             className="text-xs text-zinc-500 mb-1.5 block flex items-center justify-between"
           >
-            <span>Gemini API Key</span>
+            <span>Gemini 接口密钥</span>
             {hasKey && (
               <span className="text-xs text-cyan-400 flex items-center gap-1">
                 <span>✓</span>
@@ -96,7 +96,7 @@ export const ApiKeySettings = memo(() => {
               type={showKey ? 'text' : 'password'}
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder={isLocalMode ? '本地模式无需配置' : '输入您的 Gemini API Key'}
+              placeholder={isLocalMode ? '本地模式无需配置' : '输入您的 Gemini 接口密钥'}
               disabled={isLocalMode}
               className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50"
             />

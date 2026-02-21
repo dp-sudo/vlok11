@@ -1,10 +1,13 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
+import { createLogger } from '@/core/Logger';
 import { type AppError, ErrorSeverity, getErrorHandler } from '@/core/ErrorHandler';
 import { getEventBus } from '@/core/EventBus';
 
 import { ErrorModal } from './ui/ErrorModal';
 import { ErrorToast } from './ui/ErrorToast';
+
+const logger = createLogger({ module: 'ErrorBoundaryWithRecovery' });
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -36,7 +39,7 @@ export class ErrorBoundaryWithRecovery extends Component<ErrorBoundaryProps, Err
       await action();
       this.resetError();
     } catch (err) {
-      console.error('Recovery failed:', err);
+      logger.error('Recovery failed', { error: err });
     }
   };
 

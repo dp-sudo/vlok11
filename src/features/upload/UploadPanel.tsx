@@ -339,11 +339,11 @@ export const UploadPanel = memo(
               <>
                 <div className="space-y-4 pt-4">
                   <h2 className="text-2xl md:text-4xl font-bold text-white font-orbitron tracking-[0.15em] md:tracking-[0.2em] glow-text drop-shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-[pulse_4s_ease-in-out_infinite]">
-                    DATA IMPORT
+                    导入数据
                   </h2>
                   <div className="flex flex-col gap-1">
                     <p className="text-cyan-400 font-tech text-[10px] md:text-xs tracking-[0.3em] md:tracking-[0.4em] uppercase opacity-90 typing-effect">
-                      SYSTEM READY FOR INGESTION
+                      系统已准备就绪
                     </p>
                     <div className="h-[2px] w-24 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mt-3 shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
                   </div>
@@ -464,10 +464,10 @@ export const UploadPanel = memo(
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <span className="tracking-[0.2em] font-orbitron text-sm text-zinc-300 group-hover:text-white transition-colors">
-                          {isDragging ? 'RELEASE TO UPLOAD' : 'INITIALIZE UPLOAD'}
+                          {isDragging ? '松开以上传' : '开始上传'}
                         </span>
                         <span className="text-[10px] font-mono text-cyan-700 group-hover:text-cyan-400/80 tracking-widest">
-                          [ DROP FILE OR CLICK TO SCAN ]
+                          [ 拖拽文件或点击浏览 ]
                         </span>
                       </div>
                     </div>
@@ -482,7 +482,7 @@ export const UploadPanel = memo(
                   >
                     <LinkIcon className="w-3 h-3 text-cyan-600 group-hover:text-cyan-300 transition-colors" />
                     <span className="font-mono text-[10px] tracking-widest text-zinc-500 group-hover:text-cyan-200">
-                      LOAD FROM REMOTE URL
+                      从远程网络地址加载
                     </span>
                   </button>
                 </div>
@@ -493,7 +493,7 @@ export const UploadPanel = memo(
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" />
                     <h2 className="text-xl font-bold text-white font-orbitron tracking-wider glow-text">
-                      NETWORK LINK
+                      网络链接
                     </h2>
                   </div>
 
@@ -514,9 +514,9 @@ export const UploadPanel = memo(
                   <p className="text-xs text-cyan-400/80 mb-2 text-left font-mono flex items-center gap-2">
                     <span className="animate-pulse">_</span>
                     {(() => {
-                      if (!urlInput) return 'WAITING FOR INPUT STREAM...';
+                      if (!urlInput) return '等待输入...';
 
-                      return isUrlValid ? 'VALID URL FORMAT' : 'INVALID URL FORMAT';
+                      return isUrlValid ? '格式有效' : '格式无效';
                     })()}
                   </p>
 
@@ -571,24 +571,24 @@ export const UploadPanel = memo(
                 <div className="text-left space-y-3">
                   <h3 className="text-sm font-medium text-zinc-400 flex items-center gap-2">
                     <span className="w-1 h-4 bg-cyan-500 rounded-full" />
-                    SUPPORTED SOURCES
+                    支持的来源
                   </h3>
                   <ul className="space-y-2 text-xs text-zinc-500 font-mono">
                     <li className="flex items-center gap-2">
                       <span className="text-green-500">✓</span>
-                      Direct image URLs (JPG, PNG, WebP)
+                      直链图片地址 (JPG, PNG, WebP)
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-green-500">✓</span>
-                      Direct video URLs (MP4, WebM)
+                      直链视频地址 (MP4, WebM)
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-yellow-500">!</span>
-                      URLs must allow CORS access
+                      地址需要允许 CORS 跨域访问
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-red-500">✗</span>
-                      YouTube, Vimeo, or streaming sites
+                      不支持 YouTube，Vimeo 等流媒体地址
                     </li>
                   </ul>
                 </div>

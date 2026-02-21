@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { createLogger } from '@/core/Logger';
 import type { VideoTexture } from 'three';
+
+const logger = createLogger({ module: 'useVideoControl' });
 
 export function useVideoControl({
   videoTextureRef,
@@ -37,7 +40,7 @@ export function useVideoControl({
     // Apply Playback State
     if (isPlaying && video.paused) {
       void video.play().catch((err) => {
-        console.warn('Video auto-play blocked:', err);
+        logger.warn('Video auto-play blocked', { error: err });
       });
     } else if (!isPlaying && !video.paused) {
       video.pause();

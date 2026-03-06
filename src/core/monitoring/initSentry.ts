@@ -4,12 +4,12 @@ export async function initializeSentry(): Promise<void> {
   const sentry = getSentry();
 
   const dsn = import.meta.env['VITE_SENTRY_DSN'] as string | undefined;
-  const environment = import.meta.env['MODE'];
+  const environment = import.meta.env.MODE;
 
   await sentry.initialize({
     ...(dsn ? { dsn } : {}),
     environment,
-    enabled: import.meta.env['PROD'] && !!dsn,
+    enabled: import.meta.env.PROD && !!dsn,
     sampleRate: 1.0,
     tracesSampleRate: 0.1,
   });

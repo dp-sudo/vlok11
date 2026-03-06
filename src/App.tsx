@@ -1,22 +1,22 @@
-import { Loader2 } from 'lucide-react';
-import { lazy, memo, Suspense, useRef, useState } from 'react';
+import { Loader2, Sparkles } from 'lucide-react';
+import { lazy, memo, Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import { getErrorHandler } from '@/core/ErrorHandler';
 import { createLogger } from '@/core/Logger';
+import { useAIMotion } from '@/features/ai/hooks/useAIMotion';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import { ControlPanel } from '@/features/controls';
 import { FloatingControls } from '@/features/controls/FloatingControls';
+import { NeuralRenderView } from '@/features/render';
 import type { SceneViewerHandle } from '@/features/scene';
+import { useSceneConfigSubscriber } from '@/features/scene/hooks/useSceneConfigSubscriber';
+import { useWeatherEffect } from '@/features/scene/hooks/useWeatherEffect';
 import { StatusDisplay, UploadPanel } from '@/features/upload';
 import { MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
-import { useAIMotion } from '@/shared/hooks/useAIMotion';
 import { useProjectShortcuts } from '@/shared/hooks/useProjectShortcuts';
-import { useSceneConfigSubscriber } from '@/shared/hooks/useSceneConfigSubscriber';
-import { useWeatherEffect } from '@/shared/hooks/useWeatherEffect';
 import type { CameraViewPreset, ProcessingState } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
 
-// Lazy load heavy components to optimize initial bundle size
 const SceneViewer = lazy(() =>
   import('@/features/scene').then((module) => ({ default: module.SceneViewer }))
 );
@@ -42,7 +42,6 @@ const App = memo(() => {
 
   useProjectShortcuts();
 
-  // 场景配置
   const sceneConfig = useSceneStore((s) => s.config);
 
   useAIMotion(sceneConfig);
@@ -53,6 +52,7 @@ const App = memo(() => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeCameraView, setActiveCameraView] = useState<AppCameraView>('default');
   const [isRecording, setIsRecording] = useState(false);
+  const [showNeuralRender, setShowNeuralRender] = useState(false);
 
   const { videoState, setVideoTime, setVideoDuration, toggleVideoPlay } = vm;
 
@@ -70,63 +70,84 @@ const App = memo(() => {
     }
   };
 
-  const handleSetCameraView = (view: CameraViewPreset) => {
+  const handleSetCameraView = useCallback((view: CameraViewPreset) => {
     setActiveCameraView(view);
     sceneRef.current?.setCameraView(view);
-  };
+  }, []);
 
-  const handleVideoSeek = (time: number) => {
-    try {
-      if (!sceneRef.current?.seekVideo) {
+  const handleVideoSeek = useCallback(
+    (time: number) => {
+      try {
+        if (!sceneRef.current?.seekVideo) {
+          const errorHandler = getErrorHandler();
+          const appError = errorHandler.handle(new Error('Video seek not available'), {
+            context: 'video-seek',
+          });
+
+          logger.warn('Video seek unavailable', { context: appError.context });
+
+          return;
+        }
+
+        const success = sceneRef.current.seekVideo(time);
+
+        if (success) {
+          setVideoTime(time);
+        } else {
+          const errorHandler = getErrorHandler();
+
+          errorHandler.handle(new Error('Video seek operation failed'), { context: 'video-seek' });
+        }
+      } catch (error) {
         const errorHandler = getErrorHandler();
-        const appError = errorHandler.handle(new Error('Video seek not available'), {
+
+        errorHandler.handle(error instanceof Error ? error : new Error(String(error)), {
           context: 'video-seek',
         });
-
-        logger.warn('Video seek unavailable', { context: appError.context });
-
-        return;
-      }
-
-      const success = sceneRef.current.seekVideo(time);
-
-      if (success) {
-        setVideoTime(time);
-      } else {
-        const errorHandler = getErrorHandler();
-
-        errorHandler.handle(new Error('Video seek operation failed'), { context: 'video-seek' });
-      }
-    } catch (error) {
-      const errorHandler = getErrorHandler();
-
-      errorHandler.handle(error instanceof Error ? error : new Error(String(error)), {
-        context: 'video-seek',
-      });
-      logger.error('Video seek error', { error });
-    }
-  };
-
-  const controlPanelProps = {
-    hasVideo: vm.currentAsset?.type === 'video',
-    videoState,
-    onVideoTogglePlay: toggleVideoPlay,
-    onVideoSeek: handleVideoSeek,
-    onSetCameraView: handleSetCameraView,
-    activeCameraView: activeCameraView === 'default' ? null : activeCameraView,
-    onExportScene: () => sceneRef.current?.exportScene(),
-    onDownloadSnapshot: () => sceneRef.current?.downloadSnapshot(),
-    onToggleRecording: () => {
-      if (isRecording) {
-        sceneRef.current?.stopRecording();
-        setIsRecording(false);
-      } else {
-        sceneRef.current?.startRecording(true);
-        setIsRecording(true);
+        logger.error('Video seek error', { error });
       }
     },
-    isRecording,
-  };
+    [setVideoTime]
+  );
+
+  const handleExportScene = useCallback(() => sceneRef.current?.exportScene(), []);
+  const handleDownloadSnapshot = useCallback(() => sceneRef.current?.downloadSnapshot(), []);
+  const handleToggleRecording = useCallback(() => {
+    if (isRecording) {
+      sceneRef.current?.stopRecording();
+      setIsRecording(false);
+    } else {
+      sceneRef.current?.startRecording(true);
+      setIsRecording(true);
+    }
+  }, [isRecording]);
+
+  const controlPanelProps = useMemo(
+    () => ({
+      hasVideo: vm.currentAsset?.type === 'video',
+      videoState,
+      onVideoTogglePlay: toggleVideoPlay,
+      onVideoSeek: handleVideoSeek,
+      onSetCameraView: handleSetCameraView,
+      activeCameraView: activeCameraView === 'default' ? null : activeCameraView,
+      onExportScene: handleExportScene,
+      onDownloadSnapshot: handleDownloadSnapshot,
+      onToggleRecording: handleToggleRecording,
+      isRecording,
+    }),
+    [
+      vm.currentAsset?.type,
+      videoState,
+      toggleVideoPlay,
+      handleVideoSeek,
+      handleSetCameraView,
+      activeCameraView,
+      handleExportScene,
+      handleDownloadSnapshot,
+      handleToggleRecording,
+      isRecording,
+    ]
+  );
 
   return (
     <div className="h-screen w-screen bg-black text-white overflow-hidden flex flex-col">
@@ -134,21 +155,32 @@ const App = memo(() => {
         onOpenModelManager={() => setModelManagerOpen(true)}
         onOpenSettings={() => setSettingsOpen(true)}
       />
-      <div className="flex-1 flex flex-col overflow-hidden pt-12">
-        {/* Main Content Area - pt-12 added above for TitleBar offset if needed, or if TitleBar is fixed. TitleBar is fixed (Step 365 line 8). Layout needs to account for it. 
-            Before: AppHeader was flex-none h-16.
-            Now: No AppHeader. TitleBar is fixed top.
-            We need padding-top on the container equal to TitleBar height (h-12 = 3rem = 48px).
-            Wait, TitleBar has 'fixed top-0'.
-            So content needs 'pt-12'.
-            The previous AppHeader was IN THE FLEX FLOW.
-            So removing AppHeader means content slides up.
-            If TitleBar is fixed, we definitely need pt-12 on the container.
-            I added `pt-12` to the `flex-col` container.
-        */}
 
+      {/* Neural Render Toggle Button - Fixed Position - Responsive */}
+      {vm.showScene && (
+        <button
+          type="button"
+          onClick={() => setShowNeuralRender(!showNeuralRender)}
+          className="fixed top-14 md:top-16 right-2 md:right-4 z-50 flex items-center gap-2 px-2 md:px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/30 transition-all duration-300 group touch-optimized"
+          style={{
+            boxShadow: showNeuralRender
+              ? '0 0 20px rgba(6,182,212,0.5), 0 0 40px rgba(168,85,247,0.3)'
+              : '0 0 10px rgba(6,182,212,0.2)',
+          }}
+        >
+          <Sparkles
+            className={`w-4 h-4 ${showNeuralRender ? 'text-cyan-300' : 'text-zinc-400'} group-hover:text-cyan-300 transition-colors`}
+          />
+          <span
+            className={`text-xs font-mono tracking-wider hidden sm:inline ${showNeuralRender ? 'text-cyan-300' : 'text-zinc-400'} group-hover:text-white transition-colors`}
+          >
+            {showNeuralRender ? '退出神经渲染' : '神经渲染'}
+          </span>
+        </button>
+      )}
+
+      <div className="flex-1 flex flex-col overflow-hidden pt-12">
         <main className="flex-1 flex overflow-hidden">
-          {/* ... main content */}
           {vm.showUpload ? (
             <div className="flex-1 flex items-center justify-center">
               <UploadPanel
@@ -174,43 +206,43 @@ const App = memo(() => {
 
           {vm.showScene && vm.result ? (
             <>
-              {/* Scene Container */}
               <div className="flex-1 relative bg-zinc-950">
                 <Suspense
                   fallback={
                     <div className="flex-1 flex items-center justify-center bg-zinc-950 text-cyan-500 gap-2">
                       <Loader2 className="w-6 h-6 animate-spin" />
-                      <span className="font-mono text-sm tracking-widest">
-                        正在加载 3D 引擎...
-                      </span>
+                      <span className="font-mono text-sm tracking-widest">正在加载 3D 引擎...</span>
                     </div>
                   }
                 >
-                  <SceneViewer
-                    aspectRatio={vm.result.asset.aspectRatio}
-                    backgroundUrl={vm.result.backgroundUrl ?? null}
-                    depthUrl={vm.result.depthMapUrl}
-                    imageUrl={vm.result.imageUrl}
-                    isLooping={vm.videoState.isLooping}
-                    isVideoPlaying={vm.videoState.isPlaying}
-                    onVideoDurationChange={setVideoDuration}
-                    onVideoEnded={() => toggleVideoPlay()}
-                    onVideoTimeUpdate={setVideoTime}
-                    playbackRate={vm.videoState.playbackRate}
-                    ref={sceneRef}
-                    videoUrl={vm.result.asset.type === 'video' ? vm.result.asset.sourceUrl : null}
-                  />
+                  {showNeuralRender ? (
+                    <NeuralRenderView className="w-full h-full" />
+                  ) : (
+                    <SceneViewer
+                      aspectRatio={vm.result.asset.aspectRatio}
+                      backgroundUrl={vm.result.backgroundUrl ?? null}
+                      depthUrl={vm.result.depthMapUrl}
+                      imageUrl={vm.result.imageUrl}
+                      isLooping={vm.videoState.isLooping}
+                      isVideoPlaying={vm.videoState.isPlaying}
+                      onVideoDurationChange={setVideoDuration}
+                      onVideoEnded={() => toggleVideoPlay()}
+                      onVideoTimeUpdate={setVideoTime}
+                      playbackRate={vm.videoState.playbackRate}
+                      ref={sceneRef}
+                      videoUrl={vm.result.asset.type === 'video' ? vm.result.asset.sourceUrl : null}
+                    />
+                  )}
                 </Suspense>
 
-                {/* INDUSTRIAL HUD OVERLAY */}
                 <FloatingControls
                   activeCameraView={activeCameraView}
                   onSetCameraView={handleSetCameraView}
                 />
               </div>
 
-              {/* Side Panel - Glassmorphism */}
-              <div className="w-80 overflow-y-auto z-10 shadow-xl hidden lg:block">
+              {/* Control Panel - Show on md+ for tablets, hide on mobile (use drawer) */}
+              <div className="w-full md:w-80 overflow-y-auto z-10 shadow-xl hidden md:block h-full">
                 <ControlPanel {...controlPanelProps} />
               </div>
             </>

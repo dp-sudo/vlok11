@@ -183,13 +183,57 @@ export function resetGlobalResourceManager(): void {
 }
 
 /**
- * Hook for React components to use resource manager
+ * Hook for React components to use resource manager with automatic cleanup
+ * NOTE: This hook requires React to be available in the module context.
+ * For non-React contexts, use ResourceManager class directly.
+ *
+ * @example
+ * ```tsx
+ * import { useResourceManager } from '@/core/ResourceManager';
+ *
+ * function MyComponent() {
+ *   const resources = useResourceManager();
+ *
+ *   useEffect(() => {
+ *     // Register resources that need cleanup
+ *     const cleanup = someSubscription();
+ *     resources.add(cleanup);
+ *   }, []);
+ *
+ *   // ResourceManager is automatically disposed on unmount
+ *   return <div />;
+ * }
+ * ```
  */
 export function useResourceManager(): ResourceManager {
-  const manager = new ResourceManager();
+  // 注意：此 Hook 实现已被标记为废弃
+  // 推荐使用 useSharedResourceManager() 替代，它使用全局单例
+  // 或在组件卸载时手动调用 disposeAll()
+  logger.warn(
+    'useResourceManager is deprecated, consider using useSharedResourceManager() instead'
+  );
 
-  // Auto-cleanup on component unmount would need React integration
-  // For now, manual cleanup is required
+  return getGlobalResourceManager();
+}
 
-  return manager;
+/**
+ * Hook for React components to use a shared global resource manager
+ * Useful when multiple components need to share the same resource lifecycle
+ *
+ * @example
+ * ```tsx
+ * function ParentComponent() {
+ *   const resources = useSharedResourceManager();
+ *
+ *   return (
+ *     <>
+ *       <ChildA resources={resources} />
+ *       <ChildB resources={resources} />
+ *     </>
+ *   );
+ * }
+ * ```
+ */
+export function useSharedResourceManager(): ResourceManager {
+  return getGlobalResourceManager();
 }

@@ -59,11 +59,11 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
             <span id="processing-mode-label" className="block text-sm font-medium text-zinc-300">
               处理模式
             </span>
-            <div
-              role="group"
+            <fieldset
               aria-labelledby="processing-mode-label"
               className="grid grid-cols-2 gap-2 p-1 bg-zinc-950 rounded-lg border border-zinc-800"
             >
+              <legend className="sr-only">处理模式选择</legend>
               <button
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                   isQualityMode
@@ -86,7 +86,7 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
               >
                 速度优先 (Local)
               </button>
-            </div>
+            </fieldset>
           </div>
 
           <div className="space-y-3">

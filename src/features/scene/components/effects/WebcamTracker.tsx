@@ -95,6 +95,7 @@ const useWebcamStream = (videoRef: React.RefObject<HTMLVideoElement | null>) => 
         } catch (error) {
           // Provide a cleaner warning for common "Device not found" vs generic errors
           const err = error as Error;
+
           if (err.name === 'NotFoundError' || err.name === 'NotAllowedError') {
             logger.warn('Webcam access failed (Device not found or denied)', {
               reason: err.message,

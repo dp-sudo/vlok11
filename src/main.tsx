@@ -3,10 +3,14 @@ import ReactDOM from 'react-dom/client';
 import '@/app/styles/global.css';
 import { bootstrap } from '@/app/bootstrap';
 import { ServiceProvider } from '@/core/contexts/ServiceContext';
+import { createLogger } from '@/core/Logger';
 import { initializeSentry } from '@/core/monitoring/initSentry';
+import type { AIService } from '@/features/ai/services';
 import { ErrorBoundaryWithRecovery } from '@/shared/components/ErrorBoundaryWithRecovery';
 
 import { App } from './App';
+
+const logger = createLogger({ module: 'Main' });
 
 if (import.meta.env.PROD) {
   void initializeSentry();
@@ -19,23 +23,23 @@ if (!rootElement) {
 }
 
 const initAndRender = async () => {
-  let aiService;
+  let aiService: AIService | null = null;
 
   try {
     aiService = await bootstrap();
   } catch (error) {
-    console.error('Bootstrap failed via main.tsx:', error);
+    logger.error('Bootstrap failed', { error });
   }
 
   if (!aiService) {
-    console.warn('Bootstrap returned no service (or failed). Rendering in degraded mode.');
+    logger.warn('Bootstrap returned no service - rendering in degraded mode');
   }
 
   const root = ReactDOM.createRoot(rootElement);
 
   root.render(
     <ErrorBoundaryWithRecovery>
-      <ServiceProvider services={{ aiService: aiService ?? null }}>
+      <ServiceProvider services={{ aiService }}>
         <App />
       </ServiceProvider>
     </ErrorBoundaryWithRecovery>

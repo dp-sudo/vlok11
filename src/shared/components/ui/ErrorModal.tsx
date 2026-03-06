@@ -1,7 +1,6 @@
 import { memo } from 'react';
-
-import { createLogger } from '@/core/Logger';
 import type { AppError } from '@/core/ErrorHandler';
+import { createLogger } from '@/core/Logger';
 
 const logger = createLogger({ module: 'ErrorModal' });
 

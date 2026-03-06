@@ -165,7 +165,9 @@ export class WorkerManager implements Disposable {
       }
     } catch (error) {
       // 清理已创建的 worker
-      pool.forEach((w) => w.terminate());
+      for (const w of pool) {
+        w.terminate();
+      }
       logger.error(`Failed to warm up pool for ${name}`, { error });
       throw error;
     }

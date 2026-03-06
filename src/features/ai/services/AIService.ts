@@ -1,54 +1,36 @@
 import { getEventBus } from '@/core/EventBus';
 import { AIEvents } from '@/core/EventTypes';
 import type { LifecycleAware } from '@/core/LifecycleManager';
-import { createLogger } from '@/core/Logger';
 import { SceneType, TechPipeline } from '@/shared/types';
-import { CACHE_DEFAULTS, HASH_CALC, PROGRESS } from './AIService.constants';
+import { createLogger, CACHE_DEFAULTS, PROGRESS, hashString } from './AIServiceCore';
+import type { AICacheConfig, AIProgressCallback, AIProvider, AIService as AIServiceType, DepthResult, ImageAnalysis } from './types';
 import { FallbackProvider } from './providers/FallbackProvider';
-import { GeminiProvider } from './providers/GeminiProvider';
-import { TensorFlowProvider } from './providers/TensorFlowProvider';
-import type {
-  AICacheConfig,
-  AIProgressCallback,
-  AIProvider,
-  AIService as AIServiceType,
-  CacheEntry,
-  DepthResult,
-  ImageAnalysis,
-} from './types';
+import { AIServiceCache } from './AIServiceCache';
+import { getGeminiProvider, getTensorFlowProvider } from './AIServiceProvider';
+import type { LazyProvider } from './AIServiceProvider';
 
 const logger = createLogger({ module: 'AIService' });
-
-function hashString(str: string): string {
-  let hash1 = 0;
-  let hash2 = 0;
-  const len = str.length;
-
-  for (let i = 0; i < len; i++) {
-    const char = str.charCodeAt(i);
-
-    hash1 = ((hash1 << HASH_CALC.HASH1_SHIFT) - hash1 + char) | 0;
-    hash2 = ((hash2 << HASH_CALC.HASH2_SHIFT) ^ char) | 0;
-  }
-
-  return `${(hash1 >>> 0).toString(HASH_CALC.HEX_RADIX)}_${(hash2 >>> 0).toString(HASH_CALC.HEX_RADIX)}_${len}`;
-}
 
 class AIServiceImpl implements AIServiceType, LifecycleAware {
   private activeDepthProvider: AIProvider | null = null;
   private activeSceneProvider: AIProvider | null = null;
 
-  private analysisCache = new Map<string, CacheEntry<ImageAnalysis>>();
+  private analysisCache: AIServiceCache<ImageAnalysis>;
+  private depthCache: AIServiceCache<DepthResult>;
 
   private cacheConfig: AICacheConfig = {
     enabled: true,
     maxSize: CACHE_DEFAULTS.MAX_SIZE,
     ttlMs: CACHE_DEFAULTS.TTL_MS,
   };
+
   readonly dependencies = [];
-  private depthCache = new Map<string, CacheEntry<DepthResult>>();
+
   private fallbackProvider: FallbackProvider;
-  private geminiProvider: GeminiProvider;
+
+  private _geminiProvider: LazyProvider | null = null;
+  private _tensorflowProvider: LazyProvider | null = null;
+
   private initialized = false;
   private isPaused = false;
   private pendingAnalysis = new Map<string, Promise<ImageAnalysis>>();
@@ -56,19 +38,32 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
   private progressCallbacks = new Set<AIProgressCallback>();
 
   readonly serviceId = 'ai-service';
-  private tensorflowProvider: TensorFlowProvider;
 
   constructor() {
-    this.geminiProvider = new GeminiProvider();
-    this.tensorflowProvider = new TensorFlowProvider();
     this.fallbackProvider = new FallbackProvider();
+    this.analysisCache = new AIServiceCache<ImageAnalysis>(this.cacheConfig);
+    this.depthCache = new AIServiceCache<DepthResult>(this.cacheConfig);
+
     this.activeSceneProvider = this.fallbackProvider;
     this.activeDepthProvider = this.fallbackProvider;
   }
 
+  // Lazy initialization methods for providers
+  private async ensureGeminiProvider(): Promise<LazyProvider> {
+    this._geminiProvider ??= await getGeminiProvider();
+
+    return this._geminiProvider;
+  }
+
+  private async ensureTensorFlowProvider(): Promise<LazyProvider> {
+    this._tensorflowProvider ??= await getTensorFlowProvider();
+
+    return this._tensorflowProvider;
+  }
+
   async analyzeScene(base64Image: string): Promise<ImageAnalysis> {
     const cacheKey = hashString(base64Image);
-    const cached = this.getCached(this.analysisCache, cacheKey, 'analysis');
+    const cached = this.analysisCache.get(cacheKey, 'analysis');
 
     if (cached) {
       return cached;
@@ -98,14 +93,21 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
   configureCaching(config: Partial<AICacheConfig>): void {
     this.cacheConfig = { ...this.cacheConfig, ...config };
+    this.analysisCache.configure(this.cacheConfig);
+    this.depthCache.configure(this.cacheConfig);
   }
 
   async destroy(): Promise<void> {
-    await Promise.all([
-      this.geminiProvider.dispose(),
-      this.tensorflowProvider.dispose(),
-      this.fallbackProvider.dispose(),
-    ]);
+    const disposePromises: Promise<void>[] = [this.fallbackProvider.dispose()];
+
+    if (this._geminiProvider) {
+      disposePromises.push(this._geminiProvider.dispose());
+    }
+    if (this._tensorflowProvider) {
+      disposePromises.push(this._tensorflowProvider.dispose());
+    }
+
+    await Promise.all(disposePromises);
 
     this.activeSceneProvider = null;
     this.activeDepthProvider = null;
@@ -149,7 +151,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
         this.emitProgress(PROGRESS.MIDPOINT, 'analyzing');
         const result = await this.activeSceneProvider.analyzeScene(base64Image);
 
-        this.setCache(this.analysisCache, cacheKey, result);
+        this.analysisCache.set(cacheKey, result);
         this.emitProgress(PROGRESS.COMPLETE, 'analyzing');
         getEventBus().emit(AIEvents.REQUEST_COMPLETED, {
           provider: this.activeSceneProvider.providerId,
@@ -178,7 +180,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
     const result = await this.fallbackProvider.analyzeScene(base64Image);
 
-    this.setCache(this.analysisCache, cacheKey, result);
+    this.analysisCache.set(cacheKey, result);
     this.emitProgress(PROGRESS.COMPLETE, 'analyzing');
     getEventBus().emit(AIEvents.REQUEST_COMPLETED, {
       provider: 'fallback',
@@ -215,7 +217,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
         this.emitProgress(PROGRESS.MIDPOINT, 'depth_estimation');
         const result = await this.activeDepthProvider.estimateDepth(imageUrl);
 
-        this.setCache(this.depthCache, cacheKey, result);
+        this.depthCache.set(cacheKey, result);
         this.emitProgress(PROGRESS.COMPLETE, 'depth_estimation');
         getEventBus().emit(AIEvents.REQUEST_COMPLETED, {
           provider: this.activeDepthProvider.providerId,
@@ -244,7 +246,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
     const result = await this.fallbackProvider.estimateDepth(imageUrl);
 
-    this.setCache(this.depthCache, cacheKey, result);
+    this.depthCache.set(cacheKey, result);
     this.emitProgress(PROGRESS.COMPLETE, 'depth_estimation');
     getEventBus().emit(AIEvents.REQUEST_COMPLETED, {
       provider: 'fallback',
@@ -269,7 +271,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
   async estimateDepth(imageUrl: string): Promise<DepthResult> {
     const cacheKey = hashString(imageUrl);
-    const cached = this.getCached(this.depthCache, cacheKey, 'depth');
+    const cached = this.depthCache.get(cacheKey, 'depth');
 
     if (cached) {
       return cached;
@@ -296,32 +298,6 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
     return `scene=${this.activeSceneProvider?.providerId}, depth=${this.activeDepthProvider?.providerId}`;
   }
 
-  private getCached<T>(
-    cache: Map<string, CacheEntry<T>>,
-    key: string,
-    cacheType: 'analysis' | 'depth'
-  ): T | null {
-    if (!this.cacheConfig.enabled) {
-      return null;
-    }
-
-    const entry = cache.get(key);
-
-    if (!entry) {
-      return null;
-    }
-
-    if (Date.now() - entry.timestamp > this.cacheConfig.ttlMs) {
-      cache.delete(key);
-
-      return null;
-    }
-
-    getEventBus().emit(AIEvents.CACHE_HIT, { key, type: cacheType });
-
-    return entry.value;
-  }
-
   async initialize(): Promise<void> {
     if (this.initialized) {
       return;
@@ -338,19 +314,20 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
       return;
     }
 
+    // Initialize providers lazily
+    const [gemini, tensorflow] = await Promise.all([
+      this.ensureGeminiProvider(),
+      this.ensureTensorFlowProvider(),
+    ]);
+
     await Promise.all([
-      this.geminiProvider.initialize(),
-      this.tensorflowProvider.initialize(),
+      gemini.initialize(),
+      tensorflow.initialize(),
       this.fallbackProvider.initialize(),
     ]);
 
-    this.activeSceneProvider = this.geminiProvider.isAvailable
-      ? this.geminiProvider
-      : this.fallbackProvider;
-
-    this.activeDepthProvider = this.tensorflowProvider.isAvailable
-      ? this.tensorflowProvider
-      : this.fallbackProvider;
+    this.activeSceneProvider = gemini.isAvailable ? gemini : this.fallbackProvider;
+    this.activeDepthProvider = tensorflow.isAvailable ? tensorflow : this.fallbackProvider;
 
     this.initialized = true;
 
@@ -371,7 +348,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
   // Provider 管理方法
   async switchProvider(type: 'scene' | 'depth', providerId: string): Promise<void> {
-    const provider = this.getProviderById(providerId);
+    const provider = await this.getProviderById(providerId);
 
     if (!provider) {
       throw new Error(`Provider not found: ${providerId}`);
@@ -401,8 +378,8 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
     logger.info(`Switched ${type} provider from ${fromProvider} to ${providerId}`);
   }
 
-  isProviderAvailable(providerId: string): boolean {
-    const provider = this.getProviderById(providerId);
+  async isProviderAvailable(providerId: string): Promise<boolean> {
+    const provider = await this.getProviderById(providerId);
 
     return provider?.isAvailable ?? false;
   }
@@ -413,12 +390,12 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
     return provider?.providerId ?? 'unknown';
   }
 
-  private getProviderById(id: string): AIProvider | null {
+  private async getProviderById(id: string): Promise<AIProvider | null> {
     switch (id) {
       case 'gemini':
-        return this.geminiProvider;
+        return this.ensureGeminiProvider();
       case 'tensorflow':
-        return this.tensorflowProvider;
+        return this.ensureTensorFlowProvider();
       case 'fallback':
         return this.fallbackProvider;
       default:
@@ -428,20 +405,13 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
   // 缓存统计方法
   getCacheStats(): { analysisCacheSize: number; depthCacheSize: number; totalSize: number } {
-    let totalSize = 0;
-
-    // 估算缓存大小（简化计算）
-    for (const [key, entry] of this.analysisCache.entries()) {
-      totalSize += key.length * 2 + JSON.stringify(entry.value).length * 2;
-    }
-    for (const [key, entry] of this.depthCache.entries()) {
-      totalSize += key.length * 2 + JSON.stringify(entry.value).length * 2;
-    }
+    const analysisStats = this.analysisCache.getStats();
+    const depthStats = this.depthCache.getStats();
 
     return {
-      analysisCacheSize: this.analysisCache.size,
-      depthCacheSize: this.depthCache.size,
-      totalSize,
+      analysisCacheSize: analysisStats.size,
+      depthCacheSize: depthStats.size,
+      totalSize: analysisStats.estimatedSize + depthStats.estimatedSize,
     };
   }
 
@@ -451,6 +421,8 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
 
   updateCacheConfig(config: Partial<AICacheConfig>): void {
     this.cacheConfig = { ...this.cacheConfig, ...config };
+    this.analysisCache.configure(this.cacheConfig);
+    this.depthCache.configure(this.cacheConfig);
     logger.info('Cache config updated', { config: this.cacheConfig });
   }
 
@@ -474,22 +446,6 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
       from: 'paused',
       to: 'active',
     });
-  }
-
-  private setCache<T>(cache: Map<string, CacheEntry<T>>, key: string, value: T): void {
-    if (!this.cacheConfig.enabled) {
-      return;
-    }
-
-    if (cache.size >= this.cacheConfig.maxSize) {
-      const oldestKey = cache.keys().next().value;
-
-      if (oldestKey) {
-        cache.delete(oldestKey);
-      }
-    }
-
-    cache.set(key, { value, timestamp: Date.now(), hash: key });
   }
 }
 

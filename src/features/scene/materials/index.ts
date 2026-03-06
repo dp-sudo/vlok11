@@ -54,6 +54,21 @@ export const AnimeMaterialClass = shaderMaterial(
       ANIME_DEFAULTS.OUTLINE_COLOR_B
     ),
     uSkinToneBoost: ANIME_DEFAULTS.SKIN_TONE_BOOST,
+    // Enhanced anime style uniforms
+    uShadowSoftness: ANIME_DEFAULTS.SHADOW_SOFTNESS,
+    uColorShift: ANIME_DEFAULTS.COLOR_SHIFT,
+    uDitherStrength: ANIME_DEFAULTS.DITHER_STRENGTH,
+    uAmbientOcclusion: ANIME_DEFAULTS.AMBIENT_OCCLUSION,
+    uShadowTint: new Color(
+      ANIME_DEFAULTS.SHADOW_TINT_R,
+      ANIME_DEFAULTS.SHADOW_TINT_G,
+      ANIME_DEFAULTS.SHADOW_TINT_B
+    ),
+    uHighlightTint: new Color(
+      ANIME_DEFAULTS.HIGHLIGHT_TINT_R,
+      ANIME_DEFAULTS.HIGHLIGHT_TINT_G,
+      ANIME_DEFAULTS.HIGHLIGHT_TINT_B
+    ),
   },
   animeVertexShader,
   animeFragmentShader
@@ -81,6 +96,18 @@ export const CelMaterialClass = shaderMaterial(
     ),
     uHalftoneSize: CEL_DEFAULTS.HALFTONE_SIZE,
     uSpecularSize: CEL_DEFAULTS.SPECULAR_SIZE,
+    // Enhanced cel shading uniforms
+    uSpecularThreshold: CEL_DEFAULTS.SPECULAR_THRESHOLD,
+    uSpecularIntensity: CEL_DEFAULTS.SPECULAR_INTENSITY,
+    uShadowIntensity: CEL_DEFAULTS.SHADOW_INTENSITY,
+    uEdgeSoftness: CEL_DEFAULTS.EDGE_SOFTNESS,
+    uRimLightIntensity: CEL_DEFAULTS.RIM_LIGHT_INTENSITY,
+    uRimLightColor: new Color(
+      CEL_DEFAULTS.RIM_LIGHT_COLOR_R,
+      CEL_DEFAULTS.RIM_LIGHT_COLOR_G,
+      CEL_DEFAULTS.RIM_LIGHT_COLOR_B
+    ),
+    uToonContrast: CEL_DEFAULTS.TOON_CONTRAST,
   },
   celVertexShader,
   celFragmentShader

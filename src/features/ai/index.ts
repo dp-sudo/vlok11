@@ -12,6 +12,7 @@ export type {
   AICacheConfig,
   AIProgressCallback,
   AIProvider,
+  AIService,
   DepthResult,
   ImageAnalysis,
   MotionPath,
@@ -21,7 +22,6 @@ export type {
   SimpleSceneType,
 } from './services';
 export {
-  AIService,
   LightSceneAnalyzer,
   lightSceneAnalyzer,
   SmartMotionEngine,

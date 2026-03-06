@@ -1,8 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-
-import { createLogger } from '@/core/Logger';
 import { type AppError, ErrorSeverity, getErrorHandler } from '@/core/ErrorHandler';
 import { getEventBus } from '@/core/EventBus';
+import { createLogger } from '@/core/Logger';
 
 import { ErrorModal } from './ui/ErrorModal';
 import { ErrorToast } from './ui/ErrorToast';

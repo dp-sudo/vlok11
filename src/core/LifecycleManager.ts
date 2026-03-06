@@ -5,16 +5,33 @@ import { createLogger } from './Logger';
 export interface LifecycleAware {
   readonly dependencies?: string[];
   destroy(): Promise<void>;
+  healthCheck?(): Promise<boolean>;
   initialize(): Promise<void>;
   pause?(): void;
   resume?(): void;
   readonly serviceId: string;
 }
+
 export interface LifecycleManagerOptions {
   continueOnError?: boolean;
+  healthCheckInterval?: number;
   initTimeout?: number;
 }
+
+export interface ServiceHealthStatus {
+  healthy: boolean;
+  lastCheck: number;
+  responseTime?: number;
+}
+
+export interface ResourceStats {
+  memory?: number;
+  services: Map<string, ServiceHealthStatus>;
+  timestamp: number;
+}
+
 interface ServiceMetadata {
+  healthStatus?: ServiceHealthStatus;
   initDuration?: number;
   initOrder: number;
   service: LifecycleAware;
@@ -31,6 +48,8 @@ export enum LifecycleState {
 }
 
 const DEFAULT_INIT_TIMEOUT = 30000;
+const DEFAULT_HEALTH_CHECK_INTERVAL = 30000;
+const HEALTH_CHECK_TIMEOUT = 5000;
 
 export const getLifecycleManager = (): LifecycleManagerImpl => LifecycleManagerImpl.getInstance();
 const logger = createLogger({ module: 'LifecycleManager' });
@@ -41,6 +60,7 @@ export const resetLifecycleManager = (): void => {
 
 class LifecycleManagerImpl {
   private static instance: LifecycleManagerImpl | null = null;
+  private healthCheckIntervalId: ReturnType<typeof setInterval> | null = null;
   private initStartTime = 0;
   private options: Required<LifecycleManagerOptions>;
   private services = new Map<string, ServiceMetadata>();
@@ -50,6 +70,7 @@ class LifecycleManagerImpl {
     this.options = {
       initTimeout: options.initTimeout ?? DEFAULT_INIT_TIMEOUT,
       continueOnError: options.continueOnError ?? false,
+      healthCheckInterval: options.healthCheckInterval ?? DEFAULT_HEALTH_CHECK_INTERVAL,
     };
   }
 
@@ -291,6 +312,185 @@ class LifecycleManagerImpl {
 
   unregister(serviceId: string): void {
     this.services.delete(serviceId);
+  }
+
+  // ========== 健康检查和资源监控 ==========
+
+  /**
+   * 执行单次健康检查
+   */
+  async healthCheck(): Promise<Map<string, ServiceHealthStatus>> {
+    const results = new Map<string, ServiceHealthStatus>();
+
+    for (const [serviceId, metadata] of this.services) {
+      if (metadata.state !== LifecycleState.READY) {
+        results.set(serviceId, { healthy: false, lastCheck: Date.now() });
+        continue;
+      }
+
+      const startTime = performance.now();
+
+      try {
+        let isHealthy = true;
+
+        if (metadata.service.healthCheck) {
+          isHealthy = await Promise.race([
+            metadata.service.healthCheck(),
+            new Promise<boolean>((resolve) =>
+              setTimeout(() => resolve(false), HEALTH_CHECK_TIMEOUT)
+            ),
+          ]);
+        }
+
+        results.set(serviceId, {
+          healthy: isHealthy,
+          lastCheck: Date.now(),
+          responseTime: performance.now() - startTime,
+        });
+      } catch {
+        results.set(serviceId, {
+          healthy: false,
+          lastCheck: Date.now(),
+          responseTime: performance.now() - startTime,
+        });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * 启动定期健康检查
+   */
+  startHealthCheck(): void {
+    if (this.healthCheckIntervalId) {
+      logger.warn('Health check already running');
+
+      return;
+    }
+
+    const runHealthCheck = async (): Promise<void> => {
+      const results = await this.healthCheck();
+
+      for (const [serviceId, status] of results) {
+        const metadata = this.services.get(serviceId);
+
+        if (metadata) {
+          metadata.healthStatus = status;
+        }
+
+        if (!status.healthy) {
+          getEventBus().emit('lifecycle:service:unhealthy', { serviceId, status });
+          logger.warn(`Service ${serviceId} is unhealthy`);
+        }
+      }
+
+      getEventBus().emit('lifecycle:health:check:completed', { results });
+    };
+
+    this.healthCheckIntervalId = setInterval(() => {
+      void runHealthCheck();
+    }, this.options.healthCheckInterval);
+
+    logger.info(`Health check started with interval ${this.options.healthCheckInterval}ms`);
+  }
+
+  /**
+   * 停止定期健康检查
+   */
+  stopHealthCheck(): void {
+    if (this.healthCheckIntervalId) {
+      clearInterval(this.healthCheckIntervalId);
+      this.healthCheckIntervalId = null;
+      logger.info('Health check stopped');
+    }
+  }
+
+  /**
+   * 获取资源使用统计
+   */
+  getResourceStats(): ResourceStats {
+    const serviceStats = new Map<string, ServiceHealthStatus>();
+
+    for (const [serviceId, metadata] of this.services) {
+      if (metadata.healthStatus) {
+        serviceStats.set(serviceId, metadata.healthStatus);
+      } else {
+        serviceStats.set(serviceId, {
+          healthy: metadata.state === LifecycleState.READY,
+          lastCheck: Date.now(),
+        });
+      }
+    }
+
+    let memory: number | undefined;
+
+    if (typeof performance !== 'undefined' && 'memory' in performance) {
+      memory = (performance as { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize;
+    }
+
+    const stats: ResourceStats = {
+      services: serviceStats,
+      timestamp: Date.now(),
+    };
+
+    if (memory !== undefined) {
+      stats.memory = memory;
+    }
+
+    return stats;
+  }
+
+  /**
+   * 验证服务依赖是否满足
+   */
+  validateDependencies(serviceId: string): { valid: boolean; missing: string[] } {
+    const metadata = this.services.get(serviceId);
+
+    if (!metadata) {
+      return { valid: false, missing: [serviceId] };
+    }
+
+    const dependencies = metadata.service.dependencies ?? [];
+    const missing: string[] = [];
+
+    for (const depId of dependencies) {
+      const depMetadata = this.services.get(depId);
+
+      if (!depMetadata) {
+        missing.push(depId);
+      } else if (depMetadata.state !== LifecycleState.READY) {
+        missing.push(`${depId} (not ready)`);
+      }
+    }
+
+    return { valid: missing.length === 0, missing };
+  }
+
+  /**
+   * 获取初始化性能报告
+   */
+  getInitPerformanceReport(): {
+    totalTime: number;
+    services: Array<{ id: string; duration?: number; state: LifecycleState }>;
+  } {
+    const totalTime = this.initStartTime > 0 ? Date.now() - this.initStartTime : 0;
+    const services: Array<{ id: string; duration?: number; state: LifecycleState }> = [];
+
+    for (const [serviceId, metadata] of this.services) {
+      const serviceReport: { id: string; duration?: number; state: LifecycleState } = {
+        id: serviceId,
+        state: metadata.state,
+      };
+
+      if (metadata.initDuration !== undefined) {
+        serviceReport.duration = metadata.initDuration;
+      }
+
+      services.push(serviceReport);
+    }
+
+    return { totalTime, services };
   }
 }
 

@@ -22,7 +22,7 @@ export const ControlPanelTabBar: React.FC<ControlPanelTabBarProps> = memo(
             type="button"
             className={`
               flex-1 py-3 flex flex-col items-center gap-1.5
-              transition-all duration-200 relative
+              transition-all duration-200 relative touch-optimized
               ${isActive ? 'text-cyan-400' : 'text-slate-400 hover:text-cyan-300 hover:bg-cyan-500/5'}
             `}
             key={t.key}
@@ -31,8 +31,13 @@ export const ControlPanelTabBar: React.FC<ControlPanelTabBarProps> = memo(
             <div
               className={`
               p-2 rounded-xl transition-all duration-300
-              ${isActive ? 'bg-cyan-500/15 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-110 ring-1 ring-cyan-500/30' : 'text-slate-400 hover:text-slate-300'}
+              ${
+                isActive
+                  ? 'bg-cyan-500/15 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-110 ring-1 ring-cyan-500/30'
+                  : 'text-slate-400 hover:text-slate-300 hover:scale-105'
+              }
             `}
+              style={{ willChange: 'transform, box-shadow' }}
             >
               {t.icon}
             </div>
@@ -43,12 +48,32 @@ export const ControlPanelTabBar: React.FC<ControlPanelTabBarProps> = memo(
               {t.label}
             </span>
 
+            {/* Animated indicator with glow */}
             {isActive && (
-              <div className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+              <div
+                className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent shadow-[0_0_10px_rgba(6,182,212,0.8)]"
+                style={{
+                  animation: 'tabIndicatorSlide 0.3s ease-out',
+                  willChange: 'opacity, transform',
+                }}
+              />
             )}
           </button>
         );
       })}
+
+      <style>{`
+        @keyframes tabIndicatorSlide {
+          from {
+            opacity: 0;
+            transform: scaleX(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scaleX(1);
+          }
+        }
+      `}</style>
     </div>
   )
 );

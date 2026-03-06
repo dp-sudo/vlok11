@@ -80,11 +80,9 @@ const buildAsset = (
     id: generateUUID(),
     sourceUrl: imageUrl,
     width:
-      ((stageInput.metadata as Record<string, unknown>)?.['width'] as number) ??
-      ASSET_DEFAULTS.WIDTH,
+      ((stageInput.metadata as Record<string, unknown>)?.['width'] as number) ?? ASSET_DEFAULTS.WIDTH,
     height:
-      ((stageInput.metadata as Record<string, unknown>)?.['height'] as number) ??
-      ASSET_DEFAULTS.HEIGHT,
+      ((stageInput.metadata as Record<string, unknown>)?.['height'] as number) ?? ASSET_DEFAULTS.HEIGHT,
     aspectRatio:
       ((stageInput.metadata as Record<string, unknown>)?.['aspectRatio'] as number) ??
       ASSET_DEFAULTS.ASPECT_RATIO,
@@ -224,7 +222,9 @@ class UploadPipelineImpl implements UploadPipelineInterface {
   }
 
   dispose(): void {
-    this.unsubscriptions.forEach((unsubscribe) => unsubscribe());
+    for (const unsubscribe of this.unsubscriptions) {
+      unsubscribe();
+    }
     this.unsubscriptions = [];
     this.completeCallbacks.clear();
     this.errorCallbacks.clear();
@@ -391,7 +391,9 @@ class UploadPipelineImpl implements UploadPipelineInterface {
       (url): url is string => typeof url === 'string' && url.startsWith('blob:')
     );
 
-    urlsToTrack.forEach((url) => this.blobUrls.add(url));
+    for (const url of urlsToTrack) {
+      this.blobUrls.add(url);
+    }
   }
 
   private releaseBlobUrls(): void {

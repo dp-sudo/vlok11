@@ -33,47 +33,62 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1000, // 提升警告阈值，Three.js和TF.js较大是正常的
       rollupOptions: {
         output: {
-          manualChunks: {
+          manualChunks: (id): string | undefined => {
+            // 生产环境优化：动态导入 TensorFlow.js 和 GenAI
+            if (isProd) {
+              // AI/ML Features - TensorFlow (只在生产环境拆分)
+              if (id.includes('@tensorflow/tfjs') || id.includes('@tensorflow-models') || id.includes('@mediapipe')) {
+                return 'ai-ml';
+              }
+            } else {
+              // 开发环境跳过，避免循环依赖警告
+              if (id.includes('@tensorflow/tfjs') || id.includes('@tensorflow-models') || id.includes('@mediapipe')) {
+                return undefined;
+              }
+            }
+
+            // Google GenAI - 独立 chunk
+            if (id.includes('@google/genai')) {
+              return 'genai';
+            }
+
             // Core React
-            'react-core': ['react', 'react-dom'],
+            if (id.includes('react-dom') || id.includes('react/')) {
+              return 'react-core';
+            }
 
             // 3D Rendering (largest chunk - 无法进一步拆分)
-            'three-core': ['three', '@react-three/fiber', '@react-three/drei', 'three-stdlib'],
+            if (id.includes('three') || id.includes('@react-three')) {
+              return 'three-core';
+            }
 
             // State Management
-            state: ['zustand'],
-
-            // AI/ML Features - TensorFlow (较大但必需)
-            'ai-tensorflow': ['@tensorflow/tfjs'],
-            'ai-models': [
-              '@tensorflow-models/depth-estimation',
-              '@tensorflow-models/face-detection',
-            ],
-
-            // Google AI
-            'ai-gemini': ['@google/genai'],
+            if (id.includes('zustand')) {
+              return 'state';
+            }
 
             // Media Processing
-            media: ['hls.js'],
-
-            // Computer Vision
-            vision: ['@mediapipe/face_detection'],
+            if (id.includes('hls.js')) {
+              return 'media';
+            }
 
             // UI Components
-            ui: ['lucide-react', 'clsx', 'tailwind-merge'],
+            if (id.includes('lucide-react') || id.includes('clsx') || id.includes('tailwind-merge')) {
+              return 'ui';
+            }
 
-            // Monitoring
-            monitoring: ['@sentry/react'],
+            // Sentry - 只在生产环境打包
+            if (isProd && id.includes('@sentry')) {
+              return 'monitoring';
+            }
+
+            return undefined;
           },
           // 优化入口文件
           entryFileNames: 'assets/index-[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
           assetFileNames: 'assets/[name]-[hash].[ext]',
         },
-        // 提取动态导入的模块为独立 chunk
-        // experimentalCfg: {
-        //   splitChunks: true,
-        // },
       },
     },
     optimizeDeps: {

@@ -49,6 +49,7 @@ const PlayButton = memo<PlayButtonProps>(({ isPlaying, onClick }) => (
     onClick={onClick}
     title={isPlaying ? '暂停' : '播放'}
     type="button"
+    style={{ willChange: 'transform, box-shadow' }}
   >
     {isPlaying ? (
       <Pause className="w-6 h-6 text-white fill-white relative z-10" />
@@ -62,8 +63,7 @@ PlayButton.displayName = 'PlayButton';
 
 interface IconButtonProps {
   active?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   label?: string;
   onClick: () => void;
   title: string;
@@ -370,6 +370,11 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
             {/* Custom Slider Track - supports real-time dragging */}
             <div
               ref={trackRef}
+              role="slider"
+              aria-valuemin={0}
+              aria-valuemax={videoState.duration}
+              aria-valuenow={sliderValue}
+              aria-label="视频进度"
               className="relative h-8 flex items-center cursor-pointer group/slider"
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => !isDragging && setIsHovering(false)}

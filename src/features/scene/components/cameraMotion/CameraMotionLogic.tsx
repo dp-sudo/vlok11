@@ -157,6 +157,4 @@ const fromTarget = (controls: OrbitControlsType): Vec3 => ({
   z: controls.target.z,
 });
 
-export default CameraMotionLogic;
-
 CameraMotionLogic.displayName = 'CameraMotionLogic';

@@ -216,8 +216,12 @@ class ModelRegistryImpl {
     const maxInferenceTime = Math.max(...times);
 
     const gpu = this.detectGPU();
-    const memory = (performance as unknown as { memory?: { jsHeapSizeLimit: number } }).memory
-      ?.jsHeapSizeLimit;
+    // 安全访问 performance.memory（仅 Chrome 支持）
+    const perfMemory =
+      'memory' in performance
+        ? (performance.memory as { jsHeapSizeLimit?: number } | undefined)
+        : undefined;
+    const memory = perfMemory?.jsHeapSizeLimit;
 
     const result: ModelBenchmarkResult = {
       modelId,

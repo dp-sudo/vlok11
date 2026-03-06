@@ -1,17 +1,11 @@
-import { Loader2 } from 'lucide-react';
 import type React from 'react';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
-import { AITab } from './AITab';
-import { CameraTab } from './CameraTab';
-import { VideoControls } from './components';
-import { MOTIONS, PROJECTIONS, RENDER_STYLES, type TabType } from './constants';
-import { EffectsTab } from './EffectsTab';
-import { ImmersiveTab } from './ImmersiveTab';
-import { ControlPanelHeader, ControlPanelTabBar, SceneTab } from './parts';
+import { ControlPanelCompound } from './compound';
+import type { TabType } from './constants';
 
 interface ControlPanelProps {
   activeCameraView?: CameraViewPreset | null;
@@ -46,8 +40,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
     isRecording,
   }) => {
     const [activeTab, setActiveTab] = useState<TabType>('scene');
-    const [sliderValue, setSliderValue] = useState(0);
-    const [dragging, setDragging] = useState(false);
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
       projection: true,
       depth: true,
@@ -62,14 +54,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
     const config = useSceneStore((s) => s.config);
-    // ... rest of component ...
     const setConfig = useSceneStore((s) => s.setConfig);
     const resetConfig = useSceneStore((s) => s.resetConfig);
     const { exportState, setPlaybackRate, toggleVideoLoop } = useAppViewModel();
-
-    useEffect(() => {
-      if (!dragging && videoState) setSliderValue(videoState.currentTime);
-    }, [videoState, dragging]);
 
     const set = useCallback(
       <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => {
@@ -82,122 +69,62 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
       setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
     }, []);
 
-    // Memoized callbacks for VideoControls to prevent unnecessary re-renders
-    const handleDragStart = useCallback(() => setDragging(true), []);
-    const handleDragEnd = useCallback(() => setDragging(false), []);
-    const handleToggleMute = useCallback(() => set('videoMuted', !config.videoMuted), [config.videoMuted, set]);
-
-    const activeProjection = useMemo(
-      () => PROJECTIONS.find((p) => p.mode === config.projectionMode),
-      [config.projectionMode]
-    );
-    const activeStyle = useMemo(
-      () => RENDER_STYLES.find((r) => r.style === config.renderStyle),
-      [config.renderStyle]
-    );
-    const activeMotion = useMemo(
-      () => MOTIONS.find((m) => m.type === config.cameraMotionType),
-      [config.cameraMotionType]
-    );
     const { isExporting } = exportState;
 
     return (
-      <div className="w-full lg:w-80 bg-zinc-950/90 backdrop-blur-xl flex flex-col h-full border-l border-white/10 shadow-2xl relative text-zinc-100">
-        {isExporting ? (
-          <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
-            <div className="flex flex-col items-center gap-2 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl">
-              <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
-              <div className="text-sm font-semibold text-slate-200">
-                {exportState.format ? `导出 ${exportState.format.toUpperCase()}...` : '导出中...'}
-              </div>
-              <div className="w-32 h-1 bg-slate-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-violet-500 transition-all duration-300"
-                  style={{ width: `${exportState.progress}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        ) : null}
-
-        <ControlPanelHeader
+      <ControlPanelCompound
+        activeCameraView={activeCameraView}
+        activeTab={activeTab}
+        config={config}
+        expandedSections={expandedSections}
+        hasVideo={hasVideo}
+        hoveredItem={hoveredItem}
+        isExporting={isExporting}
+        isRecording={isRecording}
+        onDownloadSnapshot={onDownloadSnapshot}
+        onExportScene={onExportScene}
+        onReset={resetConfig}
+        onSetCameraView={onSetCameraView}
+        onSetPlaybackRate={setPlaybackRate}
+        onToggleRecording={onToggleRecording}
+        onToggleVideoLoop={toggleVideoLoop}
+        onVideoSeek={onVideoSeek}
+        onVideoTogglePlay={onVideoTogglePlay}
+        setConfig={set}
+        setHoveredItem={setHoveredItem}
+        toggleSection={toggleSection}
+        videoState={videoState}
+      >
+        <ControlPanelCompound.Header
           isExporting={isExporting}
-          {...(isRecording !== undefined ? { isRecording } : {})}
-          {...(onDownloadSnapshot ? { onDownloadSnapshot } : {})}
-          {...(onExportScene ? { onExportScene } : {})}
+          isRecording={isRecording}
+          onDownloadSnapshot={onDownloadSnapshot}
+          onExportScene={onExportScene}
           onReset={resetConfig}
-          {...(onToggleRecording ? { onToggleRecording } : {})}
+          onToggleRecording={onToggleRecording}
         />
 
-        <ControlPanelTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+        <ControlPanelCompound.TabBar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-        {hasVideo && videoState ? (
-          <VideoControls
-            isLooping={videoState.isLooping}
-            onDragEnd={handleDragEnd}
-            onDragStart={handleDragStart}
-            {...(onVideoSeek ? { onSeek: onVideoSeek } : {})}
-            onSetPlaybackRate={setPlaybackRate}
-            onSliderChange={setSliderValue}
-            onToggleLoop={toggleVideoLoop}
-            onToggleMute={handleToggleMute}
-            {...(onVideoTogglePlay ? { onTogglePlay: onVideoTogglePlay } : {})}
-            playbackRate={videoState.playbackRate}
-            sliderValue={sliderValue}
-            videoMuted={config.videoMuted}
-            videoState={videoState}
-          />
-        ) : null}
+        <ControlPanelCompound.VideoControlsWrapper
+          hasVideo={hasVideo}
+          onSetPlaybackRate={setPlaybackRate}
+          onToggleVideoLoop={toggleVideoLoop}
+          onVideoSeek={onVideoSeek}
+          onVideoTogglePlay={onVideoTogglePlay}
+          videoMuted={config.videoMuted}
+          videoState={videoState}
+        />
 
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-          <div className="p-3 space-y-1">
-            {activeTab === 'scene' && (
-              <SceneTab
-                activeProjection={activeProjection}
-                config={config}
-                expandedSections={expandedSections}
-                hoveredItem={hoveredItem}
-                set={set}
-                setHoveredItem={setHoveredItem}
-                toggleSection={toggleSection}
-              />
-            )}
-
-            {activeTab === 'camera' && (
-              <CameraTab
-                {...(activeCameraView ? { activeCameraView } : {})}
-                activeMotion={activeMotion}
-                config={config}
-                expandedSections={expandedSections}
-                {...(onSetCameraView ? { onSetCameraView } : {})}
-                set={set}
-                toggleSection={toggleSection}
-              />
-            )}
-
-            {activeTab === 'effects' && (
-              <EffectsTab
-                activeStyle={activeStyle}
-                config={config}
-                expandedSections={expandedSections}
-                set={set}
-                toggleSection={toggleSection}
-              />
-            )}
-
-            {activeTab === 'immersive' && (
-              <ImmersiveTab
-                config={config}
-                expandedSections={expandedSections}
-                set={set}
-                toggleSection={toggleSection}
-              />
-            )}
-
-            {activeTab === 'ai' && <AITab config={config} set={set} />}
-          </div>
-        </div>
-      </div>
+        <ControlPanelCompound.Content
+          activeCameraView={activeCameraView}
+          activeTab={activeTab}
+          onSetCameraView={onSetCameraView}
+        />
+      </ControlPanelCompound>
     );
   }
 );

@@ -2,6 +2,7 @@ import type { StateCreator } from 'zustand';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { getEventBus } from '@/core/EventBus';
+import { createLogger } from '@/core/Logger';
 import {
   type CameraPresetType,
   calculateDistance,
@@ -16,6 +17,8 @@ import type {
   Vec3,
 } from '@/shared/types';
 import { generateId, isCameraPoseEqual } from '@/shared/utils';
+
+const logger = createLogger({ module: 'CameraStore' });
 
 export type { InteractionType };
 
@@ -199,7 +202,7 @@ const createInteractionActions = (
   },
   captureBasePose: (pose: CameraPose) => {
     if (!isValidPose(pose)) {
-      console.warn('Invalid pose received in captureBasePose');
+      logger.warn('Invalid pose received in captureBasePose');
 
       return;
     }
@@ -279,7 +282,7 @@ const createPoseActions = (
   setPose: (newPose: Partial<CameraPose>, source: CameraHistoryEntry['source'] = 'user') => {
     // 验证姿态数据
     if (!isValidPose(newPose)) {
-      console.warn('Invalid pose data in setPose:', newPose);
+      logger.warn('Invalid pose data in setPose', { pose: newPose });
 
       return;
     }
@@ -313,7 +316,7 @@ const createPoseActions = (
     const { pose, bookmarks } = get();
 
     if (!name || name.trim().length === 0) {
-      console.warn('Cannot add bookmark with empty name');
+      logger.warn('Cannot add bookmark with empty name');
 
       return;
     }

@@ -15,14 +15,20 @@ import type {
  */
 function isProcessingResult(obj: unknown): obj is ProcessingResult {
   if (!obj || typeof obj !== 'object') return false;
+
   const result = obj as Record<string, unknown>;
 
-  return (
-    typeof result['depthMapUrl'] === 'string' &&
-    typeof result['imageUrl'] === 'string' &&
-    result['asset'] !== undefined &&
-    typeof (result['asset'] as Record<string, unknown>)['id'] === 'string'
-  );
+  // 使用 in 操作符更安全地检查属性存在性，使用括号符号访问索引签名属性
+  const hasDepthMapUrl = 'depthMapUrl' in result && typeof result['depthMapUrl'] === 'string';
+  const hasImageUrl = 'imageUrl' in result && typeof result['imageUrl'] === 'string';
+  const hasAsset = 'asset' in result && result['asset'] !== undefined;
+
+  if (!hasAsset) return false;
+
+  const asset = result['asset'] as Record<string, unknown>;
+  const hasAssetId = 'id' in asset && typeof asset['id'] === 'string';
+
+  return hasDepthMapUrl && hasImageUrl && hasAssetId;
 }
 
 export interface SessionState {

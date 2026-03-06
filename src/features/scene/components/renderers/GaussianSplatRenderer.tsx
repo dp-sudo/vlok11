@@ -15,10 +15,29 @@ interface GaussianSplatProps {
  * Uses instanced geometry with view-dependent point sizing
  * Supports LOD and advanced shading
  */
+
+// 几何体缓存：避免相同参数的重复计算
+const splatGeometryCache = new Map<string, BufferGeometry>();
+
 /**
- * Creates geometry for Gaussian splat rendering
+ * 清理几何体缓存，释放所有缓存的几何体资源
+ */
+export const clearSplatGeometryCache = (): void => {
+  splatGeometryCache.forEach((geometry) => {
+    geometry.dispose();
+  });
+  splatGeometryCache.clear();
+};
+
+/**
+ * Creates geometry for Gaussian splat rendering (with caching)
  */
 function createSplatGeometry(width: number, height: number, density: number): BufferGeometry {
+  const cacheKey = `${width}_${height}_${density}`;
+  const cached = splatGeometryCache.get(cacheKey);
+
+  if (cached) return cached;
+
   const pointCount = density * density;
   const positions = new Float32Array(pointCount * 3);
   const uvs = new Float32Array(pointCount * 2);
@@ -48,6 +67,8 @@ function createSplatGeometry(width: number, height: number, density: number): Bu
   geo.setAttribute('position', new Float32BufferAttribute(positions, 3));
   geo.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
   geo.setAttribute('aRandom', new Float32BufferAttribute(randoms, 3));
+
+  splatGeometryCache.set(cacheKey, geo);
 
   return geo;
 }

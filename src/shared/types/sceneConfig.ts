@@ -88,6 +88,11 @@ export interface AnimeStyleConfig {
   animeShadowSteps?: number;
   animeShadowThreshold?: number;
   animeSkinToneBoost?: number;
+  // Enhanced anime style parameters
+  animeShadowSoftness?: number;
+  animeColorShift?: number;
+  animeDitherStrength?: number;
+  animeAmbientOcclusion?: number;
 }
 
 export interface CelStyleConfig {
@@ -95,6 +100,13 @@ export interface CelStyleConfig {
   celHalftoneSize?: number;
   celOutlineThickness?: number;
   celSpecularSize?: number;
+  // Enhanced cel shading parameters
+  celSpecularThreshold?: number;
+  celSpecularIntensity?: number;
+  celShadowIntensity?: number;
+  celEdgeSoftness?: number;
+  celRimLightIntensity?: number;
+  celToonContrast?: number;
 }
 
 export interface CrystalStyleConfig {

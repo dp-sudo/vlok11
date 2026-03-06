@@ -45,6 +45,21 @@ export const buildAnimeUniforms = (ctx: MaterialUpdateContext): Record<string, u
   uHighlightSharpness: ctx.config.animeHighlightSharpness ?? ANIME.DEFAULT_HIGHLIGHT_SHARPNESS,
   uOutlineWidth: ctx.config.animeOutlineWidth ?? ANIME.DEFAULT_OUTLINE_WIDTH,
   uSkinToneBoost: ctx.config.animeSkinToneBoost ?? ANIME.DEFAULT_SKIN_TONE_BOOST,
+  // Enhanced anime style uniforms
+  uShadowSoftness: ctx.config.animeShadowSoftness ?? ANIME.DEFAULT_SHADOW_SOFTNESS,
+  uColorShift: ctx.config.animeColorShift ?? ANIME.DEFAULT_COLOR_SHIFT,
+  uDitherStrength: ctx.config.animeDitherStrength ?? ANIME.DEFAULT_DITHER_STRENGTH,
+  uAmbientOcclusion: ctx.config.animeAmbientOcclusion ?? ANIME.DEFAULT_AMBIENT_OCCLUSION,
+  uShadowTint: [
+    ANIME.DEFAULT_SHADOW_TINT.r,
+    ANIME.DEFAULT_SHADOW_TINT.g,
+    ANIME.DEFAULT_SHADOW_TINT.b,
+  ],
+  uHighlightTint: [
+    ANIME.DEFAULT_HIGHLIGHT_TINT.r,
+    ANIME.DEFAULT_HIGHLIGHT_TINT.g,
+    ANIME.DEFAULT_HIGHLIGHT_TINT.b,
+  ],
 });
 
 export const buildCelUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
@@ -53,6 +68,13 @@ export const buildCelUniforms = (ctx: MaterialUpdateContext): Record<string, unk
   uOutlineThickness: ctx.config.celOutlineThickness ?? CEL.DEFAULT_OUTLINE_THICKNESS,
   uHalftoneSize: ctx.config.celHalftoneSize ?? CEL.DEFAULT_HALFTONE_SIZE,
   uSpecularSize: ctx.config.celSpecularSize ?? CEL.DEFAULT_SPECULAR_SIZE,
+  // Enhanced cel shading uniforms
+  uSpecularThreshold: ctx.config.celSpecularThreshold ?? CEL.DEFAULT_SPECULAR_THRESHOLD,
+  uSpecularIntensity: ctx.config.celSpecularIntensity ?? CEL.DEFAULT_SPECULAR_INTENSITY,
+  uShadowIntensity: ctx.config.celShadowIntensity ?? CEL.DEFAULT_SHADOW_INTENSITY,
+  uEdgeSoftness: ctx.config.celEdgeSoftness ?? CEL.DEFAULT_EDGE_SOFTNESS,
+  uRimLightIntensity: ctx.config.celRimLightIntensity ?? CEL.DEFAULT_RIM_LIGHT_INTENSITY,
+  uToonContrast: ctx.config.celToonContrast ?? CEL.DEFAULT_TOON_CONTRAST,
 });
 
 export const buildCrystalUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
@@ -142,8 +164,8 @@ export const updateStandardMaterial = (
   mat.metalness = config.metalness;
   mat.envMapIntensity = config.lightIntensity * MATERIAL_DEFAULTS.ENV_MAP_INTENSITY;
   if (mat.userData['shader']) {
-    mat.userData['shader'].uniforms.uSeamCorrection.value = seamCorrectionValue;
-    mat.userData['shader'].uniforms.uEdgeFade.value = config.edgeFade;
+    mat.userData['shader'].uniforms['uSeamCorrection'].value = seamCorrectionValue;
+    mat.userData['shader'].uniforms['uEdgeFade'].value = config.edgeFade;
   }
   if (mat.map !== activeMap || mat.displacementMap !== displacementMap) {
     mat.map = activeMap;

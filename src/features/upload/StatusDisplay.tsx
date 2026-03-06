@@ -139,7 +139,7 @@ export const StatusDisplay = memo(({ processingState, onRetry, onCancel }: Statu
             <div className="absolute inset-0 border-4 border-zinc-800 rounded-full" />
             <div
               className="absolute inset-0 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"
-              style={{ animationDuration: '1.5s' }}
+              style={{ animationDuration: '1.5s', willChange: 'transform' }}
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-lg font-bold text-cyan-400">{processingState.progress}%</span>
@@ -201,7 +201,7 @@ export const StatusDisplay = memo(({ processingState, onRetry, onCancel }: Statu
           <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-4">
             <div
               className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500 ease-out"
-              style={{ width: `${processingState.progress}%` }}
+              style={{ width: `${processingState.progress}%`, willChange: 'width' }}
             />
           </div>
 

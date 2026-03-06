@@ -36,7 +36,7 @@ export interface AIService {
   getCacheStats(): CacheStats;
   initialize(): Promise<void>;
   isAvailable(): boolean;
-  isProviderAvailable(providerId: string): boolean;
+  isProviderAvailable(providerId: string): Promise<boolean>;
   onProgress(callback: AIProgressCallback): () => void;
   switchProvider(type: 'scene' | 'depth', providerId: string): Promise<void>;
   updateCacheConfig(config: Partial<AICacheConfig>): void;

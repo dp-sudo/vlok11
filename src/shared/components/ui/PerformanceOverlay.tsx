@@ -101,22 +101,37 @@ export const PerformanceOverlay = memo(
         : null;
 
     return (
-      <div
+      <button
+        type="button"
         aria-label="切换性能面板详情"
+        aria-expanded={isExpanded}
         onClick={toggleExpanded}
-        onKeyDown={(e) => e.key === 'Enter' && toggleExpanded()}
-        role="button"
         style={{
           position: 'absolute',
           zIndex: 50,
           userSelect: 'none',
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
           ...getPositionStyles(position),
         }}
-        tabIndex={0}
       >
-        <div
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)')}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.8)')}
+        <button
+          type="button"
+          aria-expanded={isExpanded}
+          onBlur={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+          }}
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             backdropFilter: 'blur(4px)',
@@ -201,8 +216,8 @@ export const PerformanceOverlay = memo(
               )}
             </div>
           ) : null}
-        </div>
-      </div>
+        </button>
+      </button>
     );
   }
 );

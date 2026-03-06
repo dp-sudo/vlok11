@@ -64,9 +64,11 @@ export class PipelineEngine implements PipelineEngineInterface {
         throw new Error(`Pipeline deadlock: no stages ready but ${pending.size} pending`);
       }
 
-      // Execute stages SEQUENTIALLY to ensure proper data flow
-      // 线性流语义：每个 stage 的输入来自上一个完成的 stage 输出（通过 currentData 传递）
-      // dependsOn 仅用于声明执行顺序依赖，不影响数据流
+      // Execute ready stages (those whose dependencies are satisfied)
+      // 执行语义：
+      // 1. dependsOn 用于确定哪些 stage 可以执行（依赖的 stage 已完成）
+      // 2. 数据流采用线性流：每个 stage 的输入来自上一个执行的 stage 输出（通过 currentData 传递）
+      // 3. 所有 ready 的 stages 按顺序执行，后一个 stage 使用前一个的输出作为输入
       for (const stageConfig of readyStages) {
         const stage = this.registry.getStage(stageConfig.type);
 
@@ -74,8 +76,8 @@ export class PipelineEngine implements PipelineEngineInterface {
           throw new Error(`Stage type '${stageConfig.type}' not found in registry`);
         }
 
-        // 线性流：始终使用 currentData（上一个 stage 的输出）作为输入
-        // dependsOn 仅确保执行顺序，不决定数据来源
+        // 线性数据流：每个 stage 的输入来自 currentData（前一个 stage 的输出）
+        // 这确保了数据按执行顺序正确传递
         const inputData = currentData;
 
         const context: StageContext = {

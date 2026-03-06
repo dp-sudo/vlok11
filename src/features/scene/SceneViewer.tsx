@@ -1,31 +1,17 @@
-import { Preload } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
-import { Suspense, forwardRef, memo, useImperativeHandle, useRef } from 'react';
+import { forwardRef, memo, useImperativeHandle, useRef } from 'react';
 import type { Group, VideoTexture } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import type { CameraPresetType } from '@/features/scene/services/camera';
 import {
-  CoreControllerProvider,
   calculateDistance,
   calculatePresetPoseForProjection,
 } from '@/features/scene/services/camera';
 import { PerformanceOverlay } from '@/shared/components';
-import { RENDERER, SCENE_CONFIG } from '@/shared/constants';
-import { VIGNETTE } from '@/shared/constants/image';
+import { WebcamTracker } from './components/effects';
 import type { CameraViewPreset } from '@/shared/types';
-import { RenderStyle } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
-
 import type { ExporterRef, RecordingRef } from './components';
-import { CameraRig, CanvasLoader, SceneExporter, SceneRecorder } from './components';
-import {
-  CoordinateDebug,
-  InputBindingEffect,
-  ToneMappingEffect,
-  TrackingBridge,
-  WebcamTracker,
-} from './components/effects';
-import { SceneContent } from './components/SceneContent';
+import { Scene3DContent, SceneEffectsLayer } from './components';
 import { useColorGrade, useVideoControl } from './hooks';
 
 export interface SceneViewerHandle {
@@ -66,10 +52,9 @@ export const SceneViewer = memo(
       onVideoDurationChange,
       onVideoEnded,
     } = props;
-    const renderStyle = useSceneStore((state) => state.config.renderStyle);
-    const enableVignette = useSceneStore((state) => state.config.enableVignette);
-    const exposure = useSceneStore((state) => state.config.exposure);
+    // 合并为单次订阅，避免多次重渲染
     const config = useSceneStore((state) => state.config);
+    const { renderStyle, enableVignette, exposure, enableFaceTracking, vignetteStrength } = config;
     const exporterRef = useRef<ExporterRef>(null);
     const recorderRef = useRef<RecordingRef>(null);
     const controlsRef = useRef<OrbitControlsType | null>(null);
@@ -115,9 +100,6 @@ export const SceneViewer = memo(
       },
     }));
     if (!imageUrl || !depthUrl) return null;
-    const planeWidth = SCENE_CONFIG.PLANE_BASE_WIDTH;
-    const planeHeight = planeWidth / aspectRatio;
-    const { enableFaceTracking } = config;
 
     return (
       <div
@@ -127,55 +109,27 @@ export const SceneViewer = memo(
         <PerformanceOverlay position="bottom-left" visible />
         {enableFaceTracking && <WebcamTracker />}
 
-        {enableVignette ? (
-          <div
-            className="absolute inset-0 z-20 pointer-events-none mix-blend-multiply"
-            style={{
-              backgroundImage: `radial-gradient(circle at center, transparent 55%, rgba(0,0,0,${Math.max(0, Math.min(1, VIGNETTE.BASE_OPACITY + config.vignetteStrength * VIGNETTE.STRENGTH_MULTIPLIER))}) 100%)`,
-            }}
-          />
-        ) : null}
+        <SceneEffectsLayer
+          enableVignette={enableVignette}
+          renderStyle={renderStyle}
+          vignetteStrength={vignetteStrength}
+          config={config}
+        />
 
-        {renderStyle === RenderStyle.HOLOGRAM_V2 && (
-          <div className="absolute top-4 right-4 z-10 text-cyan-400 text-xs font-mono animate-pulse border border-cyan-500/50 px-2 py-1 rounded bg-cyan-900/20 shadow-[0_0_10px_rgba(34,211,238,0.3)]">
-            HOLOGRAM V2 ACTIVE
-          </div>
-        )}
-
-        <CoreControllerProvider autoInit>
-          <Canvas dpr={RENDERER.DPR} gl={{ preserveDrawingBuffer: true }} shadows>
-            <ToneMappingEffect exposure={exposure} />
-            <InputBindingEffect />
-            <CoordinateDebug
-              depthUrl={depthUrl}
-              planeHeight={planeHeight}
-              planeWidth={planeWidth}
-              sceneGroupRef={sceneGroupRef}
-            />
-            <TrackingBridge
-              depthUrl={depthUrl}
-              planeHeight={planeHeight}
-              planeWidth={planeWidth}
-              sceneGroupRef={sceneGroupRef}
-            />
-            <CameraRig config={config} controlsRef={controlsRef}>
-              <Suspense fallback={<CanvasLoader />}>
-                <SceneContent
-                  aspectRatio={aspectRatio}
-                  backgroundUrl={backgroundUrl}
-                  depthUrl={depthUrl}
-                  imageUrl={imageUrl}
-                  sceneGroupRef={sceneGroupRef}
-                  videoTextureRef={videoTextureRef}
-                  videoUrl={videoUrl}
-                />
-              </Suspense>
-            </CameraRig>
-            <SceneRecorder ref={recorderRef} videoTexture={videoTextureRef.current} />
-            <SceneExporter ref={exporterRef} sceneGroupRef={sceneGroupRef} />
-            <Preload all />
-          </Canvas>
-        </CoreControllerProvider>
+        <Scene3DContent
+          aspectRatio={aspectRatio}
+          backgroundUrl={backgroundUrl}
+          config={config}
+          depthUrl={depthUrl}
+          exposure={exposure}
+          imageUrl={imageUrl}
+          sceneGroupRef={sceneGroupRef}
+          videoTextureRef={videoTextureRef}
+          videoUrl={videoUrl}
+          exporterRef={exporterRef}
+          recorderRef={recorderRef}
+          controlsRef={controlsRef}
+        />
       </div>
     );
   })

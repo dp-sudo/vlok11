@@ -188,8 +188,42 @@ const validateUrl = (url: string): boolean => {
 
     return ['http:', 'https:'].includes(urlObj.protocol);
   } catch {
+    // URL 解析失败时返回 false
     return false;
   }
+};
+
+// 处理文件验证结果（提取公共逻辑）
+const handleFileValidationResult = (
+  result: FileValidationResult,
+  file: File,
+  setValidationError: (error: string | null) => void,
+  setValidationWarning: (warning: string | null) => void,
+  setSelectedFile: (file: File | null) => void,
+  onFileUpload: (file: File) => void,
+  uploadTimeoutRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>
+): void => {
+  if (!result.valid) {
+    setValidationError(result.error ?? '文件验证失败');
+    setSelectedFile(null);
+    setValidationWarning(null);
+
+    return;
+  }
+
+  // 清理之前的超时
+  if (uploadTimeoutRef.current) {
+    clearTimeout(uploadTimeoutRef.current);
+  }
+
+  setValidationError(null);
+  setValidationWarning(result.warning ?? null);
+  setSelectedFile(file);
+
+  // 延迟一下让用户看到文件信息，然后上传
+  uploadTimeoutRef.current = setTimeout(() => {
+    onFileUpload(file);
+  }, 500);
 };
 
 // 获取文件图标
@@ -219,6 +253,16 @@ export const UploadPanel = memo(
     const [validationWarning, setValidationWarning] = useState<string | null>(null);
     const [isUrlValid, setIsUrlValid] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const uploadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // 清理上传超时，防止组件卸载后调用
+    useEffect(() => {
+      return () => {
+        if (uploadTimeoutRef.current) {
+          clearTimeout(uploadTimeoutRef.current);
+        }
+      };
+    }, []);
 
     // URL 验证
     useEffect(() => {
@@ -238,22 +282,15 @@ export const UploadPanel = memo(
 
         const result = validateFile(file, maxFileSize);
 
-        if (!result.valid) {
-          setValidationError(result.error ?? '文件验证失败');
-          setSelectedFile(null);
-          setValidationWarning(null);
-
-          return;
-        }
-
-        setValidationError(null);
-        setValidationWarning(result.warning ?? null);
-        setSelectedFile(file);
-
-        // 延迟一下让用户看到文件信息，然后上传
-        setTimeout(() => {
-          onFileUpload(file);
-        }, 500);
+        handleFileValidationResult(
+          result,
+          file,
+          setValidationError,
+          setValidationWarning,
+          setSelectedFile,
+          onFileUpload,
+          uploadTimeoutRef
+        );
       },
       [maxFileSize, onFileUpload]
     );
@@ -280,21 +317,15 @@ export const UploadPanel = memo(
 
         const result = validateFile(file, maxFileSize);
 
-        if (!result.valid) {
-          setValidationError(result.error ?? '文件验证失败');
-          setSelectedFile(null);
-          setValidationWarning(null);
-
-          return;
-        }
-
-        setValidationError(null);
-        setValidationWarning(result.warning ?? null);
-        setSelectedFile(file);
-
-        setTimeout(() => {
-          onFileUpload(file);
-        }, 500);
+        handleFileValidationResult(
+          result,
+          file,
+          setValidationError,
+          setValidationWarning,
+          setSelectedFile,
+          onFileUpload,
+          uploadTimeoutRef
+        );
       },
       [maxFileSize, onFileUpload]
     );
@@ -418,12 +449,20 @@ export const UploadPanel = memo(
                 )}
 
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label="拖放区域"
                   className={`relative group w-full max-w-sm pt-6 pb-2 ${
                     isDragging ? 'scale-105' : ''
                   } transition-transform duration-300`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      fileInputRef.current?.click();
+                    }
+                  }}
                 >
                   <div
                     className={`absolute -inset-1 bg-gradient-to-r from-cyan-500/30 via-blue-600/30 to-cyan-500/30 rounded-xl blur-lg transition duration-500 animate-[pulse_3s_ease-in-out_infinite] ${

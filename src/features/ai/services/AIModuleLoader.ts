@@ -9,11 +9,11 @@ import { createLogger } from '@/core/Logger';
 
 const logger = createLogger({ module: 'AIModuleLoader' });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const moduleCache = new Map<string, any>();
+// Use unknown for generic module cache to avoid explicit any
+const moduleCache = new Map<string, unknown>();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const loadingPromises = new Map<string, Promise<any>>();
+// Use unknown for promise-based loading
+const loadingPromises = new Map<string, Promise<unknown>>();
 
 /**
  * Load TensorFlow.js dynamically with retry mechanism

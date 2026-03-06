@@ -35,6 +35,14 @@ export const AnimeStyleControls = memo<{ config: SceneConfig; set: SetConfig }>(
         value={config.animeShadowThreshold ?? ANIME.DEFAULT_SHADOW_THRESHOLD}
       />
       <Slider
+        label="阴影柔和"
+        max={ANIME.SHADOW_SOFTNESS_MAX}
+        min={ANIME.SHADOW_SOFTNESS_MIN}
+        onChange={(v) => set('animeShadowSoftness', v)}
+        step={ANIME.SHADOW_SOFTNESS_STEP}
+        value={config.animeShadowSoftness ?? ANIME.DEFAULT_SHADOW_SOFTNESS}
+      />
+      <Slider
         label="高光锐度"
         max={ANIME.HIGHLIGHT_SHARPNESS_MAX}
         min={ANIME.HIGHLIGHT_SHARPNESS_MIN}
@@ -57,6 +65,30 @@ export const AnimeStyleControls = memo<{ config: SceneConfig; set: SetConfig }>(
         onChange={(v) => set('animeSkinToneBoost', v)}
         step={ANIME.SKIN_TONE_BOOST_STEP}
         value={config.animeSkinToneBoost ?? ANIME.DEFAULT_SKIN_TONE_BOOST}
+      />
+      <Slider
+        label="色彩偏移"
+        max={ANIME.COLOR_SHIFT_MAX}
+        min={ANIME.COLOR_SHIFT_MIN}
+        onChange={(v) => set('animeColorShift', v)}
+        step={ANIME.COLOR_SHIFT_STEP}
+        value={config.animeColorShift ?? ANIME.DEFAULT_COLOR_SHIFT}
+      />
+      <Slider
+        label="色彩抖动"
+        max={ANIME.DITHER_STRENGTH_MAX}
+        min={ANIME.DITHER_STRENGTH_MIN}
+        onChange={(v) => set('animeDitherStrength', v)}
+        step={ANIME.DITHER_STRENGTH_STEP}
+        value={config.animeDitherStrength ?? ANIME.DEFAULT_DITHER_STRENGTH}
+      />
+      <Slider
+        label="环境光遮蔽"
+        max={ANIME.AMBIENT_OCCLUSION_MAX}
+        min={ANIME.AMBIENT_OCCLUSION_MIN}
+        onChange={(v) => set('animeAmbientOcclusion', v)}
+        step={ANIME.AMBIENT_OCCLUSION_STEP}
+        value={config.animeAmbientOcclusion ?? ANIME.DEFAULT_AMBIENT_OCCLUSION}
       />
     </div>
   )
@@ -247,12 +279,28 @@ export const CelStyleControls = memo<{ config: SceneConfig; set: SetConfig }>(({
       value={config.celColorBands ?? CEL.DEFAULT_COLOR_BANDS}
     />
     <Slider
+      label="卡通对比度"
+      max={CEL.TOON_CONTRAST_MAX}
+      min={CEL.TOON_CONTRAST_MIN}
+      onChange={(v) => set('celToonContrast', v)}
+      step={CEL.TOON_CONTRAST_STEP}
+      value={config.celToonContrast ?? CEL.DEFAULT_TOON_CONTRAST}
+    />
+    <Slider
       label="描边粗细"
       max={CEL.OUTLINE_THICKNESS_MAX}
       min={CEL.OUTLINE_THICKNESS_MIN}
       onChange={(v) => set('celOutlineThickness', v)}
       step={CEL.OUTLINE_THICKNESS_STEP}
       value={config.celOutlineThickness ?? CEL.DEFAULT_OUTLINE_THICKNESS}
+    />
+    <Slider
+      label="描边柔和"
+      max={CEL.EDGE_SOFTNESS_MAX}
+      min={CEL.EDGE_SOFTNESS_MIN}
+      onChange={(v) => set('celEdgeSoftness', v)}
+      step={CEL.EDGE_SOFTNESS_STEP}
+      value={config.celEdgeSoftness ?? CEL.DEFAULT_EDGE_SOFTNESS}
     />
     <Slider
       label="网点大小"
@@ -263,12 +311,44 @@ export const CelStyleControls = memo<{ config: SceneConfig; set: SetConfig }>(({
       value={config.celHalftoneSize ?? CEL.DEFAULT_HALFTONE_SIZE}
     />
     <Slider
+      label="阴影强度"
+      max={CEL.SHADOW_INTENSITY_MAX}
+      min={CEL.SHADOW_INTENSITY_MIN}
+      onChange={(v) => set('celShadowIntensity', v)}
+      step={CEL.SHADOW_INTENSITY_STEP}
+      value={config.celShadowIntensity ?? CEL.DEFAULT_SHADOW_INTENSITY}
+    />
+    <Slider
       label="高光范围"
       max={CEL.SPECULAR_SIZE_MAX}
       min={CEL.SPECULAR_SIZE_MIN}
       onChange={(v) => set('celSpecularSize', v)}
       step={CEL.SPECULAR_SIZE_STEP}
       value={config.celSpecularSize ?? CEL.DEFAULT_SPECULAR_SIZE}
+    />
+    <Slider
+      label="高光阈值"
+      max={CEL.SPECULAR_THRESHOLD_MAX}
+      min={CEL.SPECULAR_THRESHOLD_MIN}
+      onChange={(v) => set('celSpecularThreshold', v)}
+      step={CEL.SPECULAR_THRESHOLD_STEP}
+      value={config.celSpecularThreshold ?? CEL.DEFAULT_SPECULAR_THRESHOLD}
+    />
+    <Slider
+      label="高光强度"
+      max={CEL.SPECULAR_INTENSITY_MAX}
+      min={CEL.SPECULAR_INTENSITY_MIN}
+      onChange={(v) => set('celSpecularIntensity', v)}
+      step={CEL.SPECULAR_INTENSITY_STEP}
+      value={config.celSpecularIntensity ?? CEL.DEFAULT_SPECULAR_INTENSITY}
+    />
+    <Slider
+      label="边缘光强度"
+      max={CEL.RIM_LIGHT_INTENSITY_MAX}
+      min={CEL.RIM_LIGHT_INTENSITY_MIN}
+      onChange={(v) => set('celRimLightIntensity', v)}
+      step={CEL.RIM_LIGHT_INTENSITY_STEP}
+      value={config.celRimLightIntensity ?? CEL.DEFAULT_RIM_LIGHT_INTENSITY}
     />
   </div>
 ));

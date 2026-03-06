@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-import { createLogger } from '@/core/Logger';
 import type { VideoTexture } from 'three';
+import { createLogger } from '@/core/Logger';
 
 const logger = createLogger({ module: 'useVideoControl' });
 
@@ -137,6 +136,7 @@ export function useVideoControl({
       }
     };
 
+    // eslint-disable-next-line prefer-const
     intervalId = window.setInterval(runInterval, VIDEO_ATTACH_CHECK_INTERVAL_MS);
 
     // Pause interval when page is hidden to save resources

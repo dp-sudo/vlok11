@@ -1,5 +1,6 @@
-import { BookOpen, Bot, FolderOpen, Save, Settings } from 'lucide-react';
+import { BookOpen, Bot, ChevronDown, FolderOpen, Save, Settings } from 'lucide-react';
 import type React from 'react';
+import { useState } from 'react';
 
 import { createLogger } from '@/core/Logger';
 import { projectService } from '@/core/services/ProjectService';
@@ -65,17 +66,23 @@ const AppLogo = () => (
 );
 
 export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSettings }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <div className="h-12 bg-zinc-950/90 backdrop-blur-sm flex items-center justify-between px-4 select-none z-[9999] fixed top-0 left-0 right-0 border-b border-white/5 shadow-md">
-      <div className="flex h-full items-center gap-6">
-        <div className="flex items-center gap-3 pl-1 group cursor-default">
+    <div className="h-12 bg-zinc-950/90 backdrop-blur-sm flex items-center justify-between px-2 md:px-4 select-none z-[9999] fixed top-0 left-0 right-0 border-b border-white/5 shadow-md">
+      <div className="flex h-full items-center gap-2 md:gap-6">
+        <div className="flex items-center gap-2 md:gap-3 pl-1 group cursor-default">
           <AppLogo />
-          <span className="text-xs font-orbitron text-zinc-400 group-hover:text-white tracking-[0.2em] transition-all duration-300">
+          <span className="hidden sm:inline text-xs font-orbitron text-zinc-400 group-hover:text-white tracking-[0.2em] transition-all duration-300">
             IMMERSA <span className="text-cyan-400 font-bold">3D</span>
+          </span>
+          <span className="sm:hidden text-xs font-orbitron text-zinc-400 group-hover:text-white tracking-wider transition-all duration-300">
+            <span className="text-cyan-400 font-bold">3D</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Desktop: Show all buttons */}
+        <div className="hidden md:flex items-center gap-2">
           <button
             type="button"
             onClick={() => {
@@ -129,6 +136,94 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
             <BookOpen className="w-4 h-4" />
             <span className="font-mono tracking-wider font-medium">文档</span>
           </button>
+        </div>
+
+        {/* Mobile: Dropdown menu */}
+        <div className="md:hidden relative">
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-1 px-2 py-1.5 rounded text-xs text-zinc-400 hover:text-white hover:bg-white/10 border border-transparent transition-all duration-200"
+          >
+            <span className="font-mono tracking-wider font-medium">菜单</span>
+            <ChevronDown
+              className={`w-3 h-3 transition-transform ${menuOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {menuOpen && (
+            <>
+              <button
+                type="button"
+                className="fixed inset-0 z-40"
+                onClick={() => setMenuOpen(false)}
+                tabIndex={-1}
+                aria-label="关闭菜单"
+              />
+              <div className="absolute top-full left-0 mt-1 py-2 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl z-50 min-w-[160px]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    projectService.openProject().catch((err) => {
+                      logger.error('Failed to open project', { error: err });
+                    });
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-cyan-300 hover:bg-cyan-950/30 transition-colors"
+                >
+                  <FolderOpen className="w-4 h-4" />
+                  <span className="font-mono">打开</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    projectService.saveProject().catch((err) => {
+                      logger.error('Failed to save project', { error: err });
+                    });
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-purple-300 hover:bg-purple-950/30 transition-colors"
+                >
+                  <Save className="w-4 h-4" />
+                  <span className="font-mono">保存</span>
+                </button>
+                <div className="h-px bg-zinc-800 my-1" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenModelManager?.();
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <Bot className="w-4 h-4" />
+                  <span className="font-mono">模型管理</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenSettings?.();
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="font-mono">设置</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.open('https://github.com/google/gemini-api-cookbook', '_blank');
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span className="font-mono">文档</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

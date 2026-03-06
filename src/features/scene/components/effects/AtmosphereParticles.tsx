@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber';
-import { memo, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import type { Points } from 'three';
 import {
   AdditiveBlending,
@@ -20,7 +20,9 @@ const sharedColor = new Color();
 
 // Helper: 将颜色从sharedColor复制到颜色缓冲区 (减少重复代码)
 const copyColorToBuffer = (colors: Float32Array, i3: number): void => {
-  copyColorToBuffer(colors, i3);
+  colors[i3] = sharedColor.r;
+  colors[i3 + 1] = sharedColor.g;
+  colors[i3 + 2] = sharedColor.b;
 };
 
 export type ParticleType = 'dust' | 'snow' | 'stars' | 'firefly' | 'rain' | 'leaves';
@@ -133,7 +135,8 @@ const initStars = (
   const colorRand = Math.random();
 
   if (colorRand < ANIMATION.STAR_COLOR_BLUE_THRESHOLD) sharedColor.set(PARTICLE_COLORS.STAR.WHITE);
-  else if (colorRand < ANIMATION.STAR_COLOR_WARM_THRESHOLD) sharedColor.set(PARTICLE_COLORS.STAR.BLUE);
+  else if (colorRand < ANIMATION.STAR_COLOR_WARM_THRESHOLD)
+    sharedColor.set(PARTICLE_COLORS.STAR.BLUE);
   else sharedColor.set(PARTICLE_COLORS.STAR.WARM);
   copyColorToBuffer(colors, i3);
 
@@ -194,8 +197,10 @@ const initLeaves = (
   const leafRand = Math.random();
 
   if (leafRand < ANIMATION.LEAVES_GREEN_THRESHOLD) sharedColor.set(PARTICLE_COLORS.LEAVES.GREEN);
-  else if (leafRand < ANIMATION.LEAVES_YELLOW_THRESHOLD) sharedColor.set(PARTICLE_COLORS.LEAVES.YELLOW);
-  else if (leafRand < ANIMATION.LEAVES_ORANGE_THRESHOLD) sharedColor.set(PARTICLE_COLORS.LEAVES.ORANGE);
+  else if (leafRand < ANIMATION.LEAVES_YELLOW_THRESHOLD)
+    sharedColor.set(PARTICLE_COLORS.LEAVES.YELLOW);
+  else if (leafRand < ANIMATION.LEAVES_ORANGE_THRESHOLD)
+    sharedColor.set(PARTICLE_COLORS.LEAVES.ORANGE);
   else sharedColor.set(PARTICLE_COLORS.LEAVES.RED);
   copyColorToBuffer(colors, i3);
   scales[index] = ANIMATION.LEAVES_SIZE_BASE + Math.random() * ANIMATION.LEAVES_SIZE_RANGE;
@@ -274,8 +279,7 @@ const updateParticles = (
         }
         break;
       case 'snow':
-        posX +=
-          velX + Math.sin(time * ANIMATION.DUST_TIME_FACTOR_Z + phase) * ANIMATION.SNOW_DRIFT;
+        posX += velX + Math.sin(time * ANIMATION.DUST_TIME_FACTOR_Z + phase) * ANIMATION.SNOW_DRIFT;
         posY += velY;
         posZ +=
           velZ +
@@ -324,13 +328,14 @@ const updateParticles = (
         break;
       case 'rain':
         posX +=
-          velX +
-          Math.sin(time * ANIMATION.RAIN_WAVE_SPEED + phase) * ANIMATION.RAIN_WAVE_STRENGTH;
+          velX + Math.sin(time * ANIMATION.RAIN_WAVE_SPEED + phase) * ANIMATION.RAIN_WAVE_STRENGTH;
         posY += velY;
         posZ += velZ + Math.cos(time * 1.5 + phase) * 0.001;
         // 雨丝拉伸效果：基于下落速度的动态缩放抖动
         {
-          const baseRainScale = ANIMATION.RAIN_SIZE_BASE + (phase / (Math.PI * ANIMATION.PHASE_TWO_PI)) * ANIMATION.RAIN_SIZE_RANGE;
+          const baseRainScale =
+            ANIMATION.RAIN_SIZE_BASE +
+            (phase / (Math.PI * ANIMATION.PHASE_TWO_PI)) * ANIMATION.RAIN_SIZE_RANGE;
           const streak = 1.0 + 0.5 * Math.abs(Math.sin(time * 4.0 + phase * 3.0));
 
           scales[i] = baseRainScale * streak;
@@ -338,15 +343,13 @@ const updateParticles = (
         break;
       case 'leaves':
         posX +=
-          velX +
-          Math.sin(time * ANIMATION.LEAVES_SWAY_SPEED_X + phase) * ANIMATION.LEAVES_SWAY_X;
+          velX + Math.sin(time * ANIMATION.LEAVES_SWAY_SPEED_X + phase) * ANIMATION.LEAVES_SWAY_X;
         posY +=
           velY +
           Math.sin(time * ANIMATION.LEAVES_SWAY_SPEED_Y + phase * ANIMATION.PHASE_TWO_PI) *
             ANIMATION.LEAVES_SWAY_Y;
         posZ +=
-          velZ +
-          Math.cos(time * ANIMATION.LEAVES_SWAY_SPEED_Z + phase) * ANIMATION.LEAVES_SWAY_Z;
+          velZ + Math.cos(time * ANIMATION.LEAVES_SWAY_SPEED_Z + phase) * ANIMATION.LEAVES_SWAY_Z;
         break;
     }
 
@@ -490,10 +493,25 @@ const AtmosphereParticlesComponent = ({
     if (scaleAttr) scaleAttr.needsUpdate = true;
   });
 
+  // 清理 WebGL 资源：组件卸载时释放 geometry 和 material
+  useEffect(() => {
+    return () => {
+      particleData.geometry.dispose();
+      material.dispose();
+    };
+  }, [particleData, material]);
+
   if (!enabled) return null;
 
   // 优化5: frustumCulled={false} 避免大范围粒子被视锥裁剪
-  return <points frustumCulled={false} geometry={particleData.geometry} material={material} ref={pointsRef} />;
+  return (
+    <points
+      frustumCulled={false}
+      geometry={particleData.geometry}
+      material={material}
+      ref={pointsRef}
+    />
+  );
 };
 
 export const AtmosphereParticles = memo(AtmosphereParticlesComponent);

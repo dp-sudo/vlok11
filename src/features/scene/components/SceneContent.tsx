@@ -162,6 +162,4 @@ export const SceneContent = memo((props: SceneContentProps) => {
   );
 });
 
-export default SceneContent;
-
 SceneContent.displayName = 'SceneContent';

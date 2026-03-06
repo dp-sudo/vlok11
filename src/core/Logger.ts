@@ -14,7 +14,7 @@ export function createLogger(options: LoggerOptions): LoggerContract {
   return new Logger(options);
 }
 
-export class Logger implements LoggerContract {
+class Logger implements LoggerContract {
   private static globalLevel: LogLevel = LogLevel.INFO;
   private static history: LogEntry[] = [];
   private static maxHistory = MAX_LOG_HISTORY;
@@ -172,7 +172,3 @@ export interface LoggerOptions {
   maxHistory?: number;
   module: string;
 }
-
-export const getGlobalLogLevel = Logger.getGlobalLevel;
-export const resetLogHistory = Logger.resetHistory;
-export const setGlobalLogLevel = Logger.setGlobalLevel;

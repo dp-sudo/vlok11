@@ -26,19 +26,6 @@ export {
   useMotionState,
 } from './cameraStore';
 export {
-  useCameraMotionType,
-  useCurrentAsset,
-  useCurrentTime,
-  useDisplacementScale,
-  useDuration,
-  useExportState,
-  useIsImmersive,
-  useIsMuted,
-  useProcessingResult,
-  useProcessingStatus,
-  useProjectionMode,
-  useRenderStyle,
   useSceneStore,
   useSessionStore,
-  useVideoState,
 } from './sharedStore';

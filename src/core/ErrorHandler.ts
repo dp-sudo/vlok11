@@ -6,7 +6,7 @@ import { getEventBus } from './EventBus';
 
 export type { RecoveryOption };
 
-export class ErrorHandler implements ErrorHandlerContract {
+class ErrorHandler implements ErrorHandlerContract {
   private static instance: ErrorHandler | null = null;
   private fatalCallbacks = new Set<(error: AppError) => void>();
   private history: AppError[] = [];
@@ -377,6 +377,3 @@ export enum ErrorSeverity {
 }
 
 export const getErrorHandler = (): ErrorHandlerContract => ErrorHandler.getInstance();
-export const resetErrorHandler = (): void => {
-  ErrorHandler.resetInstance();
-};

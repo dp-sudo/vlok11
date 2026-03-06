@@ -16,21 +16,22 @@ export const useAppStore = create<AppStore>()(
 );
 
 // Selector hooks for optimized subscriptions
-export const useCameraMotionType = () => useAppStore((s) => s.config.cameraMotionType);
-export const useCurrentAsset = () => useAppStore((s) => s.currentAsset);
-export const useDisplacementScale = () => useAppStore((s) => s.config.displacementScale);
-export const useExportState = () => useAppStore((s) => s.exportState);
-export const useIsImmersive = () => useAppStore((s) => s.config.isImmersive);
-export const useIsPlaying = () => useAppStore((s) => s.isPlaying);
-export const useProcessingResult = () => useAppStore((s) => s.result);
-export const useProcessingStatus = () => useAppStore((s) => s.status);
-export const useProjectionMode = () => useAppStore((s) => s.config.projectionMode);
-export const useRenderStyle = () => useAppStore((s) => s.config.renderStyle);
+// Note: Unused selector hooks removed - add back if needed
+// export const useCameraMotionType = () => useAppStore((s) => s.config.cameraMotionType);
+// export const useCurrentAsset = () => useAppStore((s) => s.currentAsset);
+// export const useDisplacementScale = () => useAppStore((s) => s.config.displacementScale);
+// export const useExportState = () => useAppStore((s) => s.exportState);
+// export const useIsImmersive = () => useAppStore((s) => s.config.isImmersive);
+// export const useIsPlaying = () => useAppStore((s) => s.isPlaying);
+// export const useProcessingResult = () => useAppStore((s) => s.result);
+// export const useProcessingStatus = () => useAppStore((s) => s.status);
+// export const useProjectionMode = () => useAppStore((s) => s.config.projectionMode);
+// export const useRenderStyle = () => useAppStore((s) => s.config.renderStyle);
 export const useSceneStore = useAppStore;
 export const useSessionStore = useAppStore;
 
 // Video state selectors - individual hooks to avoid unnecessary re-renders
-export const useCurrentTime = () => useAppStore((s) => s.currentTime);
-export const useDuration = () => useAppStore((s) => s.duration);
-export const useIsMuted = () => useAppStore((s) => s.isMuted);
-export const useVideoState = () => useAppStore((s) => s);
+// export const useCurrentTime = () => useAppStore((s) => s.currentTime);
+// export const useDuration = () => useAppStore((s) => s.duration);
+// export const useIsMuted = () => useAppStore((s) => s.isMuted);
+// export const useVideoState = () => useAppStore((s) => s);

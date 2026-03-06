@@ -156,24 +156,25 @@ const App = memo(() => {
         onOpenSettings={() => setSettingsOpen(true)}
       />
 
-      {/* Neural Render Toggle Button - Fixed Position - Responsive */}
+      {/* Neural Render Toggle */}
       {vm.showScene && (
         <button
           type="button"
+          aria-pressed={showNeuralRender}
           onClick={() => setShowNeuralRender(!showNeuralRender)}
-          className="fixed top-14 md:top-16 right-2 md:right-4 z-50 flex items-center gap-2 px-2 md:px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/30 transition-all duration-300 group touch-optimized"
-          style={{
-            boxShadow: showNeuralRender
-              ? '0 0 20px rgba(6,182,212,0.5), 0 0 40px rgba(168,85,247,0.3)'
-              : '0 0 10px rgba(6,182,212,0.2)',
-          }}
+          className={`
+            fixed top-14 md:top-16 right-2 md:right-4 z-50
+            flex items-center gap-2 px-3 py-2 rounded-lg
+            border transition-all duration-300 group
+            touch-optimized
+            ${showNeuralRender
+              ? 'bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.5),0_0_40px_rgba(168,85,247,0.3)]'
+              : 'bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/20 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+            }
+          `}
         >
-          <Sparkles
-            className={`w-4 h-4 ${showNeuralRender ? 'text-cyan-300' : 'text-zinc-400'} group-hover:text-cyan-300 transition-colors`}
-          />
-          <span
-            className={`text-xs font-mono tracking-wider hidden sm:inline ${showNeuralRender ? 'text-cyan-300' : 'text-zinc-400'} group-hover:text-white transition-colors`}
-          >
+          <Sparkles className={`w-4 h-4 ${showNeuralRender ? 'text-cyan-300' : 'text-zinc-500'} group-hover:text-cyan-300 transition-colors`} />
+          <span className={`text-xs font-mono tracking-wider hidden sm:inline ${showNeuralRender ? 'text-cyan-300' : 'text-zinc-500'} group-hover:text-white transition-colors`}>
             {showNeuralRender ? '退出神经渲染' : '神经渲染'}
           </span>
         </button>

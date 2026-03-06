@@ -2,50 +2,35 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2'><path d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'></path><polyline points='3.27 6.96 12 12.01 20.73 6.96'></polyline><line x1='12' y1='22.08' x2='12' y2='12'></line></svg>"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Immersa 3D - 单视图场景重建</title>
-
-    <!-- Performance: DNS Prefetch for external resources -->
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2'><path d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'></path><polyline points='3.27 6.96 12 12.01 20.73 6.96'></polyline><line x1='12' y1='22.08' x2='12' y2='12'></line></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0b0b10" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="AI驱动的2D到3D场景重建 - 使用React Three Fiber和TensorFlow.js" />
+    <title>IMMERSA 3D // 场景重建系统</title>
 
     <!-- Performance: Preconnect to external origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Performance: Preload critical fonts -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&display=swap" as="style" />
-
-    <!-- Performance: Resource hints for module preload -->
-    <link rel="modulepreload" href="/src/main.tsx" />
-
-    <!-- SEO & Meta -->
-    <meta name="description" content="AI驱动的2D到3D场景重建 - 使用React Three Fiber和TensorFlow.js" />
-    <meta name="theme-color" content="#0b0b10" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-    <!-- Preload Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
-
-    <title>IMMERSA 3D // SYSTEM</title>
+    <!-- Fonts: Exo 2 + Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
 
     <style>
-      /* CRITICAL BOOT STYLES - CYBERPUNK THEME - GPU OPTIMIZED */
+      /* CRITICAL BOOT STYLES - GPU OPTIMIZED */
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
       body {
         background-color: #050505;
-        margin: 0;
-        overflow: hidden;
-        font-family: 'Consolas', 'Monaco', monospace;
+        font-family: 'Exo 2', 'Consolas', 'Monaco', system-ui, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
       }
+      #root { height: 100%; }
 
+      /* Boot Loader */
       #boot-loader {
         position: fixed;
         inset: 0;
@@ -54,169 +39,118 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+        background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 70%, #000000 100%);
         color: #06b6d4;
-        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         will-change: opacity;
       }
+      #boot-loader.fade-out { opacity: 0; pointer-events: none; }
 
-      /* Tech Rings Container */
-      .loader-container {
+      /* Loader Rings */
+      .loader-ring {
         position: relative;
-        width: 120px;
-        height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      /* Inner Ring - GPU accelerated */
-      .ring-inner {
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        border: 2px solid rgba(6, 182, 212, 0.3);
-        border-top: 2px solid #06b6d4;
-        border-radius: 50%;
-        animation: spin-right 1.5s linear infinite;
-        box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
-        will-change: transform;
-      }
-
-      /* Outer Ring */
-      .ring-outer {
-        position: absolute;
         width: 100px;
         height: 100px;
-        border: 1px dashed rgba(6, 182, 212, 0.2);
-        border-radius: 50%;
-        animation: spin-left 4s linear infinite;
-        will-change: transform;
       }
-
-      /* Center Core */
-      .core-gem {
-        width: 8px;
-        height: 8px;
+      .loader-ring span {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid transparent;
+      }
+      .loader-ring .ring-1 {
+        border-top-color: #06b6d4;
+        border-right-color: rgba(6, 182, 212, 0.3);
+        animation: spin-right 1s linear infinite;
+      }
+      .loader-ring .ring-2 {
+        inset: 8px;
+        border-bottom-color: #a78bfa;
+        border-left-color: rgba(167, 139, 250, 0.2);
+        animation: spin-left 2s linear infinite reverse;
+      }
+      .loader-ring .ring-3 {
+        inset: 20px;
+        border-color: rgba(34, 211, 238, 0.15);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      .loader-ring .core {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 6px;
         background: #22d3ee;
         border-radius: 50%;
-        box-shadow: 0 0 20px #22d3ee;
-        animation: pulse 2s ease-in-out infinite;
-        will-change: transform, opacity;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 15px #22d3ee, 0 0 30px rgba(34, 211, 238, 0.5);
       }
 
-      /* Scanning Line */
-      .scan-line {
-        position: absolute;
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #06b6d4, transparent);
-        top: 50%;
-        animation: scan 3s ease-in-out infinite;
-        opacity: 0.5;
-        will-change: transform, opacity;
+      /* Loading Text */
+      .loader-text {
+        margin-top: 2rem;
+        text-align: center;
       }
-
-      /* Text Styles */
-      .boot-text {
-        margin-top: 3rem;
+      .loader-text .main {
+        font-family: 'Orbitron', monospace;
         font-size: 14px;
         letter-spacing: 4px;
         color: #22d3ee;
-        text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
-        position: relative;
+        text-shadow: 0 0 20px rgba(34, 211, 238, 0.6);
       }
-
-      .boot-text::before {
-        content: '> ';
-        opacity: 0.5;
-      }
-
-      .boot-sub {
-        margin-top: 0.5rem;
-        font-size: 10px;
+      .loader-text .sub {
+        font-size: 11px;
         color: rgba(6, 182, 212, 0.5);
-        letter-spacing: 1px;
+        letter-spacing: 2px;
+        margin-top: 0.5rem;
       }
 
-      /* Animations - Optimized */
-      @keyframes spin-right {
-        100% { transform: rotate(360deg); }
-      }
-      @keyframes spin-left {
-        100% { transform: rotate(-360deg); }
-      }
+      /* Animations */
+      @keyframes spin-right { to { transform: rotate(360deg); } }
+      @keyframes spin-left { to { transform: rotate(-360deg); } }
       @keyframes pulse {
-        0%, 100% { opacity: 0.5; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.5); }
-      }
-      @keyframes scan {
-        0% { top: 0%; opacity: 0; }
-        50% { opacity: 1; }
-        100% { top: 100%; opacity: 0; }
+        0%, 100% { opacity: 0.4; transform: scale(0.95); }
+        50% { opacity: 1; transform: scale(1.05); }
       }
 
-      /* Reduced motion support */
+      /* Reduced motion */
       @media (prefers-reduced-motion: reduce) {
-        .ring-inner, .ring-outer, .core-gem, .scan-line {
-          animation: none !important;
-        }
-        .core-gem {
-          opacity: 1;
-          transform: scale(1);
-        }
+        .loader-ring span { animation: none !important; }
       }
     </style>
   </head>
   <body>
-    <!-- SYSTEM BOOT LOADER -->
+    <!-- Boot Loader -->
     <div id="boot-loader">
-      <div class="loader-container">
-        <div class="ring-outer"></div>
-        <div class="ring-inner"></div>
-        <div class="core-gem"></div>
-        <div class="scan-line"></div>
+      <div class="loader-ring">
+        <span class="ring-1"></span>
+        <span class="ring-2"></span>
+        <span class="ring-3"></span>
+        <span class="core"></span>
       </div>
-      <div class="boot-text">系统启动初始化</div>
-      <div class="boot-sub">加载神经元网络组件...</div>
+      <div class="loader-text">
+        <div class="main">系统初始化</div>
+        <div class="sub">加载组件...</div>
+      </div>
     </div>
 
-    <div id="root">
-      <!-- React Hydration Target -->
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- Loader Cleanup Script - Optimized -->
+    <!-- Loader Cleanup -->
     <script>
       (function() {
-        // Performance: Use requestIdleCallback when available, fallback to setTimeout
         var cleanup = function() {
           var loader = document.getElementById('boot-loader');
-          if (loader) {
-            // If app mounted successfully, remove immediately
-            loader.style.opacity = '0';
-            setTimeout(function() {
-              loader.remove();
-            }, 600);
+          if (loader && !loader.classList.contains('fade-out')) {
+            loader.classList.add('fade-out');
+            setTimeout(function() { loader.remove(); }, 500);
           }
         };
-
-        // Listen for React mount event (if available)
         window.addEventListener('lifecycle:app:ready', cleanup);
-
-        // Fallback: Clean up after app load
         window.addEventListener('load', function() {
-          setTimeout(cleanup, 100);
-          // Safety timeout - force cleanup after 5s regardless
-          setTimeout(function() {
-            var loader = document.getElementById('boot-loader');
-            if (loader) {
-              loader.style.opacity = '0';
-              setTimeout(function() {
-                loader.remove();
-              }, 600);
-            }
-          }, 5000);
+          setTimeout(cleanup, 300);
+          setTimeout(cleanup, 5000); // Safety fallback
         });
       })();
     </script>

@@ -25,6 +25,14 @@ const RESOLUTIONS = [
 
 const FPS_OPTIONS = [15, 30, 60, 90, 120] as const;
 
+const getVolumeLabel = (volume: number): string => {
+  if (volume === 0) return '静音';
+  if (volume < 0.5) return '低';
+  if (volume < 0.8) return '中';
+
+  return '高';
+};
+
 export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
   const {
     geminiApiKey,
@@ -70,19 +78,23 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
 
   const handleSavePreset = () => {
     const trimmedName = presetName.trim();
+
     // 验证：长度限制和存在性检查
     if (!trimmedName) return;
     if (trimmedName.length > 50) {
-      alert('预设名称不能超过50个字符');
+      console.warn('预设名称不能超过50个字符');
+
       return;
     }
     if ((savedPresets as { name: string }[]).some((p) => p.name === trimmedName)) {
-      alert('预设名称已存在，请使用其他名称');
+      console.warn('预设名称已存在，请使用其他名称');
+
       return;
     }
     // 获取当前场景配置并序列化保存
     const sceneStore = useSceneStore.getState();
     const currentConfig = sceneStore.getConfig();
+
     savePreset(trimmedName, currentConfig);
     setPresetName('');
   };
@@ -90,8 +102,10 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
   // 加载预设并应用到场景
   const handleLoadPreset = (name: string) => {
     const config = loadPreset(name);
+
     if (config) {
       const sceneStore = useSceneStore.getState();
+
       sceneStore.setConfig(config);
     }
   };
@@ -317,7 +331,7 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                       <Volume2 className="w-4 h-4" />
                     )}
                     <span className="text-xs">
-                      {audioVolume === 0 ? '静音' : audioVolume < 0.5 ? '低' : audioVolume < 0.8 ? '中' : '高'}
+                    {getVolumeLabel(audioVolume)}
                     </span>
                   </div>
                 </div>

@@ -9,14 +9,13 @@ describe('videoStore', () => {
 
     return {
       getState: () => {
-        if (!initialState) {
-          initialState = createVideoSlice(
+        initialState ??= createVideoSlice(
             (set) => set,
             () => initialState!,
             {} as never
-          );
-        }
-        return initialState!;
+        );
+
+        return initialState;
       },
     };
   };

@@ -16,11 +16,12 @@ describe('PipelineEngine', () => {
     // Reset singleton instances
     resetEventBus();
     engine = PipelineEngine.getInstance();
-    engine.dispose();
+    void engine.dispose();
     StageRegistry.getInstance();
 
     // Clear the registry
     const registry = getStageRegistry();
+
     registry.unregister('test1');
     registry.unregister('test2');
     registry.unregister('failStage');
@@ -35,6 +36,7 @@ describe('PipelineEngine', () => {
     it('should return the same instance', () => {
       const instance1 = PipelineEngine.getInstance();
       const instance2 = PipelineEngine.getInstance();
+
       expect(instance1).toBe(instance2);
     });
   });
@@ -47,6 +49,7 @@ describe('PipelineEngine', () => {
         name: 'stage1',
         async execute(input) {
           executionOrder.push('stage1');
+
           return { ...(input as object), stage1: true };
         },
       };
@@ -55,11 +58,13 @@ describe('PipelineEngine', () => {
         name: 'stage2',
         async execute(input) {
           executionOrder.push('stage2');
+
           return { ...(input as object), stage2: true };
         },
       };
 
       const registry = getStageRegistry();
+
       registry.register('stage1', stage1);
       registry.register('stage2', stage2);
 
@@ -92,11 +97,13 @@ describe('PipelineEngine', () => {
         name: 'stage2',
         async execute(input) {
           receivedInput = input;
+
           return { ...(input as object), fromStage2: 'data2' };
         },
       };
 
       const registry = getStageRegistry();
+
       registry.register('stage1', stage1);
       registry.register('stage2', stage2);
 
@@ -145,11 +152,13 @@ describe('PipelineEngine', () => {
         name: 'longRunning',
         async execute() {
           await new Promise((resolve) => setTimeout(resolve, 1000));
+
           return {};
         },
       };
 
       const registry = getStageRegistry();
+
       registry.register('longRunning', longRunning);
 
       const config: PipelineConfig = {
@@ -159,6 +168,7 @@ describe('PipelineEngine', () => {
       };
 
       const controller = new AbortController();
+
       controller.abort();
 
       await expect(engine.execute({}, config, controller.signal)).rejects.toThrow('Pipeline aborted');
@@ -171,6 +181,7 @@ describe('PipelineEngine', () => {
         name: 'stage1',
         async execute() {
           executedStages.push('stage1');
+
           return { stage1: true };
         },
       };
@@ -179,11 +190,13 @@ describe('PipelineEngine', () => {
         name: 'stage2',
         async execute() {
           executedStages.push('stage2');
+
           return { stage2: true };
         },
       };
 
       const registry = getStageRegistry();
+
       registry.register('stage1', stage1);
       registry.register('stage2', stage2);
 
@@ -210,6 +223,7 @@ describe('PipelineEngine', () => {
       };
 
       const registry = getStageRegistry();
+
       registry.register('testStage', stage);
 
       const config: PipelineConfig = {
@@ -222,6 +236,7 @@ describe('PipelineEngine', () => {
       const completedHandler = vi.fn();
 
       const bus = getEventBus();
+
       bus.on('pipeline:stage-started', startedHandler);
       bus.on('pipeline:stage-completed', completedHandler);
 
@@ -242,9 +257,11 @@ describe('PipelineEngine', () => {
       };
 
       const registry = getStageRegistry();
+
       registry.register('newStage', stage);
 
       const retrieved = registry.getStage('newStage');
+
       expect(retrieved).toBe(stage);
     });
 
@@ -264,10 +281,12 @@ describe('PipelineEngine', () => {
       };
 
       const registry = getStageRegistry();
+
       registry.register('same', stage1);
       registry.register('same', stage2);
 
       const retrieved = registry.getStage('same');
+
       expect(retrieved).toBe(stage2);
     });
   });
@@ -276,6 +295,7 @@ describe('PipelineEngine', () => {
     it('should clear instance after dispose', async () => {
       await engine.dispose();
       const newEngine = PipelineEngine.getInstance();
+
       expect(newEngine).not.toBe(engine);
     });
   });

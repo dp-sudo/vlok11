@@ -25,6 +25,7 @@ import {
   CRYSTAL_DEFAULTS,
   HOLOGRAM_V2_DEFAULTS,
   INK_WASH_DEFAULTS,
+  LIGHT,
   MATRIX_DEFAULTS,
   RETRO_PIXEL_DEFAULTS,
   TEXTURE,
@@ -36,6 +37,22 @@ const DEFAULT_TEXEL_SIZE: [number, number] = [
   1 / TEXTURE.DEFAULT_TEXEL_SIZE,
 ];
 
+// Helper to compute light direction from angles (in degrees)
+const computeLightDirection = (angleX: number, angleY: number): [number, number, number] => {
+  const radX = (angleX * Math.PI) / 180;
+  const radY = (angleY * Math.PI) / 180;
+  return [
+    Math.cos(radX) * Math.sin(radY),
+    Math.sin(radX),
+    Math.cos(radX) * Math.cos(radY),
+  ];
+};
+
+const DEFAULT_LIGHT_DIRECTION: [number, number, number] = computeLightDirection(
+  LIGHT.DEFAULT_ANGLE_X,
+  LIGHT.DEFAULT_ANGLE_Y
+);
+
 export const AnimeMaterialClass = shaderMaterial(
   {
     uTime: 0,
@@ -44,6 +61,9 @@ export const AnimeMaterialClass = shaderMaterial(
     uDisplacementMap: null,
     uDisplacementScale: UNIFORM_DEFAULTS.DISPLACEMENT_SCALE_DEFAULT,
     uDisplacementBias: UNIFORM_DEFAULTS.DISPLACEMENT_BIAS_DEFAULT,
+    // Light uniforms
+    uLightIntensity: LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: DEFAULT_LIGHT_DIRECTION,
     uShadowSteps: ANIME_DEFAULTS.SHADOW_STEPS,
     uShadowThreshold: ANIME_DEFAULTS.SHADOW_THRESHOLD,
     uHighlightSharpness: ANIME_DEFAULTS.HIGHLIGHT_SHARPNESS,
@@ -82,6 +102,9 @@ export const CelMaterialClass = shaderMaterial(
     uDisplacementMap: null,
     uDisplacementScale: UNIFORM_DEFAULTS.DISPLACEMENT_SCALE_DEFAULT,
     uDisplacementBias: UNIFORM_DEFAULTS.DISPLACEMENT_BIAS_DEFAULT,
+    // Light uniforms
+    uLightIntensity: LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: DEFAULT_LIGHT_DIRECTION,
     uColorBands: CEL_DEFAULTS.COLOR_BANDS,
     uOutlineThickness: CEL_DEFAULTS.OUTLINE_THICKNESS,
     uOutlineColor: new Color(
@@ -121,6 +144,9 @@ export const CrystalMaterialClass = shaderMaterial(
     uDisplacementMap: null,
     uDisplacementScale: UNIFORM_DEFAULTS.DISPLACEMENT_SCALE_DEFAULT,
     uDisplacementBias: UNIFORM_DEFAULTS.DISPLACEMENT_BIAS_DEFAULT,
+    // Light uniforms
+    uLightIntensity: LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: DEFAULT_LIGHT_DIRECTION,
     uIOR: CRYSTAL_DEFAULTS.IOR,
     uDispersion: CRYSTAL_DEFAULTS.DISPERSION,
     uFresnelPower: CRYSTAL_DEFAULTS.FRESNEL_POWER,
@@ -144,6 +170,9 @@ export const HologramV2MaterialClass = shaderMaterial(
     uDisplacementMap: null,
     uDisplacementScale: UNIFORM_DEFAULTS.DISPLACEMENT_SCALE_DEFAULT,
     uDisplacementBias: UNIFORM_DEFAULTS.DISPLACEMENT_BIAS_DEFAULT,
+    // Light uniforms
+    uLightIntensity: LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: DEFAULT_LIGHT_DIRECTION,
     uScanlineIntensity: HOLOGRAM_V2_DEFAULTS.SCANLINE_INTENSITY,
     uScanlineDensity: HOLOGRAM_V2_DEFAULTS.SCANLINE_DENSITY,
     uRGBOffset: HOLOGRAM_V2_DEFAULTS.RGB_OFFSET,
@@ -169,6 +198,9 @@ export const InkWashMaterialClass = shaderMaterial(
     uDisplacementMap: null,
     uDisplacementScale: UNIFORM_DEFAULTS.DISPLACEMENT_SCALE_DEFAULT,
     uDisplacementBias: UNIFORM_DEFAULTS.DISPLACEMENT_BIAS_DEFAULT,
+    // Light uniforms
+    uLightIntensity: LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: DEFAULT_LIGHT_DIRECTION,
     uInkDensity: INK_WASH_DEFAULTS.INK_DENSITY,
     uBleedAmount: INK_WASH_DEFAULTS.BLEED_AMOUNT,
     uPaperTexture: INK_WASH_DEFAULTS.PAPER_TEXTURE,
@@ -188,6 +220,9 @@ export const MatrixMaterialClass = shaderMaterial(
     uDisplacementMap: null,
     uDisplacementScale: UNIFORM_DEFAULTS.DISPLACEMENT_SCALE_DEFAULT,
     uDisplacementBias: UNIFORM_DEFAULTS.DISPLACEMENT_BIAS_DEFAULT,
+    // Light uniforms
+    uLightIntensity: LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: DEFAULT_LIGHT_DIRECTION,
     uFallSpeed: MATRIX_DEFAULTS.FALL_SPEED,
     uCharDensity: MATRIX_DEFAULTS.CHAR_DENSITY,
     uGlowIntensity: MATRIX_DEFAULTS.GLOW_INTENSITY,
@@ -212,6 +247,9 @@ export const RetroPixelMaterialClass = shaderMaterial(
     uDisplacementMap: null,
     uDisplacementScale: UNIFORM_DEFAULTS.DISPLACEMENT_SCALE_DEFAULT,
     uDisplacementBias: UNIFORM_DEFAULTS.DISPLACEMENT_BIAS_DEFAULT,
+    // Light uniforms
+    uLightIntensity: LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: DEFAULT_LIGHT_DIRECTION,
     uPixelSize: RETRO_PIXEL_DEFAULTS.PIXEL_SIZE,
     uPaletteMode: RETRO_PIXEL_DEFAULTS.PALETTE_MODE,
     uDitherStrength: RETRO_PIXEL_DEFAULTS.DITHER_STRENGTH,

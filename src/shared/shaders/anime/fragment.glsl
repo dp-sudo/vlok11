@@ -92,15 +92,17 @@ vec3 quantizeColor(vec3 color, int steps) {
   return floor(color * n + 0.5) / n;
 }
 
-// Soft shadow quantization for anime look
+// Soft shadow quantization for anime look - 更平滑的多色阶过渡
 float animeShadow(float luminance, float threshold, float softness) {
-  // Create smooth band transitions
-  float shadow = smoothstep(threshold - softness, threshold + softness, luminance);
+  // 多级色阶过渡 (3级阴影)
+  float shadow1 = smoothstep(threshold - softness, threshold + softness * 0.5, luminance);
+  float shadow2 = smoothstep(threshold * 0.6 - softness * 0.3, threshold * 0.6 + softness * 0.2, luminance);
+  float shadow3 = smoothstep(threshold * 0.3 - softness * 0.15, threshold * 0.3 + softness * 0.1, luminance);
 
-  // Add secondary shadow band for depth
-  float deepShadow = smoothstep(threshold * 0.5 - softness * 0.5, threshold * 0.5 + softness * 0.5, luminance);
+  // 混合三级阴影
+  float shadow = shadow1 * 0.6 + shadow2 * 0.25 + shadow3 * 0.15;
 
-  return shadow;
+  return clamp(shadow, 0.0, 1.0);
 }
 
 // Skin tone detection and enhancement

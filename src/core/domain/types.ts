@@ -12,6 +12,10 @@ export const isValidAnalysisResult = (analysis: unknown): analysis is AnalysisRe
     Object.values(SceneType).includes(a.sceneType) &&
     typeof a.description === 'string' &&
     typeof a.estimatedDepthScale === 'number' &&
+    typeof a.reasoning === 'string' &&
+    typeof a.recommendedFov === 'number' &&
+    typeof a.recommendedPipeline === 'string' &&
+    Object.values(TechPipeline).includes(a.recommendedPipeline) &&
     Array.isArray(a.keywords)
   );
 };

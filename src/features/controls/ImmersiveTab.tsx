@@ -8,6 +8,7 @@ import { AI_MOTION_STYLES, WEATHER_EFFECTS } from './constants';
 interface ImmersiveTabProps {
   config: SceneConfig;
   expandedSections: Record<string, boolean>;
+  searchQuery?: string;
   set: <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
   toggleSection: (key: string) => void;
 }
@@ -124,7 +125,10 @@ const WeatherSection = memo<{
 ));
 
 export const ImmersiveTab: React.FC<ImmersiveTabProps> = memo(
-  ({ config, set, expandedSections, toggleSection }) => (
+  ({ config, set, expandedSections, toggleSection, searchQuery = '' }) => {
+    // 保留searchQuery参数以支持未来搜索功能
+    void searchQuery;
+    return (
     <>
       <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-3">
@@ -153,8 +157,8 @@ export const ImmersiveTab: React.FC<ImmersiveTabProps> = memo(
         toggleSection={toggleSection}
       />
     </>
-  )
-);
+  );
+});
 
 export type { ImmersiveTabProps };
 

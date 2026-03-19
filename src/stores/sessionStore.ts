@@ -72,6 +72,7 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
   _api: Parameters<StateCreator<T>>[2]
 ): SessionSlice => {
   let pipeline: UploadPipeline | null = null;
+  let pipelineCallbacksCleaned = false;
   let aiService: AIService | null = null;
 
   const ensurePipeline = () => {
@@ -82,7 +83,14 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       pipeline = createUploadPipeline({ aiService });
 
       pipeline.onProgress((p) => {
+        // S1 - 检查回调是否已清理
+        if (pipelineCallbacksCleaned) return;
         if (p.stage === 'complete') return;
+
+        // S3 - 竞态条件：检查当前状态
+        const currentStatus = get().status;
+        if (currentStatus !== 'uploading') return;
+
         let status: ProcessingStatus = 'analyzing';
 
         if (p.stage === 'depth') status = 'processing_depth';
@@ -90,16 +98,29 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       });
 
       pipeline.onError((err) => {
+        // S1 - 检查回调是否已清理
+        if (pipelineCallbacksCleaned) return;
+        // S3 - 竞态条件：检查当前状态
+        const currentStatus = get().status;
+        if (currentStatus !== 'uploading') return;
         get().uploadError(err.message);
       });
 
       pipeline.onComplete((result) => {
+        // S1 - 检查回调是否已清理
+        if (pipelineCallbacksCleaned) return;
+        // S3 - 竞态条件：检查当前状态
+        const currentStatus = get().status;
+        if (currentStatus !== 'uploading') return;
+
         if (isProcessingResult(result)) {
           get().uploadComplete(result);
         } else {
           get().uploadError('Invalid processing result received from pipeline');
         }
       });
+
+      pipelineCallbacksCleaned = false;
     }
 
     return pipeline;
@@ -115,6 +136,9 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
 
     uploadStart: (input) => {
       const currentStatus = get().status;
+
+      // S6 - 缺少并发上传保护
+      if (get().status === 'uploading') return;
 
       if (!isValidStatusTransition(currentStatus, 'uploading')) {
         get().uploadError(
@@ -163,6 +187,14 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
     },
 
     resetSession: () => {
+      // S1 - 清理 pipeline 回调以防止内存泄漏
+      if (pipeline) {
+        // 标记回调已清理，防止 resetSession 完成后旧回调仍执行
+        pipelineCallbacksCleaned = true;
+        pipeline.cancel();
+        pipeline.dispose();
+        pipeline = null;
+      }
       set({
         ...DEFAULT_SESSION,
         currentAsset: undefined,
@@ -171,7 +203,6 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
         isServiceInitialized: !!aiService,
       } as Partial<T>);
       get().resetVideo();
-      pipeline?.cancel();
     },
 
     startExport: (format) => {

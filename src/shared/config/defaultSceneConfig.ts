@@ -86,10 +86,10 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   showAxes: false,
 
   renderStyle: RenderStyle.NORMAL,
-  roughness: 0.5,
-  metalness: 0.15,
-  lightIntensity: 1.3,
-  exposure: 1.15,
+  roughness: 0.4, // 降低粗糙度，更有光泽
+  metalness: 0.2, // 增加金属度，更有质感
+  lightIntensity: 1.5, // 增加光照强度
+  exposure: 1.0, // 调整曝光
   projectionMode: ProjectionMode.PLANE,
   /** Projection angle in degrees (0-180) */
   projectionAngle: 180,
@@ -97,19 +97,19 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
 
   enableNakedEye3D: false,
   enableParticles: false,
-  edgeFade: 0.75,
-  depthFog: 0.15,
-  lightAngleX: 40,
-  lightAngleY: 35,
+  edgeFade: 0.5, // 降低边缘淡化
+  depthFog: 0.1, // 减少深度雾
+  lightAngleX: 45, // 调整光照角度
+  lightAngleY: 45,
   vignetteStrength: 0,
   particleType: 'dust',
   particleColor: '',
   particleDensity: 0.5,
 
   colorGrade: ColorGradePreset.CINEMATIC,
-  saturation: 1.1,
-  contrast: 1.08,
-  brightness: 1.02,
+  saturation: 1.0, // 降低饱和度，更自然
+  contrast: 1.05, // 降低对比度，更柔和
+  brightness: 1.0, // 调整亮度
 
   videoMuted: true,
   enableFrameInterpolation: true,
@@ -127,4 +127,7 @@ export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   weatherParticleDensity: 0.5,
 
   recordingQuality: 'medium',
+  recordingFps: 60,
+  recordingResolution: '1920x1080',
+  recordingCodec: 'vp9',
 };

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
+import { persist, createJSONStorage, subscribeWithSelector } from 'zustand/middleware';
 
 import { createSceneSlice, type SceneSlice } from './sceneConfigStore';
 import { createSessionSlice, type SessionSlice } from './sessionStore';
@@ -7,31 +7,53 @@ import { createVideoSlice, type VideoSlice } from './videoStore';
 
 type AppStore = SessionSlice & VideoSlice & SceneSlice;
 
+// 自定义 localStorage 存储，使用更短的 key
+const localStorageStorage = {
+  getItem: (name: string): string | null => {
+    try {
+      return localStorage.getItem(name);
+    } catch (error) {
+      console.warn(`[localStorage] Failed to get item "${name}":`, error);
+      return null;
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    try {
+      localStorage.setItem(name, value);
+    } catch (error) {
+      console.warn(`[localStorage] Failed to set item "${name}":`, error);
+    }
+  },
+  removeItem: (name: string): void => {
+    try {
+      localStorage.removeItem(name);
+    } catch (error) {
+      console.warn(`[localStorage] Failed to remove item "${name}":`, error);
+    }
+  },
+};
+
+// S2 - 持久化版本控制
+const CURRENT_VERSION = 1;
+
 export const useAppStore = create<AppStore>()(
-  subscribeWithSelector((...a) => ({
-    ...createVideoSlice(...a),
-    ...createSessionSlice(...a),
-    ...createSceneSlice(...a),
-  }))
+  persist(
+    subscribeWithSelector((...a) => ({
+      ...createVideoSlice(...a),
+      ...createSessionSlice(...a),
+      ...createSceneSlice(...a),
+    })),
+    {
+      name: 'scene-config-v1',
+      storage: createJSONStorage(() => localStorageStorage),
+      // 只持久化 scene config 部分，避免持久化 session 和 video 状态
+      partialize: (state) => ({
+        config: state.config,
+        _version: CURRENT_VERSION,
+      }),
+    }
+  )
 );
 
-// Selector hooks for optimized subscriptions
-// Note: Unused selector hooks removed - add back if needed
-// export const useCameraMotionType = () => useAppStore((s) => s.config.cameraMotionType);
-// export const useCurrentAsset = () => useAppStore((s) => s.currentAsset);
-// export const useDisplacementScale = () => useAppStore((s) => s.config.displacementScale);
-// export const useExportState = () => useAppStore((s) => s.exportState);
-// export const useIsImmersive = () => useAppStore((s) => s.config.isImmersive);
-// export const useIsPlaying = () => useAppStore((s) => s.isPlaying);
-// export const useProcessingResult = () => useAppStore((s) => s.result);
-// export const useProcessingStatus = () => useAppStore((s) => s.status);
-// export const useProjectionMode = () => useAppStore((s) => s.config.projectionMode);
-// export const useRenderStyle = () => useAppStore((s) => s.config.renderStyle);
 export const useSceneStore = useAppStore;
 export const useSessionStore = useAppStore;
-
-// Video state selectors - individual hooks to avoid unnecessary re-renders
-// export const useCurrentTime = () => useAppStore((s) => s.currentTime);
-// export const useDuration = () => useAppStore((s) => s.duration);
-// export const useIsMuted = () => useAppStore((s) => s.isMuted);
-// export const useVideoState = () => useAppStore((s) => s);

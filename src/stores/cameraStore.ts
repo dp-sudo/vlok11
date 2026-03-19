@@ -138,6 +138,9 @@ export interface CameraMotionState {
 const DEFAULT_ORTHO_ZOOM = 20;
 const DEFAULT_FOV = 50;
 
+/** 历史记录软限制阈值，超过此值时自动压缩 */
+const HISTORY_SOFT_LIMIT = 100;
+
 /** 验证相机姿态数据是否有效 */
 const isValidPose = (pose: Partial<CameraPose>): boolean => {
   if (!pose.position || !pose.target) return true; // null/undefined 时跳过验证
@@ -259,11 +262,17 @@ const createMotionActions = (
       },
     });
 
-    // 发射 motion:resumed 事件，让 CameraAnimator 触发恢复过渡动画
-    getEventBus().emit('motion:resumed', {
-      type: motion.type,
-      progress: safePausedAt,
-    });
+    // S10 - 发射 motion:resumed 事件，让 CameraAnimator 触发恢复过渡动画
+    // 添加错误处理，防止事件发射失败导致整个流程中断
+    try {
+      getEventBus().emit('motion:resumed', {
+        type: motion.type,
+        progress: safePausedAt,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.warn(`Failed to emit motion:resumed event: ${errorMessage}`);
+    }
   },
   updateMotionProgress: (progress: number) => {
     // 确保 progress 在有效范围内 [0, 1]
@@ -293,13 +302,47 @@ const createPoseActions = (
     // 如果姿态相同，跳过更新
     if (isCameraPoseEqual(currentPose, updatedPose)) return;
 
-    set((state) => ({
-      pose: updatedPose,
-      history: [
-        { pose: updatedPose, timestamp: Date.now(), source },
-        ...state.history.slice(0, CAMERA.MAX_HISTORY - 1),
-      ],
-    }));
+    set((state) => {
+      let history = state.history;
+
+      // 软限制：当历史记录超过阈值时进行压缩
+      if (history.length >= HISTORY_SOFT_LIMIT) {
+        // 保留最新的20条和最旧的10条，中间部分每2条取1条
+        const keep = 20;
+        const tailKeep = 10;
+        const newHistory: CameraHistoryEntry[] = [];
+
+        // 保留最新的记录
+        for (let i = 0; i < keep && i < history.length; i++) {
+          const entry = history[i];
+          if (entry) newHistory.push(entry);
+        }
+
+        // 中间部分稀疏采样
+        const middleStart = keep;
+        const middleEnd = history.length - tailKeep;
+        for (let i = middleStart; i < middleEnd; i += 2) {
+          const entry = history[i];
+          if (entry) newHistory.push(entry);
+        }
+
+        // 保留最旧的记录
+        for (let i = middleEnd; i < history.length; i++) {
+          const entry = history[i];
+          if (entry) newHistory.push(entry);
+        }
+
+        history = newHistory;
+      }
+
+      return {
+        pose: updatedPose,
+        history: [
+          { pose: updatedPose, timestamp: Date.now(), source },
+          ...history.slice(0, CAMERA.MAX_HISTORY - 1),
+        ],
+      };
+    });
   },
   setPosition: (position: Vec3) => {
     get().setPose({ position }, 'user');
@@ -369,6 +412,10 @@ const createResetAllAction = (
   set: Parameters<StateCreator<CameraSlice, [], [], CameraSlice>>[0]
 ) => ({
   resetAll: () => {
+    // 清理事件监听器（防御性编程）
+    // 当前 cameraStore 使用 zustand 的 subscribeWithSelector，不需要手动清理
+    // 如果未来添加了 DOM 事件监听器，应在此处清理
+
     set({
       pose: { ...DEFAULT_POSE },
       bookmarks: [],

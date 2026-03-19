@@ -1,46 +1,48 @@
+// 动漫风格 - 更平滑的色阶和柔和阴影
 export const ANIME_DEFAULTS = {
-  SHADOW_STEPS: 4,
-  SHADOW_THRESHOLD: 0.45,
-  HIGHLIGHT_SHARPNESS: 0.8,
-  OUTLINE_WIDTH: 1.2,
-  OUTLINE_COLOR_R: 0.1,
-  OUTLINE_COLOR_G: 0.08,
-  OUTLINE_COLOR_B: 0.05,
-  SKIN_TONE_BOOST: 0.4,
-  // Enhanced anime style parameters
-  SHADOW_SOFTNESS: 0.15,
-  COLOR_SHIFT: 0.3,
-  DITHER_STRENGTH: 0.2,
-  AMBIENT_OCCLUSION: 0.15,
-  SHADOW_TINT_R: 0.65,
-  SHADOW_TINT_G: 0.7,
-  SHADOW_TINT_B: 0.8,
-  HIGHLIGHT_TINT_R: 1.05,
-  HIGHLIGHT_TINT_G: 1.02,
-  HIGHLIGHT_TINT_B: 0.95,
+  SHADOW_STEPS: 6, // 增加色阶，从4到6
+  SHADOW_THRESHOLD: 0.4, // 降低阈值，让阴影更早出现
+  HIGHLIGHT_SHARPNESS: 0.5, // 降低锐度，让高光更柔和
+  OUTLINE_WIDTH: 0.5, // 减小描边宽度
+  OUTLINE_COLOR_R: 0.15,
+  OUTLINE_COLOR_G: 0.12,
+  OUTLINE_COLOR_B: 0.1,
+  SKIN_TONE_BOOST: 0.3,
+  // 增强的动漫风格参数
+  SHADOW_SOFTNESS: 0.25, // 增加阴影柔和度
+  COLOR_SHIFT: 0.15, // 减少色偏
+  DITHER_STRENGTH: 0.05, // 减少抖动
+  AMBIENT_OCCLUSION: 0.08, // 减少AO影响
+  SHADOW_TINT_R: 0.7, // 偏暖的阴影色调
+  SHADOW_TINT_G: 0.75,
+  SHADOW_TINT_B: 0.85,
+  HIGHLIGHT_TINT_R: 1.1, // 偏暖的高光
+  HIGHLIGHT_TINT_G: 1.05,
+  HIGHLIGHT_TINT_B: 0.9,
 } as const;
 
+// 卡通风格 - 更明显的色阶分离
 export const CEL_DEFAULTS = {
-  COLOR_BANDS: 4,
-  OUTLINE_THICKNESS: 1.8,
-  OUTLINE_COLOR_R: 0.05,
-  OUTLINE_COLOR_G: 0.03,
-  OUTLINE_COLOR_B: 0.02,
-  SHADOW_COLOR_R: 0.15,
-  SHADOW_COLOR_G: 0.15,
-  SHADOW_COLOR_B: 0.25,
-  HALFTONE_SIZE: 2.0,
-  SPECULAR_SIZE: 0.35,
-  // Enhanced cel shading parameters
-  SPECULAR_THRESHOLD: 0.85,
-  SPECULAR_INTENSITY: 0.7,
-  SHADOW_INTENSITY: 0.6,
-  EDGE_SOFTNESS: 0.5,
-  RIM_LIGHT_INTENSITY: 0.25,
-  RIM_LIGHT_COLOR_R: 0.6,
-  RIM_LIGHT_COLOR_G: 0.8,
+  COLOR_BANDS: 5, // 增加色阶
+  OUTLINE_THICKNESS: 0.8, // 减小描边
+  OUTLINE_COLOR_R: 0.08,
+  OUTLINE_COLOR_G: 0.06,
+  OUTLINE_COLOR_B: 0.04,
+  SHADOW_COLOR_R: 0.2, // 更深的阴影
+  SHADOW_COLOR_G: 0.2,
+  SHADOW_COLOR_B: 0.3,
+  HALFTONE_SIZE: 1.5,
+  SPECULAR_SIZE: 0.25,
+  // 增强的卡通着色参数
+  SPECULAR_THRESHOLD: 0.9,
+  SPECULAR_INTENSITY: 0.9,
+  SHADOW_INTENSITY: 0.8,
+  EDGE_SOFTNESS: 0.3, // 更硬的边缘
+  RIM_LIGHT_INTENSITY: 0.4, // 更明显的边缘光
+  RIM_LIGHT_COLOR_R: 0.8,
+  RIM_LIGHT_COLOR_G: 0.9,
   RIM_LIGHT_COLOR_B: 1.0,
-  TOON_CONTRAST: 1.1,
+  TOON_CONTRAST: 1.2, // 更高的对比度
 } as const;
 
 export const CRYSTAL_DEFAULTS = {
@@ -67,13 +69,14 @@ export const HOLOGRAM_V2_DEFAULTS = {
   DATA_STREAM_SPEED: 1.2,
 } as const;
 
+// 水墨风格 - 更柔和的墨迹效果
 export const INK_WASH_DEFAULTS = {
-  INK_DENSITY: 0.75,
-  BLEED_AMOUNT: 0.6,
-  PAPER_TEXTURE: 0.5,
-  BRUSH_TEXTURE: 0.7,
-  WHITE_SPACE: 0.35,
-  EDGE_WOBBLE: 0.35,
+  INK_DENSITY: 0.6, // 降低墨迹密度，更通透
+  BLEED_AMOUNT: 0.75, // 增加晕染，更柔和
+  PAPER_TEXTURE: 0.65, // 增强纸张纹理
+  BRUSH_TEXTURE: 0.5, // 减少笔触纹理
+  WHITE_SPACE: 0.4, // 增加留白
+  EDGE_WOBBLE: 0.2, // 减少边缘抖动，更平滑
 } as const;
 
 export const MATRIX_DEFAULTS = {
@@ -115,4 +118,10 @@ export const UNIFORM_DEFAULTS = {
 
 export const TEXTURE = {
   DEFAULT_TEXEL_SIZE: 1024,
+} as const;
+
+export const LIGHT = {
+  DEFAULT_INTENSITY: 1.5,
+  DEFAULT_ANGLE_X: 45,
+  DEFAULT_ANGLE_Y: 45,
 } as const;

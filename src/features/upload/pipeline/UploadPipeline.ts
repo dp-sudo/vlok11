@@ -76,16 +76,13 @@ const buildAsset = (
   imageUrl: string,
   isVideo: boolean
 ): ProcessedResult['asset'] => {
+  const {metadata} = stageInput;
   const baseAsset = {
     id: generateUUID(),
     sourceUrl: imageUrl,
-    width:
-      ((stageInput.metadata as Record<string, unknown>)?.['width'] as number) ?? ASSET_DEFAULTS.WIDTH,
-    height:
-      ((stageInput.metadata as Record<string, unknown>)?.['height'] as number) ?? ASSET_DEFAULTS.HEIGHT,
-    aspectRatio:
-      ((stageInput.metadata as Record<string, unknown>)?.['aspectRatio'] as number) ??
-      ASSET_DEFAULTS.ASPECT_RATIO,
+    width: metadata?.width ?? ASSET_DEFAULTS.WIDTH,
+    height: metadata?.height ?? ASSET_DEFAULTS.HEIGHT,
+    aspectRatio: metadata?.aspectRatio ?? ASSET_DEFAULTS.ASPECT_RATIO,
     createdAt: Date.now(),
   };
 
@@ -93,9 +90,7 @@ const buildAsset = (
     return {
       ...baseAsset,
       type: 'video' as const,
-      duration:
-        ((stageInput.metadata as Record<string, unknown>)?.['duration'] as number) ??
-        ASSET_DEFAULTS.DURATION,
+      duration: metadata?.duration ?? ASSET_DEFAULTS.DURATION,
       thumbnailUrl: imageUrl,
       sourceUrl: stageInput.videoUrl ?? imageUrl,
     };
@@ -261,7 +256,8 @@ class UploadPipelineImpl implements UploadPipelineInterface {
         type: s.name,
         order: i,
         enabled: true,
-
+        timeoutMs: 60000,
+        retryCount: 2,
         ...(i > 0 ? { dependsOn: [arr[i - 1]!.name] } : {}),
       })),
     };
@@ -283,15 +279,12 @@ class UploadPipelineImpl implements UploadPipelineInterface {
 
       return finalOutput;
     } catch (error) {
-      const stageName = 'pipeline';
-
+      this.releaseBlobUrls();
       this.handleStageError(
-        stageName,
+        'pipeline',
         error instanceof Error ? error : new Error(String(error)),
         stageInput
       );
-      // We throw a silent internal exception to break out of process() cleanly without
-      // spamming the console stack trace, because handleStageError has already communicated the issue.
       throw new Error('Pipeline Execution Interrupted');
     }
   }

@@ -10,7 +10,9 @@ export interface VideoState {
 }
 
 export interface VideoActions {
+  pause: () => void;
   resetVideo: () => void;
+  seek: (time: number) => void;
   setMuted: (muted: boolean) => void;
   setPlaybackRate: (rate: number) => void;
   setVideoDuration: (duration: number) => void;
@@ -38,15 +40,37 @@ export const createVideoSlice = <T extends VideoSlice>(
   ...DEFAULT_VIDEO,
 
   setVideoDuration: (duration) => {
-    set({ duration } as Partial<T>);
+    // 验证 duration 为非负数
+    const validDuration = Number.isFinite(duration) ? Math.max(0, duration) : 0;
+
+    // S8 - 添加 currentTime 校验，防止状态不一致
+    const currentTime = get().currentTime ?? 0;
+    const newCurrentTime = validDuration < currentTime ? validDuration : currentTime;
+
+    set({ duration: validDuration, currentTime: newCurrentTime } as Partial<T>);
   },
 
   setVideoTime: (time) => {
-    set({ currentTime: time } as Partial<T>);
+    // 验证 time 在有效范围内 [0, duration]
+    const duration = get().duration ?? 0;
+    const clampedTime = Number.isFinite(time)
+      ? Math.max(0, Math.min(time, duration))
+      : 0;
+    set({ currentTime: clampedTime } as Partial<T>);
   },
 
   togglePlay: () => {
     set({ isPlaying: !get().isPlaying } as Partial<T>);
+  },
+
+  // 新增：独立的暂停操作
+  pause: () => {
+    set({ isPlaying: false } as Partial<T>);
+  },
+
+  // S7 - seek 函数与 setVideoTime 重复逻辑，统一使用 setVideoTime
+  seek: (time) => {
+    get().setVideoTime(time);
   },
 
   setMuted: (muted) => {
@@ -58,7 +82,11 @@ export const createVideoSlice = <T extends VideoSlice>(
   },
 
   setPlaybackRate: (rate) => {
-    set({ playbackRate: rate } as Partial<T>);
+    // 验证 playbackRate 为正数且在合理范围内 [0.1, 4.0]
+    const validRate = Number.isFinite(rate)
+      ? Math.max(0.1, Math.min(rate, 4.0))
+      : 1.0;
+    set({ playbackRate: validRate } as Partial<T>);
   },
 
   resetVideo: () => {

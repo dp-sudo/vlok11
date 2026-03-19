@@ -1,0 +1,470 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1773839427110,
+  "projectRoot": "A:\\3d",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": ">=18.0.0",
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "19.0.0",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.0.0",
+        "category": "frontend"
+      },
+      {
+        "name": "vite",
+        "version": "7.0.0",
+        "category": "build"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": "Node.js 18.0.0"
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "vite",
+      "build": "tsc --noEmit && vite build",
+      "preview": "vite preview",
+      "lint": "eslint src --max-warnings 0",
+      "lint:fix": "eslint src --fix",
+      "lint:strict": "eslint src --max-warnings 0 && tsc --noEmit",
+      "verify": "npm run lint:strict && vite build",
+      "format": "prettier --write .",
+      "format:check": "prettier --check .",
+      "biome:check": "biome check src",
+      "biome:fix": "biome check --write src",
+      "biome:organize": "biome organize src",
+      "biome:lint": "biome lint src",
+      "biome:format": "biome format src",
+      "clean": "rimraf dist node_modules/.vite",
+      "deps:update": "npm update",
+      "deploy": "npm run build && wrangler pages deploy dist --project-name=immersa-3d",
+      "deploy:preview": "npm run build && wrangler pages deploy dist --project-name=immersa-3d --branch=preview",
+      "setup:domain": "bash ./setup-domain.sh",
+      "setup:env": "bash ./setup-env.sh",
+      "full-deploy": "npm run build && wrangler pages deploy dist --project-name=immersa-3d && echo '部署成功！访问: https://immersa-3d.pages.dev'"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "feature-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "public",
+      "src"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 8,
+      "lastAccessed": 1773839427045,
+      "keyFiles": [
+        "icon.svg",
+        "index.html",
+        "manifest.json",
+        "manifest.webmanifest",
+        "registerSW.js"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 0,
+      "lastAccessed": 1773839427084,
+      "keyFiles": []
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 3,
+      "lastAccessed": 1773839427084,
+      "keyFiles": [
+        "icon.svg",
+        "manifest.json",
+        "_redirects"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 4,
+      "lastAccessed": 1773839427085,
+      "keyFiles": [
+        "App.tsx",
+        "global.d.ts",
+        "main.tsx",
+        "vite-env.d.ts"
+      ]
+    },
+    "dist\\assets": {
+      "path": "dist\\assets",
+      "purpose": "Static assets",
+      "fileCount": 14,
+      "lastAccessed": 1773839427086,
+      "keyFiles": [
+        "ai-ml-KYQS8Ysl.js",
+        "GeminiProvider-DU3XcGWi.js",
+        "genai-l0sNRNKZ.js"
+      ]
+    },
+    "src\\app": {
+      "path": "src\\app",
+      "purpose": "Application code",
+      "fileCount": 1,
+      "lastAccessed": 1773839427088,
+      "keyFiles": [
+        "bootstrap.ts"
+      ]
+    },
+    "src\\types": {
+      "path": "src\\types",
+      "purpose": "Type definitions",
+      "fileCount": 1,
+      "lastAccessed": 1773839427088,
+      "keyFiles": [
+        "globals.d.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src",
+      "accessCount": 32,
+      "lastAccessed": 1773853808205,
+      "type": "directory"
+    },
+    {
+      "path": "src\\stores\\cameraStore.ts",
+      "accessCount": 22,
+      "lastAccessed": 1773853425922,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\Logger.ts",
+      "accessCount": 22,
+      "lastAccessed": 1773853610299,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\EventBus.ts",
+      "accessCount": 21,
+      "lastAccessed": 1773853605541,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\upload\\pipeline\\stages\\ReadStage.ts",
+      "accessCount": 19,
+      "lastAccessed": 1773853332403,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\ErrorCodes.ts",
+      "accessCount": 19,
+      "lastAccessed": 1773853379493,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\pipeline\\PipelineEngine.ts",
+      "accessCount": 19,
+      "lastAccessed": 1773897988735,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\upload\\pipeline\\UploadPipeline.ts",
+      "accessCount": 17,
+      "lastAccessed": 1773853285952,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\cameraStore.test.ts",
+      "accessCount": 14,
+      "lastAccessed": 1773849656568,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\controls\\compound\\ControlPanelCompound.tsx",
+      "accessCount": 13,
+      "lastAccessed": 1773853671489,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\videoStore.test.ts",
+      "accessCount": 13,
+      "lastAccessed": 1773853973084,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\videoStore.ts",
+      "accessCount": 13,
+      "lastAccessed": 1773897988856,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\EventBus.test.ts",
+      "accessCount": 12,
+      "lastAccessed": 1773849458214,
+      "type": "file"
+    },
+    {
+      "path": "src\\tests\\setup.ts",
+      "accessCount": 12,
+      "lastAccessed": 1773850191697,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\sessionStore.ts",
+      "accessCount": 12,
+      "lastAccessed": 1773853478372,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\sceneConfigStore.ts",
+      "accessCount": 11,
+      "lastAccessed": 1773853291618,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\sharedStore.ts",
+      "accessCount": 11,
+      "lastAccessed": 1773853485291,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\sessionStore.test.ts",
+      "accessCount": 10,
+      "lastAccessed": 1773848603826,
+      "type": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "accessCount": 9,
+      "lastAccessed": 1773846357369,
+      "type": "file"
+    },
+    {
+      "path": "src\\App.tsx",
+      "accessCount": 8,
+      "lastAccessed": 1773845868816,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\Logger.test.ts",
+      "accessCount": 8,
+      "lastAccessed": 1773849140216,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 8,
+      "lastAccessed": 1773853794530,
+      "type": "file"
+    },
+    {
+      "path": "src\\tests\\zustand.ts",
+      "accessCount": 7,
+      "lastAccessed": 1773849751022,
+      "type": "file"
+    },
+    {
+      "path": "src\\core",
+      "accessCount": 7,
+      "lastAccessed": 1773852744109,
+      "type": "directory"
+    },
+    {
+      "path": "src\\features\\controls\\ControlPanel.tsx",
+      "accessCount": 7,
+      "lastAccessed": 1773853301718,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\pipeline\\PipelineEngine.test.ts",
+      "accessCount": 6,
+      "lastAccessed": 1773850162747,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 6,
+      "lastAccessed": 1773852624641,
+      "type": "directory"
+    },
+    {
+      "path": "src\\core\\LifecycleManager.ts",
+      "accessCount": 6,
+      "lastAccessed": 1773853563154,
+      "type": "file"
+    },
+    {
+      "path": "src\\shared\\config\\defaultSceneConfig.ts",
+      "accessCount": 6,
+      "lastAccessed": 1773853760759,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\EventTypes.ts",
+      "accessCount": 4,
+      "lastAccessed": 1773852694789,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\pipeline\\types.ts",
+      "accessCount": 4,
+      "lastAccessed": 1773852694843,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\upload\\pipeline\\types.ts",
+      "accessCount": 3,
+      "lastAccessed": 1773848661046,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\ResourceManager.ts",
+      "accessCount": 3,
+      "lastAccessed": 1773852729978,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera\\MotionService.ts",
+      "accessCount": 2,
+      "lastAccessed": 1773845461101,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\pipeline\\StageRegistry.ts",
+      "accessCount": 2,
+      "lastAccessed": 1773850616618,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\SceneViewer.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773850664731,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\index.ts",
+      "accessCount": 2,
+      "lastAccessed": 1773851108517,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\ai\\services\\AIService.ts",
+      "accessCount": 2,
+      "lastAccessed": 1773852755908,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 1,
+      "lastAccessed": 1773845236387,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera\\CameraService.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773845243554,
+      "type": "file"
+    },
+    {
+      "path": "src\\main.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1773845256934,
+      "type": "file"
+    },
+    {
+      "path": "tsconfig.json",
+      "accessCount": 1,
+      "lastAccessed": 1773845256989,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\ai\\services\\AIServiceCore.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773845258240,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera\\CoreController.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773845258345,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\bootstrap.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773845264708,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\ErrorHandler.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773845274514,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\hooks\\useSceneMaterials.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773845294651,
+      "type": "file"
+    },
+    {
+      "path": "src\\shared\\components\\ErrorBoundaryWithRecovery.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1773845486467,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera",
+      "accessCount": 1,
+      "lastAccessed": 1773845486479,
+      "type": "directory"
+    },
+    {
+      "path": "src\\features\\upload\\pipeline\\stages",
+      "accessCount": 1,
+      "lastAccessed": 1773845647964,
+      "type": "directory"
+    }
+  ],
+  "userDirectives": []
+}

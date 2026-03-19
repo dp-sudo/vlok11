@@ -32,6 +32,7 @@ interface EffectsTabProps {
   activeStyle: (typeof RENDER_STYLES)[number] | undefined;
   config: SceneConfig;
   expandedSections: Record<string, boolean>;
+  searchQuery?: string;
   set: <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
   toggleSection: (key: string) => void;
 }
@@ -96,7 +97,10 @@ const ColorGradeSection = memo<{
 ));
 
 export const EffectsTab: React.FC<EffectsTabProps> = memo(
-  ({ config, set, expandedSections, toggleSection, activeStyle }) => (
+  ({ config, set, expandedSections, toggleSection, activeStyle, searchQuery = '' }) => {
+    // 保留searchQuery参数以支持未来搜索功能
+    void searchQuery;
+    return (
     <>
       <div className="mb-3 p-3 rounded-xl bg-white border border-zinc-200 shadow-sm">
         <div className="flex items-center gap-3">
@@ -145,8 +149,8 @@ export const EffectsTab: React.FC<EffectsTabProps> = memo(
       <MaterialSection config={config} set={set} />
       <RecordingSettings config={config} set={set} />
     </>
-  )
-);
+  );
+});
 
 const EffectsToggleSection = memo<{
   config: SceneConfig;

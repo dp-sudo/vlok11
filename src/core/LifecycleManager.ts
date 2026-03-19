@@ -148,6 +148,9 @@ class LifecycleManagerImpl {
 
     this.state = LifecycleState.DESTROYING;
 
+    // Stop health check interval to prevent memory leaks
+    this.stopHealthCheck();
+
     const sortedServices = [...this.services.entries()]
       .filter(([, meta]) => meta.initOrder >= 0)
       .sort((a, b) => b[1].initOrder - a[1].initOrder);

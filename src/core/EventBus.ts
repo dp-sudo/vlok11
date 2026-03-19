@@ -16,6 +16,11 @@ interface Subscriber {
   priority: number;
 }
 
+export interface EventInterceptor {
+  onEmit?: (type: string, payload: unknown) => unknown | void;
+  onSubscribe?: (type: string, handler: (payload: unknown) => void) => void;
+}
+
 const logger = createLogger({ module: 'EventBus' });
 
 let eventBusInstance: EventBusImpl | null = null;
@@ -24,6 +29,7 @@ class EventBusImpl implements EventBus {
   private history: (EventRecord | null)[];
   private historyHead = 0;
   private historySize = 0;
+  private interceptors: EventInterceptor[] = [];
   private loggingEnabled = false;
   private maxHistory = EVENT_BUS.MAX_HISTORY;
   private subscribers = new Map<string, Subscriber[]>();
@@ -42,10 +48,22 @@ class EventBusImpl implements EventBus {
   emit<T extends CoreEventType>(type: T, payload: CoreEventPayloadMap[T]): void;
   emit(type: string, payload: unknown): void;
   emit(type: string, payload: unknown): void {
+    let processedPayload = payload;
+
+    for (const interceptor of this.interceptors) {
+      if (interceptor.onEmit) {
+        const result = interceptor.onEmit(type, processedPayload);
+
+        if (result !== undefined) {
+          processedPayload = result;
+        }
+      }
+    }
+
     const subscribers = this.subscribers.get(type);
 
     if (this.loggingEnabled) {
-      logger.debug(`Event emitted: ${type}`, { payload });
+      logger.debug(`Event emitted: ${type}`, { payload: processedPayload });
     }
 
     if (!subscribers || subscribers.length === 0) {
@@ -59,7 +77,10 @@ class EventBusImpl implements EventBus {
       subscriberCount: subscribers.length,
     };
 
-    // 环形缓冲区实现
+    // 环形缓冲区实现：
+    // - historyHead 指向下一个写入位置
+    // - 当缓冲区满时，新记录覆盖最旧的记录（通过 modulo 实现循环）
+    // - 最旧的记录位置：(head - 1 + max) % max
     if (this.history.length < this.maxHistory) {
       this.history.push(record);
     } else {
@@ -70,7 +91,7 @@ class EventBusImpl implements EventBus {
 
     for (const sub of subscribers) {
       try {
-        sub.handler(payload);
+        sub.handler(processedPayload);
 
         if (sub.once) {
           this.off(type, sub.handler);
@@ -90,16 +111,24 @@ class EventBusImpl implements EventBus {
   }
 
   getEventHistory(limit?: number): EventRecord[] {
-    const result: EventRecord[] = [];
     const count = limit === undefined ? this.historySize : Math.min(limit, this.historySize);
-    const start = this.history.length - count;
+
+    if (count === 0 || this.history.length === 0) {
+      return [];
+    }
+
+    // If buffer not yet full, use simple slice
+    if (this.history.length < this.maxHistory) {
+      return this.history.slice(-count) as EventRecord[];
+    }
+
+    // Buffer is full - use circular buffer indexing
+    // head points to next write position, so newest is at (head - 1 + max) % max
+    const result: EventRecord[] = [];
 
     for (let i = 0; i < count; i++) {
-      const record = this.history[start + i];
-
-      if (record) {
-        result.push(record);
-      }
+      const idx = (this.historyHead - 1 - i + this.maxHistory) % this.maxHistory;
+      result.push(this.history[idx]!);
     }
 
     return result;
@@ -118,13 +147,14 @@ class EventBusImpl implements EventBus {
 
     if (!subs) return;
 
-    const index = subs.findIndex((sub) => sub.handler === handler);
+    // Use filter to avoid array holes from splice
+    const filteredSubs = subs.filter((sub) => sub.handler !== handler);
 
-    if (index !== -1) {
-      subs.splice(index, 1);
+    if (filteredSubs.length !== subs.length) {
+      this.subscribers.set(type, filteredSubs);
     }
 
-    if (subs.length === 0) {
+    if (filteredSubs.length === 0) {
       this.subscribers.delete(type);
     }
   }
@@ -196,6 +226,37 @@ class EventBusImpl implements EventBus {
     }
 
     return count;
+  }
+
+  /**
+   * Debug method to get all subscriber handlers for a given event type
+   * Useful for tracking subscriptions and detecting potential memory leaks
+   */
+  getSubscriberHandlers(type: CoreEventType | string): Array<{ handler: (payload: unknown) => void; once: boolean; priority: number }> {
+    const subs = this.subscribers.get(type);
+
+    if (!subs) {
+      return [];
+    }
+
+    return subs.map((sub) => ({
+      handler: sub.handler,
+      once: sub.once,
+      priority: sub.priority,
+    }));
+  }
+
+  addInterceptor(interceptor: EventInterceptor): () => void {
+    this.interceptors.push(interceptor);
+
+    return () => {
+      // Use filter to avoid array holes from splice
+      this.interceptors = this.interceptors.filter((i) => i !== interceptor);
+    };
+  }
+
+  clearInterceptors(): void {
+    this.interceptors = [];
   }
 
   dispose(): void {

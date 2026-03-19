@@ -65,7 +65,7 @@ export class ReadStage implements PipelineStage {
             imageBase64 = await this.fileToBase64(file);
             throwIfAborted(input.signal);
             imageUrl = fileUrl;
-            aspectRatio = await this.getImageAspectRatio(fileUrl);
+            aspectRatio = await this.getImageAspectRatio(fileUrl).catch(() => 1);
           }
 
           const result = {
@@ -74,14 +74,12 @@ export class ReadStage implements PipelineStage {
             imageUrl,
             ...(videoUrl ? { videoUrl } : {}),
             metadata: {
-              ...input.metadata,
               aspectRatio,
               fileName: this.sanitizeFileName(file.name),
               fileSize: file.size,
               fileType: file.type,
               isVideo,
-
-              duration: (input.metadata as { duration?: number })?.duration,
+              duration: (input.metadata as Record<string, unknown>)?.['duration'] as number | undefined,
             },
             success: true,
           };
@@ -91,10 +89,11 @@ export class ReadStage implements PipelineStage {
             imageUrl: typeof result.imageUrl === 'string' ? result.imageUrl.substring(0, 50) : '',
           });
 
-          return result;
-        } catch (innerError) {
-          URL.revokeObjectURL(fileUrl);
-          throw innerError;
+          return result as StageOutput;
+        } finally {
+          if (!input.videoUrl) {
+            URL.revokeObjectURL(fileUrl);
+          }
         }
       } else if (input.url) {
         throwIfAborted(input.signal);
@@ -124,7 +123,7 @@ export class ReadStage implements PipelineStage {
           imageUrl = url;
           imageBase64 = await this.urlToBase64(url, input.signal);
           throwIfAborted(input.signal);
-          aspectRatio = await this.getImageAspectRatio(url);
+          aspectRatio = await this.getImageAspectRatio(url).catch(() => 1);
         }
 
         const result = {

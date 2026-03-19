@@ -187,6 +187,9 @@ export interface AIImmersiveConfig {
 // 录制配置
 export interface RecordingConfig {
   recordingQuality: 'high' | 'medium' | 'low';
+  recordingFps: number;
+  recordingResolution: string;
+  recordingCodec: string;
 }
 
 export interface SceneConfig

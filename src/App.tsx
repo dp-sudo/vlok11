@@ -1,3 +1,4 @@
+import { ErrorBoundaryWithRecovery, MobileDrawer } from '@/shared/components';
 import { Loader2, Sparkles } from 'lucide-react';
 import { lazy, memo, Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import { getErrorHandler } from '@/core/ErrorHandler';
@@ -11,7 +12,6 @@ import type { SceneViewerHandle } from '@/features/scene';
 import { useSceneConfigSubscriber } from '@/features/scene/hooks/useSceneConfigSubscriber';
 import { useWeatherEffect } from '@/features/scene/hooks/useWeatherEffect';
 import { StatusDisplay, UploadPanel } from '@/features/upload';
-import { MobileDrawer } from '@/shared/components';
 import { TitleBar } from '@/shared/components/layout/TitleBar';
 import { useProjectShortcuts } from '@/shared/hooks/useProjectShortcuts';
 import type { CameraViewPreset, ProcessingState } from '@/shared/types';
@@ -265,6 +265,14 @@ const App = memo(() => {
   );
 });
 
-export { App };
+const AppWithBoundary = memo(() => {
+  return (
+    <ErrorBoundaryWithRecovery>
+      <App />
+    </ErrorBoundaryWithRecovery>
+  );
+});
 
-App.displayName = 'App';
+AppWithBoundary.displayName = 'AppWithBoundary';
+
+export { AppWithBoundary as App };

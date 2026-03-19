@@ -11,9 +11,25 @@ const logger = createLogger({ module: 'ResourceManager' });
 
 export type CleanupFunction = () => void;
 
+export interface TrackedResource {
+  createdAt: number;
+  name?: string;
+  type: 'anonymous' | 'named' | 'event' | 'timeout' | 'interval';
+}
+
+export interface ResourceStats {
+  anonymous: number;
+  eventListeners: number;
+  named: number;
+  timeouts: number;
+  intervals: number;
+  total: number;
+}
+
 export class ResourceManager {
   private disposables: Set<CleanupFunction> = new Set();
   private namedResources: Map<string, CleanupFunction> = new Map();
+  private trackedResources: Map<CleanupFunction, TrackedResource> = new Map();
   private isDisposed = false;
 
   /**
@@ -161,6 +177,46 @@ export class ResourceManager {
    */
   get resourceCount(): number {
     return this.disposables.size + this.namedResources.size;
+  }
+
+  /**
+   * Get detailed resource statistics
+   */
+  getStats(): ResourceStats {
+    const stats: ResourceStats = {
+      anonymous: 0,
+      eventListeners: 0,
+      named: this.namedResources.size,
+      timeouts: 0,
+      intervals: 0,
+      total: 0,
+    };
+
+    for (const resource of this.trackedResources.values()) {
+      switch (resource.type) {
+        case 'anonymous':
+          stats.anonymous++;
+          break;
+        case 'event':
+          stats.eventListeners++;
+          break;
+        case 'timeout':
+          stats.timeouts++;
+          break;
+        case 'interval':
+          stats.intervals++;
+          break;
+      }
+    }
+
+    stats.total =
+      stats.anonymous +
+      stats.eventListeners +
+      stats.named +
+      stats.timeouts +
+      stats.intervals;
+
+    return stats;
   }
 }
 

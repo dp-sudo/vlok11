@@ -10,6 +10,7 @@ interface SceneTabProps {
   config: SceneConfig;
   expandedSections: Record<string, boolean>;
   hoveredItem: string | null;
+  searchQuery?: string;
   set: <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
   setHoveredItem: (item: string | null) => void;
   toggleSection: (key: string) => void;
@@ -24,7 +25,20 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
     hoveredItem,
     setHoveredItem,
     activeProjection,
-  }) => (
+    searchQuery = '',
+  }) => {
+    // 搜索过滤 - 过滤配置项
+    const filterBySearch = (text: string): boolean => {
+      if (!searchQuery) return true;
+      return text.toLowerCase().includes(searchQuery.toLowerCase());
+    };
+
+    // 根据搜索词过滤显示的配置
+    const showDepth = !searchQuery || filterBySearch('深度网格密度');
+    const showMirror = !searchQuery || filterBySearch('镜像');
+    const showEnv = !searchQuery || filterBySearch('网格坐标轴人脸');
+
+    return (
     <>
       <div className="mb-3 p-4 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-4">
@@ -88,77 +102,83 @@ export const SceneTab: React.FC<SceneTabProps> = memo(
         ) : null}
       </CollapsibleSection>
 
-      <CollapsibleSection
-        expanded={!!expandedSections['depth']}
-        icon={<Sliders className="w-3.5 h-3.5" />}
-        onToggle={() => toggleSection('depth')}
-        title="深度控制"
-      >
-        <Slider
-          label="深度强度"
-          max={8}
-          min={0}
-          onChange={(v) => set('displacementScale', v)}
-          presets={DEPTH_PRESETS as unknown as number[]}
-          showPresets
-          step={0.1}
-          value={config.displacementScale}
-        />
-        <Slider
-          label="网格密度"
-          max={512}
-          min={64}
-          onChange={(v) => set('meshDensity', v)}
-          step={32}
-          value={config.meshDensity}
-        />
-        <Toggle
-          checked={config.depthInvert}
-          label="深度反转"
-          onChange={(v) => set('depthInvert', v)}
-        />
-        <Slider
-          label="边缘淡化"
-          max={1}
-          min={0}
-          onChange={(v) => set('edgeFade', v)}
-          step={0.05}
-          value={config.edgeFade}
-        />
-      </CollapsibleSection>
-
-      <CollapsibleSection icon={<Maximize2 className="w-3.5 h-3.5" />} title="镜像模式">
-        <div className="grid grid-cols-2 gap-1.5">
-          {MIRROR_MODES.map((m) => (
-            <Btn
-              active={config.mirrorMode === m.mode}
-              key={m.mode}
-              onClick={() => set('mirrorMode', m.mode)}
-            >
-              {m.label}
-            </Btn>
-          ))}
-        </div>
-      </CollapsibleSection>
-
-      <CollapsibleSection icon={<Sun className="w-3.5 h-3.5" />} title="环境设置">
-        <div className="space-y-1">
-          <Toggle checked={config.showGrid} label="显示网格" onChange={(v) => set('showGrid', v)} />
-          <Toggle
-            checked={config.showAxes}
-            label="显示坐标轴"
-            onChange={(v) => set('showAxes', v)}
+      {showDepth && (
+        <CollapsibleSection
+          expanded={!!expandedSections['depth']}
+          icon={<Sliders className="w-3.5 h-3.5" />}
+          onToggle={() => toggleSection('depth')}
+          title="深度控制"
+        >
+          <Slider
+            label="深度强度"
+            max={8}
+            min={0}
+            onChange={(v) => set('displacementScale', v)}
+            presets={DEPTH_PRESETS as unknown as number[]}
+            showPresets
+            step={0.1}
+            value={config.displacementScale}
+          />
+          <Slider
+            label="网格密度"
+            max={512}
+            min={64}
+            onChange={(v) => set('meshDensity', v)}
+            step={32}
+            value={config.meshDensity}
           />
           <Toggle
-            checked={config.enableFaceTracking}
-            label="人脸追踪"
-            onChange={(v) => set('enableFaceTracking', v)}
+            checked={config.depthInvert}
+            label="深度反转"
+            onChange={(v) => set('depthInvert', v)}
           />
-        </div>
-      </CollapsibleSection>
+          <Slider
+            label="边缘淡化"
+            max={1}
+            min={0}
+            onChange={(v) => set('edgeFade', v)}
+            step={0.05}
+            value={config.edgeFade}
+          />
+        </CollapsibleSection>
+      )}
+
+      {showMirror && (
+        <CollapsibleSection icon={<Maximize2 className="w-3.5 h-3.5" />} title="镜像模式">
+          <div className="grid grid-cols-2 gap-1.5">
+            {MIRROR_MODES.map((m) => (
+              <Btn
+                active={config.mirrorMode === m.mode}
+                key={m.mode}
+                onClick={() => set('mirrorMode', m.mode)}
+              >
+                {m.label}
+              </Btn>
+            ))}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {showEnv && (
+        <CollapsibleSection icon={<Sun className="w-3.5 h-3.5" />} title="环境设置">
+          <div className="space-y-1">
+            <Toggle checked={config.showGrid} label="显示网格" onChange={(v) => set('showGrid', v)} />
+            <Toggle
+              checked={config.showAxes}
+              label="显示坐标轴"
+              onChange={(v) => set('showAxes', v)}
+            />
+            <Toggle
+              checked={config.enableFaceTracking}
+              label="人脸追踪"
+              onChange={(v) => set('enableFaceTracking', v)}
+            />
+          </div>
+        </CollapsibleSection>
+      )}
     </>
-  )
-);
+    );
+});
 
 SceneTab.displayName = 'SceneTab';
 

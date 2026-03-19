@@ -1,0 +1,29 @@
+{
+  "name": "IMMERSA 3D - AI 3D Scene Reconstruction",
+  "short_name": "IMMERSA 3D",
+  "description": "AI驱动的2D到3D场景重建 - 使用React Three Fiber和TensorFlow.js",
+  "theme_color": "#0b0b10",
+  "background_color": "#050505",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["graphics", "utilities", "video"],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}

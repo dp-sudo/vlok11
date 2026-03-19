@@ -6,9 +6,39 @@ export enum LogLevel {
   WARN = 2,
 }
 
+export interface LogFilter {
+  module?: string;
+  minLevel?: LogLevel;
+}
+
+export interface LogFormatter {
+  format(entry: LogEntry): string;
+}
+
 const MAX_LOG_HISTORY = 500;
 const TIME_SLICE_END = 23;
 const TIME_SLICE_START = 11;
+
+// Sensitive fields that should be redacted from logs
+const SENSITIVE_FIELDS = ['apiKey', 'token', 'password', 'secret', 'credential'];
+
+// Lock for thread-safe history management
+let historyLock = false;
+
+// 默认格式化器
+const defaultFormatter: LogFormatter = {
+  format(entry: LogEntry): string {
+    const time = new Date(entry.timestamp).toISOString().slice(TIME_SLICE_START, TIME_SLICE_END);
+    const levelStr = LogLevel[entry.level];
+    const prefix = `[${time}] [${entry.module}] [${levelStr}]`;
+
+    return entry.context
+      ? `${prefix} ${entry.message} ${JSON.stringify(entry.context)}`
+      : `${prefix} ${entry.message}`;
+  },
+};
+
+const CURRENT_FORMATTER: { current: LogFormatter } = { current: defaultFormatter };
 
 export function createLogger(options: LoggerOptions): LoggerContract {
   return new Logger(options);
@@ -18,6 +48,7 @@ class Logger implements LoggerContract {
   private static globalLevel: LogLevel = LogLevel.INFO;
   private static history: LogEntry[] = [];
   private static maxHistory = MAX_LOG_HISTORY;
+  private static moduleFilters = new Map<string, LogLevel>();
 
   private correlationId: string | undefined;
   private localLevel: LogLevel | undefined;
@@ -43,6 +74,49 @@ class Logger implements LoggerContract {
 
   static setGlobalLevel(level: LogLevel): void {
     Logger.globalLevel = level;
+  }
+
+  static setModuleLevel(module: string, level: LogLevel): void {
+    Logger.moduleFilters.set(module, level);
+  }
+
+  static getModuleLevel(module: string): LogLevel | undefined {
+    return Logger.moduleFilters.get(module);
+  }
+
+  static clearModuleLevels(): void {
+    Logger.moduleFilters.clear();
+  }
+
+  static setFormatter(formatter: LogFormatter): void {
+    CURRENT_FORMATTER.current = formatter;
+  }
+
+  static resetFormatter(): void {
+    CURRENT_FORMATTER.current = defaultFormatter;
+  }
+
+  static getHistory(): LogEntry[] {
+    return [...Logger.history];
+  }
+
+  private getEffectiveLevel(): LogLevel {
+    return this.localLevel ?? Logger.moduleFilters.get(this.module) ?? Logger.globalLevel;
+  }
+
+  /**
+   * Sanitize context to redact sensitive information
+   */
+  private sanitizeContext(context: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(context)) {
+      if (SENSITIVE_FIELDS.some((field) => key.toLowerCase().includes(field))) {
+        sanitized[key] = '[REDACTED]';
+      } else {
+        sanitized[key] = value;
+      }
+    }
+    return sanitized;
   }
 
   clearHistory(): void {
@@ -72,7 +146,7 @@ class Logger implements LoggerContract {
   }
 
   getLevel(): LogLevel {
-    return this.localLevel ?? Logger.globalLevel;
+    return this.getEffectiveLevel();
   }
 
   info(message: string, context?: Record<string, unknown>): void {
@@ -80,11 +154,14 @@ class Logger implements LoggerContract {
   }
 
   private log(level: LogLevel, message: string, context?: Record<string, unknown>): void {
-    const effectiveLevel = this.localLevel ?? Logger.globalLevel;
+    const effectiveLevel = this.getEffectiveLevel();
 
     if (level < effectiveLevel) {
       return;
     }
+
+    // Sanitize context to redact sensitive information
+    const sanitizedContext = context ? this.sanitizeContext(context) : undefined;
 
     const entry: LogEntry = {
       level,
@@ -92,13 +169,23 @@ class Logger implements LoggerContract {
       message,
       timestamp: Date.now(),
       ...(this.correlationId !== undefined ? { correlationId: this.correlationId } : {}),
-      ...(context ? { context } : {}),
+      ...(sanitizedContext ? { context: sanitizedContext } : {}),
     };
 
-    Logger.history.push(entry);
+    // Use lock to prevent race conditions in history management
+    while (historyLock) {
+      // Spin wait - in practice this is very rare
+    }
+    historyLock = true;
 
-    if (Logger.history.length > Logger.maxHistory) {
-      Logger.history = Logger.history.slice(-Logger.maxHistory);
+    try {
+      Logger.history.push(entry);
+
+      if (Logger.history.length > Logger.maxHistory) {
+        Logger.history = Logger.history.slice(-Logger.maxHistory);
+      }
+    } finally {
+      historyLock = false;
     }
 
     this.output(entry);
@@ -166,6 +253,21 @@ export interface LoggerContract {
   setLevel(level: LogLevel): void;
   warn(message: string, context?: Record<string, unknown>): void;
 }
+
+export interface LoggerStaticContract {
+  getGlobalLevel(): LogLevel;
+  setGlobalLevel(level: LogLevel): void;
+  setModuleLevel(module: string, level: LogLevel): void;
+  getModuleLevel(module: string): LogLevel | undefined;
+  clearModuleLevels(): void;
+  setFormatter(formatter: LogFormatter): void;
+  resetFormatter(): void;
+  getHistory(): LogEntry[];
+  resetHistory(): void;
+}
+
+export { Logger };
+
 export interface LoggerOptions {
   correlationId?: string;
   level?: LogLevel;

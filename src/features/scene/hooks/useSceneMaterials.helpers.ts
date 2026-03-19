@@ -7,11 +7,33 @@ import {
   CRYSTAL,
   HOLOGRAM_V2,
   INK_WASH,
+  LIGHT,
   MATERIAL_DEFAULTS,
   MATRIX,
   RETRO_PIXEL,
   TEXTURE as TEXTURE_CONSTANTS,
 } from './useSceneMaterials.constants';
+
+// Compute light direction from angle values (in degrees)
+export function computeLightDirection(angleX: number, angleY: number): [number, number, number] {
+  const radX = (angleX * Math.PI) / 180;
+  const radY = (angleY * Math.PI) / 180;
+  return [
+    Math.cos(radX) * Math.sin(radY),
+    Math.sin(radX),
+    Math.cos(radX) * Math.cos(radY),
+  ];
+}
+
+// Build common light uniforms from config
+export function buildLightUniforms(config: SceneConfig): Record<string, unknown> {
+  const angleX = config.lightAngleX ?? LIGHT.DEFAULT_ANGLE_X;
+  const angleY = config.lightAngleY ?? LIGHT.DEFAULT_ANGLE_Y;
+  return {
+    uLightIntensity: config.lightIntensity ?? LIGHT.DEFAULT_INTENSITY,
+    uLightDirection: computeLightDirection(angleX, angleY),
+  };
+}
 
 export function getTexelSize(texture: Texture | null): [number, number] {
   if (!texture?.image)
@@ -39,6 +61,7 @@ export interface MaterialUpdateContext {
 }
 
 export const buildAnimeUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
+  ...buildLightUniforms(ctx.config),
   uTexelSize: ctx.texelSize,
   uShadowSteps: ctx.config.animeShadowSteps ?? ANIME.DEFAULT_SHADOW_STEPS,
   uShadowThreshold: ctx.config.animeShadowThreshold ?? ANIME.DEFAULT_SHADOW_THRESHOLD,
@@ -63,6 +86,7 @@ export const buildAnimeUniforms = (ctx: MaterialUpdateContext): Record<string, u
 });
 
 export const buildCelUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
+  ...buildLightUniforms(ctx.config),
   uTexelSize: ctx.texelSize,
   uColorBands: ctx.config.celColorBands ?? CEL.DEFAULT_COLOR_BANDS,
   uOutlineThickness: ctx.config.celOutlineThickness ?? CEL.DEFAULT_OUTLINE_THICKNESS,
@@ -78,6 +102,7 @@ export const buildCelUniforms = (ctx: MaterialUpdateContext): Record<string, unk
 });
 
 export const buildCrystalUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
+  ...buildLightUniforms(ctx.config),
   uTexelSize: ctx.texelSize,
   uIOR: ctx.config.crystalIOR ?? CRYSTAL.DEFAULT_IOR,
   uDispersion: ctx.config.crystalDispersion ?? CRYSTAL.DEFAULT_DISPERSION,
@@ -87,6 +112,7 @@ export const buildCrystalUniforms = (ctx: MaterialUpdateContext): Record<string,
 });
 
 export const buildHologramV2Uniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
+  ...buildLightUniforms(ctx.config),
   uTexelSize: ctx.texelSize,
   uScanlineIntensity:
     ctx.config.hologramV2ScanlineIntensity ?? HOLOGRAM_V2.DEFAULT_SCANLINE_INTENSITY,
@@ -99,6 +125,7 @@ export const buildHologramV2Uniforms = (ctx: MaterialUpdateContext): Record<stri
 });
 
 export const buildInkWashUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
+  ...buildLightUniforms(ctx.config),
   uTexelSize: ctx.texelSize,
   uInkDensity: ctx.config.inkWashInkDensity ?? INK_WASH.DEFAULT_INK_DENSITY,
   uBleedAmount: ctx.config.inkWashBleedAmount ?? INK_WASH.DEFAULT_BLEED_AMOUNT,
@@ -109,6 +136,7 @@ export const buildInkWashUniforms = (ctx: MaterialUpdateContext): Record<string,
 });
 
 export const buildMatrixUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
+  ...buildLightUniforms(ctx.config),
   uTexelSize: ctx.texelSize,
   uFallSpeed: ctx.config.matrixFallSpeed ?? MATRIX.DEFAULT_FALL_SPEED,
   uCharDensity: ctx.config.matrixCharDensity ?? MATRIX.DEFAULT_CHAR_DENSITY,
@@ -119,6 +147,7 @@ export const buildMatrixUniforms = (ctx: MaterialUpdateContext): Record<string, 
 });
 
 export const buildRetroPixelUniforms = (ctx: MaterialUpdateContext): Record<string, unknown> => ({
+  ...buildLightUniforms(ctx.config),
   uTexelSize: ctx.texelSize,
   uPixelSize: ctx.config.retroPixelSize ?? RETRO_PIXEL.DEFAULT_PIXEL_SIZE,
   uPaletteMode: ctx.config.retroPaletteMode ?? RETRO_PIXEL.DEFAULT_PALETTE_MODE,

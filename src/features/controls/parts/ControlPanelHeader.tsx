@@ -29,6 +29,8 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
       <div className="flex items-center gap-1">
         {/* 录制按钮 */}
         <button
+          aria-label={isRecording ? '停止录制' : '开始录制'}
+          aria-pressed={isRecording}
           className={`p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
             isRecording
               ? 'text-red-400 bg-red-500/20 hover:bg-red-500/30 ring-1 ring-red-500/50'
@@ -48,6 +50,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
 
         {/* 截图按钮 */}
         <button
+          aria-label="保存截图"
           className="p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isExporting}
           onClick={onDownloadSnapshot}
@@ -59,6 +62,7 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
 
         {/* 导出按钮 */}
         <button
+          aria-label="导出场景"
           className="p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isExporting}
           onClick={onExportScene}
@@ -69,10 +73,11 @@ export const ControlPanelHeader: React.FC<ControlPanelHeaderProps> = memo(
         </button>
 
         {/* 分隔线 */}
-        <div className="w-px h-5 bg-slate-600 mx-1.5" />
+        <div className="w-px h-5 bg-slate-600 mx-1.5" aria-hidden="true" />
 
         {/* 重置按钮 */}
         <button
+          aria-label="重置设置"
           className="p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isExporting}
           onClick={onReset}

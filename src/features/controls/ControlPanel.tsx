@@ -3,7 +3,7 @@ import { memo, useCallback, useState } from 'react';
 
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
-import { useSceneStore } from '@/stores/sharedStore';
+import { useAppStore, useSceneStore } from '@/stores/sharedStore';
 import { ControlPanelCompound } from './compound';
 import type { TabType } from './constants';
 
@@ -56,7 +56,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
     const config = useSceneStore((s) => s.config);
     const setConfig = useSceneStore((s) => s.setConfig);
     const resetConfig = useSceneStore((s) => s.resetConfig);
-    const { exportState, setPlaybackRate, toggleVideoLoop } = useAppViewModel();
+    const { setPlaybackRate, toggleVideoLoop } = useAppViewModel();
+    const isExporting = useAppStore((s) => s.exportState.isExporting);
 
     const set = useCallback(
       <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => {
@@ -68,8 +69,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
     const toggleSection = useCallback((key: string) => {
       setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
     }, []);
-
-    const { isExporting } = exportState;
 
     return (
       <ControlPanelCompound

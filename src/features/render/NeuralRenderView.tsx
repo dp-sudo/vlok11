@@ -10,15 +10,31 @@ export function NeuralRenderView({ className = '' }: Props) {
   const rendererRef = useRef<GaussianSplattingRenderer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // 创建渲染器
-    const renderer = new GaussianSplattingRenderer({
-      container: containerRef.current,
-      backgroundColor: 0x050508,
-    });
+    // 检查容器尺寸
+    const { clientWidth, clientHeight } = containerRef.current;
+    if (clientWidth === 0 || clientHeight === 0) {
+      setError('容器尺寸无效');
+      setIsLoading(false);
+      return;
+    }
+
+    // 创建渲染器 - 添加错误边界
+    let renderer: GaussianSplattingRenderer;
+    try {
+      renderer = new GaussianSplattingRenderer({
+        container: containerRef.current,
+        backgroundColor: 0x050508,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '渲染器初始化失败');
+      setIsLoading(false);
+      return;
+    }
 
     rendererRef.current = renderer;
 
@@ -47,6 +63,16 @@ export function NeuralRenderView({ className = '' }: Props) {
     <div className={`relative w-full h-full ${className}`}>
       {/* 渲染容器 */}
       <div ref={containerRef} className="w-full h-full" />
+
+      {/* 错误显示 */}
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/90 backdrop-blur-sm">
+          <div className="text-center text-red-400">
+            <h3 className="text-xl font-light mb-2">渲染错误</h3>
+            <p className="text-sm">{error}</p>
+          </div>
+        </div>
+      )}
 
       {/* 加载界面 */}
       {isLoading && (

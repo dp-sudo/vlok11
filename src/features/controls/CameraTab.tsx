@@ -40,6 +40,7 @@ interface CameraTabProps {
   expandedSections: Record<string, boolean>;
   onSetCameraView?: (view: CameraViewPreset) => void;
   onSetOrthoPreset?: (preset: OrthoViewPresetType) => void;
+  searchQuery?: string;
   set: <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
   toggleSection: (key: string) => void;
 }
@@ -100,7 +101,11 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
     activeMotion,
     activeOrthoPreset,
     onSetOrthoPreset,
-  }) => (
+    searchQuery = '',
+  }) => {
+    // 保留searchQuery参数以支持未来搜索功能
+    void searchQuery;
+    return (
     <>
       <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-3">
@@ -152,8 +157,8 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
       />
       <ControlParamsSection config={config} set={set} />
     </>
-  )
-);
+    );
+});
 const CameraViewSection = memo<{
   activeCameraView?: CameraViewPreset | null;
   expandedSections: Record<string, boolean>;

@@ -30,6 +30,7 @@ export async function processPipeline(
   let videoUrl: string | undefined;
 
   if (isVideo) {
+    // Note: Caller is responsible for revoking this Blob URL when no longer needed
     videoUrl = input instanceof File ? URL.createObjectURL(input) : input;
   }
 

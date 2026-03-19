@@ -85,6 +85,10 @@ export class AnalyzeStage implements PipelineStage {
           recommendedPipeline: TechPipeline.DEPTH_MESH,
           suggestedModel: 'default',
         },
+        metadata: {
+          ...input.metadata,
+          analysisDegraded: true,
+        },
       };
     }
   }

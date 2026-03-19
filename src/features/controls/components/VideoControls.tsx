@@ -20,7 +20,7 @@ interface VideoControlsProps {
   isLooping: boolean;
   onDragEnd: () => void;
   onDragStart: () => void;
-  onSeek?: (time: number) => void;
+  onSeek: ((time: number) => void) | undefined;
   onSetPlaybackRate: (rate: number) => void;
   onSliderChange: (value: number) => void;
   onToggleLoop: () => void;
@@ -202,6 +202,9 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
     const progressPercent = (sliderValue / (videoState.duration || 1)) * PERCENT;
     const bufferPercent = Math.min(progressPercent + BUFFER_OFFSET, PERCENT);
 
+    // Debounce for skip buttons
+    const lastSkipTime = useRef(0);
+
     // Calculate time from mouse/touch position
     const calculateTimeFromPosition = useCallback(
       (clientX: number) => {
@@ -313,9 +316,13 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
       };
     }, [isDragging, calculateTimeFromPosition, onSliderChange, onSeek, onDragEnd]);
 
-    // 跳跃快进/快退（默认5秒）- 用于快速浏览
+    // 跳跃快进/快退（默认5秒）- 用于快速浏览（带防抖）
     const handleSkip = useCallback(
       (direction: 'backward' | 'forward') => {
+        const now = Date.now();
+        if (now - lastSkipTime.current < 300) return;
+        lastSkipTime.current = now;
+
         const skipDuration = 5; // 默认跳跃5秒
         const newTime = sliderValue + (direction === 'forward' ? skipDuration : -skipDuration);
 

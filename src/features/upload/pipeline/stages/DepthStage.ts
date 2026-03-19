@@ -34,22 +34,15 @@ export class DepthStage implements PipelineStage {
       if (!input.imageUrl) {
         logger.error('Missing imageUrl in input', { input: Object.keys(input) });
         throwIfAborted(input.signal);
-
-        const testMode = (window as { __TEST_MODE__?: boolean }).__TEST_MODE__;
-
-        if (typeof window !== 'undefined' && testMode === true) {
-          if (!input.imageUrl && input.file) {
-            input.imageUrl = URL.createObjectURL(input.file);
-          }
-        }
-
-        if (!input.imageUrl) {
-          throw new Error('No image URL available for depth estimation');
-        }
+        throw new Error('No image URL available for depth estimation');
       }
 
       if (!this.aiService.isAvailable()) {
-        await this.aiService.initialize();
+        try {
+          await this.aiService.initialize();
+        } catch (initError) {
+          logger.warn('DepthStage AI service initialization failed', { error: initError });
+        }
       }
 
       throwIfAborted(input.signal);

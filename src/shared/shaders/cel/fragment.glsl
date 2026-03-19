@@ -65,37 +65,43 @@ float colorEdge(vec2 uv, float thickness) {
   return colorDiff * 0.5;
 }
 
-// Enhanced posterization with toon contrast
+// Enhanced posterization with smooth toon contrast
 vec3 posterize(vec3 color, int bands, float contrast) {
   float n = float(bands);
-  vec3 posterized = floor(color * n) / (n - 1.0);
 
-  // Apply contrast adjustment
+  // 使用平滑的色阶量化而非硬切割
+  vec3 quantized = floor(color * n + 0.5) / n;
+
+  // 保留原始颜色与量化颜色的混合，过渡更自然
+  float blendFactor = 0.6; // 60% 量化 + 40% 原始
+  vec3 posterized = mix(color, quantized, blendFactor);
+
+  // 柔和的对比度调整
   posterized = (posterized - 0.5) * contrast + 0.5;
 
   return clamp(posterized, 0.0, 1.0);
 }
 
-// Multi-level shadow system
+// Multi-level shadow system - 更平滑的过渡
 float toonShadow(float luminance, float intensity) {
-  // Create distinct shadow bands
-  float shadow;
+  // 使用平滑过渡替代硬边缘
+  float shadow = 1.0;
 
-  // Light zone
-  if (luminance > 0.6) {
-    shadow = 1.0;
+  // 深阴影区域
+  if (luminance < 0.2) {
+    shadow = mix(0.25, 0.4, smoothstep(0.0, 0.2, luminance));
   }
-  // Mid-light zone
-  else if (luminance > 0.35) {
-    shadow = 0.75;
+  // 中等阴影区域
+  else if (luminance < 0.4) {
+    shadow = mix(0.4, 0.65, smoothstep(0.2, 0.4, luminance));
   }
-  // Shadow zone
-  else if (luminance > 0.15) {
-    shadow = 0.5;
+  // 浅阴影区域
+  else if (luminance < 0.65) {
+    shadow = mix(0.65, 0.9, smoothstep(0.4, 0.65, luminance));
   }
-  // Deep shadow zone
+  // 高光区域
   else {
-    shadow = 0.3;
+    shadow = mix(0.9, 1.0, smoothstep(0.65, 0.85, luminance));
   }
 
   return mix(1.0, shadow, intensity);

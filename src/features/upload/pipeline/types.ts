@@ -28,6 +28,15 @@ export interface RunContext {
   runId: string;
   signal: AbortSignal;
 }
+export interface StageMetadata {
+  width?: number;
+  height?: number;
+  aspectRatio?: number;
+  duration?: number;
+  frameRate?: number;
+  [key: string]: unknown;
+}
+
 export interface StageInput {
   analysis?: AnalysisResult;
   backgroundUrl?: string;
@@ -35,7 +44,7 @@ export interface StageInput {
   file?: File;
   imageBase64?: string;
   imageUrl?: string;
-  metadata?: Record<string, unknown>;
+  metadata?: StageMetadata;
   onProgress?: (stage: string, progress: number, message: string) => void;
   runId?: string;
   signal?: AbortSignal;

@@ -130,7 +130,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
 
           <button
             type="button"
-            onClick={() => window.open('https://github.com/google/gemini-api-cookbook', '_blank')}
+            onClick={() => window.open('https://ai.google.dev/docs', '_blank')}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-500 hover:text-white hover:bg-white/5 border border-transparent transition-all duration-200 group"
           >
             <BookOpen className="w-4 h-4" />
@@ -213,7 +213,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
                 <button
                   type="button"
                   onClick={() => {
-                    window.open('https://github.com/google/gemini-api-cookbook', '_blank');
+                    window.open('https://ai.google.dev/docs', '_blank');
                     setMenuOpen(false);
                   }}
                   className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"

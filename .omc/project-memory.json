@@ -224,8 +224,8 @@
     },
     {
       "path": "src",
-      "accessCount": 6,
-      "lastAccessed": 1774108905234,
+      "accessCount": 9,
+      "lastAccessed": 1774109619122,
       "type": "directory"
     },
     {
@@ -281,6 +281,12 @@
       "accessCount": 1,
       "lastAccessed": 1774106635941,
       "type": "file"
+    },
+    {
+      "path": "src\\tests",
+      "accessCount": 1,
+      "lastAccessed": 1774109610788,
+      "type": "directory"
     }
   ],
   "userDirectives": []

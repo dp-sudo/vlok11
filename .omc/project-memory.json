@@ -223,6 +223,12 @@
       "type": "file"
     },
     {
+      "path": "src",
+      "accessCount": 6,
+      "lastAccessed": 1774108905234,
+      "type": "directory"
+    },
+    {
       "path": "src\\features\\scene\\hooks\\useWeatherEffect.ts",
       "accessCount": 3,
       "lastAccessed": 1774106819436,
@@ -247,6 +253,12 @@
       "type": "file"
     },
     {
+      "path": "package.json",
+      "accessCount": 3,
+      "lastAccessed": 1774109355186,
+      "type": "file"
+    },
+    {
       "path": "src\\types\\globals.d.ts",
       "accessCount": 2,
       "lastAccessed": 1774107016359,
@@ -259,12 +271,6 @@
       "type": "file"
     },
     {
-      "path": "src",
-      "accessCount": 2,
-      "lastAccessed": 1774108113264,
-      "type": "directory"
-    },
-    {
       "path": "biome-report.txt",
       "accessCount": 1,
       "lastAccessed": 1774106635894,
@@ -274,12 +280,6 @@
       "path": "lint-results-after-fix.txt",
       "accessCount": 1,
       "lastAccessed": 1774106635941,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 1,
-      "lastAccessed": 1774106635959,
       "type": "file"
     }
   ],

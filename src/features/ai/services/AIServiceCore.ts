@@ -3,6 +3,12 @@ import { HASH_CALC } from './AIService.constants';
 
 export { createLogger };
 
+// Re-export constants
+export {
+  CACHE_DEFAULTS,
+  HASH_CALC,
+  PROGRESS,
+} from './AIService.constants';
 // Re-export types from types.ts
 export type {
   AICacheConfig,
@@ -14,13 +20,6 @@ export type {
   DepthResult,
   ImageAnalysis,
 } from './types';
-
-// Re-export constants
-export {
-  CACHE_DEFAULTS,
-  HASH_CALC,
-  PROGRESS,
-} from './AIService.constants';
 
 // Utility function for hashing strings
 export function hashString(str: string): string {

@@ -13,7 +13,9 @@ export interface VideoActions {
   pause: () => void;
   resetVideo: () => void;
   seek: (time: number) => void;
+  setLooping: (isLooping: boolean) => void;
   setMuted: (muted: boolean) => void;
+  setPlaying: (isPlaying: boolean) => void;
   setPlaybackRate: (rate: number) => void;
   setVideoDuration: (duration: number) => void;
   setVideoTime: (time: number) => void;
@@ -53,9 +55,8 @@ export const createVideoSlice = <T extends VideoSlice>(
   setVideoTime: (time) => {
     // 验证 time 在有效范围内 [0, duration]
     const duration = get().duration ?? 0;
-    const clampedTime = Number.isFinite(time)
-      ? Math.max(0, Math.min(time, duration))
-      : 0;
+    const clampedTime = Number.isFinite(time) ? Math.max(0, Math.min(time, duration)) : 0;
+
     set({ currentTime: clampedTime } as Partial<T>);
   },
 
@@ -66,6 +67,10 @@ export const createVideoSlice = <T extends VideoSlice>(
   // 新增：独立的暂停操作
   pause: () => {
     set({ isPlaying: false } as Partial<T>);
+  },
+
+  setPlaying: (isPlaying) => {
+    set({ isPlaying } as Partial<T>);
   },
 
   // S7 - seek 函数与 setVideoTime 重复逻辑，统一使用 setVideoTime
@@ -81,11 +86,14 @@ export const createVideoSlice = <T extends VideoSlice>(
     set({ isLooping: !get().isLooping } as Partial<T>);
   },
 
+  setLooping: (isLooping) => {
+    set({ isLooping } as Partial<T>);
+  },
+
   setPlaybackRate: (rate) => {
     // 验证 playbackRate 为正数且在合理范围内 [0.1, 4.0]
-    const validRate = Number.isFinite(rate)
-      ? Math.max(0.1, Math.min(rate, 4.0))
-      : 1.0;
+    const validRate = Number.isFinite(rate) ? Math.max(0.1, Math.min(rate, 4.0)) : 1.0;
+
     set({ playbackRate: validRate } as Partial<T>);
   },
 

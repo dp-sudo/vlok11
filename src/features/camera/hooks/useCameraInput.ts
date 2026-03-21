@@ -28,11 +28,6 @@ export function useCameraInput(
 ) {
   const { enabled = true } = options;
 
-  // Get sensitivities from config
-  const rotateSpeed = useSceneStore((s) => s.config.rotateSpeed);
-  const zoomSpeed = useSceneStore((s) => s.config.zoomSpeed);
-  const panSpeed = useSceneStore((s) => s.config.panSpeed);
-
   const isInteracting = useRef(false);
   const interactionType = useRef<InteractionType>('none');
   const lastPosition = useRef<Point2D>({ x: 0, y: 0 });
@@ -65,13 +60,16 @@ export function useCameraInput(
   const updateRotation = useCallback(
     (deltaX: number, deltaY: number) => {
       const { pose, setPose } = store.getState();
+      // Get current speed from store to avoid recreating callback on speed changes
+      const currentRotateSpeed = useSceneStore.getState().config.rotateSpeed;
       const dx = pose.position.x - pose.target.x;
       const dz = pose.position.z - pose.target.z;
       const radius = Math.sqrt(dx * dx + dz * dz);
 
       const currentAngle = Math.atan2(dx, dz);
-      const newAngle = currentAngle + deltaX * rotateSpeed;
-      const newY = pose.position.y - deltaY * rotateSpeed * INPUT_CONSTANTS.ROTATION_Y_FACTOR;
+      const newAngle = currentAngle + deltaX * currentRotateSpeed;
+      const newY =
+        pose.position.y - deltaY * currentRotateSpeed * INPUT_CONSTANTS.ROTATION_Y_FACTOR;
 
       setPose(
         {
@@ -84,15 +82,17 @@ export function useCameraInput(
         'user'
       );
     },
-    [store, rotateSpeed]
+    [store]
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: store is stable Zustand reference
   const updatePan = useCallback(
     (deltaX: number, deltaY: number) => {
       const { pose, setPose } = store.getState();
-      const panX = -deltaX * panSpeed;
-      const panY = deltaY * panSpeed;
+      // Get current speed from store to avoid recreating callback on speed changes
+      const currentPanSpeed = useSceneStore.getState().config.panSpeed;
+      const panX = -deltaX * currentPanSpeed;
+      const panY = deltaY * currentPanSpeed;
 
       setPose(
         {
@@ -110,13 +110,15 @@ export function useCameraInput(
         'user'
       );
     },
-    [store, panSpeed]
+    [store]
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: store is stable Zustand reference
   const updateZoom = useCallback(
     (delta: number) => {
       const { pose, setPose } = store.getState();
+      // Get current speed from store to avoid recreating callback on speed changes
+      const currentZoomSpeed = useSceneStore.getState().config.zoomSpeed;
       const direction = {
         x: pose.position.x - pose.target.x,
         y: pose.position.y - pose.target.y,
@@ -126,7 +128,7 @@ export function useCameraInput(
         direction.x * direction.x + direction.y * direction.y + direction.z * direction.z
       );
 
-      const zoomChange = delta * zoomSpeed * INPUT_CONSTANTS.ZOOM_FACTOR;
+      const zoomChange = delta * currentZoomSpeed * INPUT_CONSTANTS.ZOOM_FACTOR;
       const newDistance = Math.max(
         INPUT_CONSTANTS.ZOOM_MIN,
         Math.min(INPUT_CONSTANTS.ZOOM_MAX, distance + zoomChange)
@@ -144,7 +146,7 @@ export function useCameraInput(
         'user'
       );
     },
-    [store, zoomSpeed]
+    [store]
   );
 
   useInputEventListeners({
@@ -311,14 +313,17 @@ function useInputEventListeners(config: InputEventListenersConfig) {
   }, [
     containerRef,
     enabled,
-    isInteracting,
-    interactionType,
+    endInteraction,
+    // Note: ref.current values (interactionType, isInteracting, lastPosition, touchStartDistance)
+    // are not needed in deps because we access them via ref object stability
+    // and the callbacks (startInteraction, update*) are already stable
+    startInteraction,
+    updatePan,
+    updateRotation,
+    updateZoom,
+    interactionType.current,
+    isInteracting.current,
     lastPosition,
     touchStartDistance,
-    startInteraction,
-    endInteraction,
-    updateRotation,
-    updatePan,
-    updateZoom,
   ]);
 }

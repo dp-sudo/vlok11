@@ -2,6 +2,7 @@ export * from './coordinates';
 export * from './math';
 export * from './media';
 export * from './presets';
+export * from './runtimeFlags';
 
 /**
  * Format file size in human readable format

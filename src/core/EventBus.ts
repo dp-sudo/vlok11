@@ -17,7 +17,7 @@ interface Subscriber {
 }
 
 export interface EventInterceptor {
-  onEmit?: (type: string, payload: unknown) => unknown | void;
+  onEmit?: (type: string, payload: unknown) => unknown | undefined;
   onSubscribe?: (type: string, handler: (payload: unknown) => void) => void;
 }
 
@@ -128,6 +128,7 @@ class EventBusImpl implements EventBus {
 
     for (let i = 0; i < count; i++) {
       const idx = (this.historyHead - 1 - i + this.maxHistory) % this.maxHistory;
+
       result.push(this.history[idx]!);
     }
 
@@ -232,7 +233,9 @@ class EventBusImpl implements EventBus {
    * Debug method to get all subscriber handlers for a given event type
    * Useful for tracking subscriptions and detecting potential memory leaks
    */
-  getSubscriberHandlers(type: CoreEventType | string): Array<{ handler: (payload: unknown) => void; once: boolean; priority: number }> {
+  getSubscriberHandlers(
+    type: CoreEventType | string
+  ): Array<{ handler: (payload: unknown) => void; once: boolean; priority: number }> {
     const subs = this.subscribers.get(type);
 
     if (!subs) {

@@ -35,21 +35,21 @@ export {
   useInputService,
   useMotionService,
 } from './CoreControllerProvider';
-export { getInputService, InputService } from './InputService';
-export { InputStateManager, DEFAULT_INTERACTION_STATE } from './InputState';
 export { InputHandler } from './InputHandler';
+export { getInputService, InputService } from './InputService';
+export { DEFAULT_INTERACTION_STATE, InputStateManager } from './InputState';
 // Motion modules - re-export from MotionService which re-exports them
 export {
-  getMotionService,
-  MotionService,
-  MotionCalculator,
   getMotionCalculator,
-  type MotionType,
-  type MotionParams,
-  type MotionResult,
-  type MotionPoint,
+  getMotionService,
+  MotionCalculator,
   type MotionConfig,
+  type MotionParams,
+  type MotionPoint,
+  type MotionResult,
+  MotionService,
   type MotionState,
+  type MotionType,
 } from './MotionService';
 export type { OrthoViewPreset, OrthoViewPresetType } from './OrthographicPresets';
 export {

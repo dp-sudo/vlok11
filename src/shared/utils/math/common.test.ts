@@ -101,23 +101,102 @@ describe('math/common', () => {
   describe('generateId', () => {
     it('should return a string', () => {
       const id = generateId();
+
       expect(typeof id).toBe('string');
     });
 
     it('should return unique ids on consecutive calls', () => {
       const id1 = generateId();
       const id2 = generateId();
+
       expect(id1).not.toBe(id2);
     });
 
     it('should contain underscore separator', () => {
       const id = generateId();
+
       expect(id).toContain('_');
     });
 
     it('should have reasonable length', () => {
       const id = generateId();
+
       expect(id.length).toBeGreaterThan(10);
+    });
+
+    it('should handle rapid consecutive calls', () => {
+      const ids = new Set<string>();
+
+      for (let i = 0; i < 100; i++) {
+        ids.add(generateId());
+      }
+
+      // All should be unique
+      expect(ids.size).toBe(100);
+    });
+  });
+
+  describe('edge cases', () => {
+    describe('clamp', () => {
+      it('should handle min greater than max', () => {
+        // When min > max, Math.min(max, Math.max(min, value)) returns max
+        // clamp(5, 10, 5) = Math.min(5, Math.max(10, 5)) = Math.min(5, 10) = 5
+        // Actually: clamp(5, 10, 5) = Math.max(10, Math.min(5, 5)) = Math.max(10, 5) = 10
+        expect(clamp(5, 10, 5)).toBe(10);
+      });
+
+      it('should handle all same values', () => {
+        expect(clamp(5, 5, 5)).toBe(5);
+      });
+
+      it('should handle very large numbers', () => {
+        expect(clamp(1e20, 0, 1e10)).toBe(1e10);
+        expect(clamp(-1e20, 0, 1e10)).toBe(0);
+      });
+
+      it('should handle very small numbers', () => {
+        expect(clamp(1e-20, 0, 1)).toBe(1e-20);
+        expect(clamp(-1e-20, 0, 1)).toBe(0);
+      });
+
+      it('should handle floating point precision', () => {
+        expect(clamp(0.1 + 0.2, 0, 0.3)).toBe(0.3);
+      });
+    });
+
+    describe('lerp', () => {
+      it('should handle negative numbers', () => {
+        expect(lerp(-10, 10, 0.5)).toBe(0);
+      });
+
+      it('should handle very large t values', () => {
+        expect(lerp(0, 10, 100)).toBe(1000);
+        expect(lerp(0, 10, -100)).toBe(-1000);
+      });
+
+      it('should handle edge t values at precision limits', () => {
+        expect(lerp(0, 1, Number.MIN_VALUE)).toBeCloseTo(0);
+      });
+    });
+
+    describe('degToRad', () => {
+      it('should handle very large degree values', () => {
+        expect(degToRad(1e10)).toBeCloseTo(1e10 * (Math.PI / 180));
+      });
+
+      it('should handle very small degree values', () => {
+        expect(degToRad(1e-10)).toBeCloseTo(1e-10 * (Math.PI / 180));
+      });
+    });
+
+    describe('radToDeg', () => {
+      it('should handle very large radian values', () => {
+        expect(radToDeg(1e10)).toBeCloseTo(1e10 * (180 / Math.PI));
+      });
+
+      it('should handle very small radian values', () => {
+        expect(radToDeg(1e-10)).toBeCloseTo(1e-10 * (180 / Math.PI));
+      });
     });
   });
 });

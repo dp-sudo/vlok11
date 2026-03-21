@@ -138,6 +138,12 @@ export function useWeatherEffect(config: WeatherConfig): void {
 
       const lerp = (base: number, target: number, t: number) => base + (target - base) * t;
 
+      prevEnabled.current = weatherEnabled;
+      prevEffect.current = weatherEffect;
+      prevIntensity.current = weatherIntensity;
+      prevParticleDensity.current = weatherParticleDensity;
+      isFirstRender.current = false;
+
       useSceneStore.getState().setConfig({
         enableParticles: true,
         particleType: visualConfig.particleType,
@@ -165,6 +171,8 @@ export function useWeatherEffect(config: WeatherConfig): void {
         saturation: lerp(1.0, visualConfig.saturation, intensity).toFixed(2),
         depthFog: lerp(0, visualConfig.depthFog, intensity).toFixed(2),
       });
+
+      return;
     }
 
     prevEnabled.current = weatherEnabled;
@@ -177,7 +185,7 @@ export function useWeatherEffect(config: WeatherConfig): void {
     weatherEffect,
     weatherIntensity,
     weatherParticleDensity,
-    config.weatherParticleDensity,
     particleColor,
+    config.weatherParticleDensity,
   ]);
 }

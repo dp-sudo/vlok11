@@ -56,7 +56,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
     const config = useSceneStore((s) => s.config);
     const setConfig = useSceneStore((s) => s.setConfig);
     const resetConfig = useSceneStore((s) => s.resetConfig);
-    const { setPlaybackRate, toggleVideoLoop } = useAppViewModel();
+    const { setPlaybackRate, toggleVideoLoop } = useAppViewModel((vm) => ({
+      setPlaybackRate: vm.setPlaybackRate,
+      toggleVideoLoop: vm.toggleVideoLoop,
+    }));
     const isExporting = useAppStore((s) => s.exportState.isExporting);
 
     const set = useCallback(
@@ -103,10 +106,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = memo(
           onToggleRecording={onToggleRecording}
         />
 
-        <ControlPanelCompound.TabBar
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+        <ControlPanelCompound.TabBar activeTab={activeTab} onTabChange={setActiveTab} />
 
         <ControlPanelCompound.VideoControlsWrapper
           hasVideo={hasVideo}

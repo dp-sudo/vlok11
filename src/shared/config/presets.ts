@@ -1,7 +1,7 @@
 import type { SceneConfig } from '@/shared/types';
 import {
-  CameraMotionType,
   CameraMode,
+  CameraMotionType,
   ColorGradePreset,
   ProjectionMode,
   RenderStyle,
@@ -452,10 +452,12 @@ export function getScenePreset(id: string): ScenePreset | undefined {
  */
 export function sanitizeConfig(config: Partial<SceneConfig>): Partial<SceneConfig> {
   const sanitized: Partial<SceneConfig> = {};
+
   for (const [key, value] of Object.entries(config)) {
     if (value !== undefined) {
       (sanitized as Record<string, unknown>)[key] = value;
     }
   }
+
   return sanitized;
 }

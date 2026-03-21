@@ -50,19 +50,21 @@ const CameraModeSection = memo<{
   set: <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => void;
 }>(({ config, set }) => (
   <CollapsibleSection icon={<Camera className="w-3.5 h-3.5" />} title="相机模式">
-    <div className="grid grid-cols-2 gap-1.5">
+    <div aria-label="相机模式选择" className="grid grid-cols-2 gap-1.5" role="listbox">
       <CardBtn
         active={config.cameraMode === CameraMode.PERSPECTIVE}
         onClick={() => set('cameraMode', CameraMode.PERSPECTIVE)}
+        role="option"
       >
-        <Eye className="w-4 h-4 mb-1" />
+        <Eye className="w-4 h-4 mb-1" aria-hidden="true" />
         <span>{CAMERA_MODE_LABELS.PERSPECTIVE}</span>
       </CardBtn>
       <CardBtn
         active={config.cameraMode === CameraMode.ORTHOGRAPHIC}
         onClick={() => set('cameraMode', CameraMode.ORTHOGRAPHIC)}
+        role="option"
       >
-        <Grid3X3 className="w-4 h-4 mb-1" />
+        <Grid3X3 className="w-4 h-4 mb-1" aria-hidden="true" />
         <span>{CAMERA_MODE_LABELS.ORTHOGRAPHIC}</span>
       </CardBtn>
     </div>
@@ -105,60 +107,62 @@ export const CameraTab: React.FC<CameraTabProps> = memo(
   }) => {
     // 保留searchQuery参数以支持未来搜索功能
     void searchQuery;
+
     return (
-    <>
-      <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-            <Camera className="w-5 h-5" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-zinc-100 tracking-wide font-tech">
-              {config.cameraMode === CameraMode.PERSPECTIVE
-                ? CAMERA_MODE_LABELS.PERSPECTIVE
-                : CAMERA_MODE_LABELS.ORTHOGRAPHIC}
-              相机
+      <>
+        <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <Camera className="w-5 h-5" />
             </div>
-            <div className="text-[11px] text-zinc-400 font-normal mt-0.5">
-              {activeMotion?.label} · FOV {config.fov}°
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-zinc-100 tracking-wide font-tech">
+                {config.cameraMode === CameraMode.PERSPECTIVE
+                  ? CAMERA_MODE_LABELS.PERSPECTIVE
+                  : CAMERA_MODE_LABELS.ORTHOGRAPHIC}
+                相机
+              </div>
+              <div className="text-[11px] text-zinc-400 font-normal mt-0.5">
+                {activeMotion?.label} · FOV {config.fov}°
+              </div>
             </div>
-          </div>
-          <div className="text-right flex-shrink-0">
-            <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-0.5">
-              速度
-            </div>
-            <div className="text-base font-mono text-violet-600 font-semibold">
-              {config.cameraMotionSpeed.toFixed(1)}x
+            <div className="text-right flex-shrink-0">
+              <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-0.5">
+                速度
+              </div>
+              <div className="text-base font-mono text-violet-600 font-semibold">
+                {config.cameraMotionSpeed.toFixed(1)}x
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <CameraViewSection
-        expandedSections={expandedSections}
-        toggleSection={toggleSection}
-        {...(activeCameraView !== undefined ? { activeCameraView } : {})}
-        {...(onSetCameraView ? { onSetCameraView } : {})}
-      />
-      <CameraModeSection config={config} set={set} />
+        <CameraViewSection
+          expandedSections={expandedSections}
+          toggleSection={toggleSection}
+          {...(activeCameraView !== undefined ? { activeCameraView } : {})}
+          {...(onSetCameraView ? { onSetCameraView } : {})}
+        />
+        <CameraModeSection config={config} set={set} />
 
-      <OrthoPresetSection
-        config={config}
-        expandedSections={expandedSections}
-        toggleSection={toggleSection}
-        {...(onSetOrthoPreset ? { onSetPreset: onSetOrthoPreset } : {})}
-        {...(activeOrthoPreset !== undefined ? { activePreset: activeOrthoPreset } : {})}
-      />
-      <MotionSection
-        config={config}
-        expandedSections={expandedSections}
-        set={set}
-        toggleSection={toggleSection}
-      />
-      <ControlParamsSection config={config} set={set} />
-    </>
+        <OrthoPresetSection
+          config={config}
+          expandedSections={expandedSections}
+          toggleSection={toggleSection}
+          {...(onSetOrthoPreset ? { onSetPreset: onSetOrthoPreset } : {})}
+          {...(activeOrthoPreset !== undefined ? { activePreset: activeOrthoPreset } : {})}
+        />
+        <MotionSection
+          config={config}
+          expandedSections={expandedSections}
+          set={set}
+          toggleSection={toggleSection}
+        />
+        <ControlParamsSection config={config} set={set} />
+      </>
     );
-});
+  }
+);
 const CameraViewSection = memo<{
   activeCameraView?: CameraViewPreset | null;
   expandedSections: Record<string, boolean>;
@@ -171,9 +175,15 @@ const CameraViewSection = memo<{
     onToggle={() => toggleSection('camera')}
     title="快捷视角"
   >
-    <div className="grid grid-cols-3 gap-1.5">
+    <div aria-label="快捷视角选择" className="grid grid-cols-3 gap-1.5" role="listbox">
       {CAMERA_VIEWS.map((v) => (
-        <CardBtn active={activeCameraView === v} key={v} onClick={() => onSetCameraView?.(v)} small>
+        <CardBtn
+          active={activeCameraView === v}
+          key={v}
+          onClick={() => onSetCameraView?.(v)}
+          role="option"
+          small
+        >
           {getCameraViewLabel(v)}
         </CardBtn>
       ))}
@@ -232,36 +242,42 @@ const MotionSection = memo<{
     onToggle={() => toggleSection('motion')}
     title="自动运镜"
   >
-    <div className="grid grid-cols-3 gap-1.5">
+    <div aria-label="运镜类型选择" className="grid grid-cols-3 gap-1.5" role="listbox">
       {MOTIONS.map((m) => (
         <CardBtn
           active={config.cameraMotionType === m.type}
           key={m.type}
           onClick={() => set('cameraMotionType', m.type)}
+          role="option"
         >
-          <span className="text-sm mb-0.5">{m.icon}</span>
+          <span aria-hidden="true" className="text-sm mb-0.5">
+            {m.icon}
+          </span>
           <span>{m.label}</span>
         </CardBtn>
       ))}
     </div>
     {config.cameraMotionType !== CameraMotionType.STATIC ? (
       <>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div aria-label="运镜混合模式选择" className="grid grid-cols-3 gap-1.5" role="listbox">
           <Btn
             active={config.cameraMotionBlend === 'override'}
             onClick={() => set('cameraMotionBlend', 'override')}
+            role="option"
           >
             覆盖
           </Btn>
           <Btn
             active={config.cameraMotionBlend === 'additive'}
             onClick={() => set('cameraMotionBlend', 'additive')}
+            role="option"
           >
             叠加
           </Btn>
           <Btn
             active={config.cameraMotionBlend === 'manual-priority'}
             onClick={() => set('cameraMotionBlend', 'manual-priority')}
+            role="option"
           >
             手动优先
           </Btn>
@@ -362,7 +378,7 @@ const OrthoPresetSection = memo<{
       onToggle={() => toggleSection('orthoPresets')}
       title="正交视图"
     >
-      <div className="grid grid-cols-2 gap-1.5">
+      <div aria-label="正交视图选择" className="grid grid-cols-2 gap-1.5" role="listbox">
         {presets.map((preset) => {
           const info = getOrthoPresetDisplayInfo(preset);
 
@@ -371,6 +387,7 @@ const OrthoPresetSection = memo<{
               active={activePreset === preset}
               key={preset}
               onClick={() => onSetPreset?.(preset)}
+              role="option"
             >
               {icons[preset]}
               <span>{info.label}</span>
@@ -414,15 +431,16 @@ const MeasurementSection = memo<MeasurementSectionProps>(({ config, set }) => {
 
   return (
     <CollapsibleSection icon={<Ruler className="w-3.5 h-3.5" />} title="测量工具">
-      <div className="grid grid-cols-2 gap-1.5 mb-3">
+      <div aria-label="测量工具类型选择" className="grid grid-cols-2 gap-1.5 mb-3" role="listbox">
         <Btn
           active={
             config.measurementEnabled &&
             measurementService.getConfig().measurementType === 'distance'
           }
           onClick={handleStartDistance}
+          role="option"
         >
-          <Move3D className="w-4 h-4 mb-1" />
+          <Move3D className="w-4 h-4 mb-1" aria-hidden="true" />
           <span>距离</span>
         </Btn>
         <Btn
@@ -430,8 +448,9 @@ const MeasurementSection = memo<MeasurementSectionProps>(({ config, set }) => {
             config.measurementEnabled && measurementService.getConfig().measurementType === 'angle'
           }
           onClick={handleStartAngle}
+          role="option"
         >
-          <Focus className="w-4 h-4 mb-1" />
+          <Focus className="w-4 h-4 mb-1" aria-hidden="true" />
           <span>角度</span>
         </Btn>
       </div>

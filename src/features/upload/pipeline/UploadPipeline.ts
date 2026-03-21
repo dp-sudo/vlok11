@@ -76,7 +76,7 @@ const buildAsset = (
   imageUrl: string,
   isVideo: boolean
 ): ProcessedResult['asset'] => {
-  const {metadata} = stageInput;
+  const { metadata } = stageInput;
   const baseAsset = {
     id: generateUUID(),
     sourceUrl: imageUrl,

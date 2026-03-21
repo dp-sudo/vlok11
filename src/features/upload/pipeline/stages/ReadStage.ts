@@ -79,7 +79,9 @@ export class ReadStage implements PipelineStage {
               fileSize: file.size,
               fileType: file.type,
               isVideo,
-              duration: (input.metadata as Record<string, unknown>)?.['duration'] as number | undefined,
+              duration: (input.metadata as Record<string, unknown>)?.['duration'] as
+                | number
+                | undefined,
             },
             success: true,
           };
@@ -90,10 +92,14 @@ export class ReadStage implements PipelineStage {
           });
 
           return result as StageOutput;
-        } finally {
-          if (!input.videoUrl) {
-            URL.revokeObjectURL(fileUrl);
-          }
+          // Note: blob URL (fileUrl) is NOT revoked here because:
+          // 1. imageUrl is returned to be used by downstream stages (DepthStage, PrepareStage)
+          // 2. videoUrl blob IS revoked in PrepareStage after frame extraction
+          // 3. Image blob revocation happens in UploadPipeline.releaseBlobUrls() after pipeline completes
+        } catch (e) {
+          // Revoke blob URL on error to prevent memory leak
+          URL.revokeObjectURL(fileUrl);
+          throw e;
         }
       } else if (input.url) {
         throwIfAborted(input.signal);

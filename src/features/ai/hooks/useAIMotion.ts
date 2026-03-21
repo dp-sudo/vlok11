@@ -121,13 +121,13 @@ export function useAIMotion(config: AIMotionConfig): void {
       });
     };
 
-    analyzeAndApply().catch((error) => {
-      logger.error('Failed to analyze and apply motion', { error: String(error) });
-    });
-
     prevEnabled.current = aiMotionEnabled;
     prevStyle.current = aiMotionStyle;
     isFirstRender.current = false;
+
+    analyzeAndApply().catch((error) => {
+      logger.error('Failed to analyze and apply motion', { error: String(error) });
+    });
   }, [aiMotionEnabled, aiMotionStyle, currentImageUrl]);
 }
 

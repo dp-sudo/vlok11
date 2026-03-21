@@ -33,7 +33,9 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 // Mock AbortController and AbortSignal
 class MockAbortSignal {
   _aborted = false;
-  get aborted() { return this._aborted; }
+  get aborted() {
+    return this._aborted;
+  }
   onabort: null | ((...args: unknown[]) => void) = null;
   dispatchEvent = () => true;
   addEventListener = vi.fn();

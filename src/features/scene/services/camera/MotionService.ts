@@ -19,12 +19,12 @@ import type {
 } from '@/shared/types';
 import type { CameraPose as StoreCameraPose } from '@/stores/cameraStore';
 import { useCameraStore } from '@/stores/index';
-import { getPrecisionConfigService } from './PrecisionConfigService';
 import { getMotionCalculator } from './MotionCalculator';
+import { getPrecisionConfigService } from './PrecisionConfigService';
 
+export type { MotionParams, MotionResult, MotionType } from './MotionCalculator';
 // Re-export MotionCalculator for external use
-export { MotionCalculator, getMotionCalculator } from './MotionCalculator';
-export type { MotionType, MotionParams, MotionResult } from './MotionCalculator';
+export { getMotionCalculator, MotionCalculator } from './MotionCalculator';
 
 // Re-export types for convenience
 export type { MotionPoint, MotionConfig, MotionState };
@@ -103,8 +103,7 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
 
     this.state.progress = progress;
 
-    const base =
-      basePose ??
+    const base = basePose ??
       this.getBasePose() ?? {
         position: { x: 0, y: 0, z: 9 },
         target: { x: 0, y: 0, z: 0 },
@@ -114,7 +113,13 @@ class MotionServiceImpl implements MotionServiceType, LifecycleAware {
 
     // Use MotionCalculator for calculations
     const calculator = getMotionCalculator();
-    const result = calculator.calculate(time, this.state.startTime, base, type, this.trackingTarget ?? undefined);
+    const result = calculator.calculate(
+      time,
+      this.state.startTime,
+      base,
+      type,
+      this.trackingTarget ?? undefined
+    );
 
     return result;
   }

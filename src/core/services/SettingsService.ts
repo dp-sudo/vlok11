@@ -22,7 +22,13 @@ export interface AppSettings {
   exportResolution: string;
   exportCodec: string;
   // 预设管理
-  savedPresets: Record<string, unknown>[];
+  savedPresets: SavedPreset[];
+}
+
+export interface SavedPreset {
+  config: unknown;
+  name: string;
+  timestamp: number;
 }
 
 export interface SettingsStore extends AppSettings {
@@ -139,25 +145,39 @@ export class SettingsService {
           setExportResolution: (resolution) => set({ exportResolution: resolution }),
           setExportCodec: (codec) => set({ exportCodec: codec }),
           savePreset: (name, config) => {
+            const trimmedName = name.trim();
+
+            if (!trimmedName) return;
+
+            const nextPreset: SavedPreset = {
+              name: trimmedName,
+              config,
+              timestamp: Date.now(),
+            };
+
             const presets = get().savedPresets;
-            const existing = presets.findIndex((p: unknown) => (p as { name: string }).name === name);
+            const existing = presets.findIndex((preset) => preset.name === trimmedName);
+
             if (existing >= 0) {
-              presets[existing] = { name, config, timestamp: Date.now() };
-            } else {
-              presets.push({ name, config, timestamp: Date.now() });
+              set({
+                savedPresets: presets.map((preset, index) =>
+                  index === existing ? nextPreset : preset
+                ),
+              });
+
+              return;
             }
-            set({ savedPresets: [...presets] });
+
+            set({ savedPresets: [...presets, nextPreset] });
           },
           loadPreset: (name) => {
-            const preset = get().savedPresets.find(
-              (p: unknown) => (p as { name: string }).name === name
-            );
-            return preset ? (preset as { config: unknown }).config : null;
+            const preset = get().savedPresets.find((savedPreset) => savedPreset.name === name);
+
+            return preset?.config ?? null;
           },
           deletePreset: (name) => {
-            const presets = get().savedPresets.filter(
-              (p: unknown) => (p as { name: string }).name !== name
-            );
+            const presets = get().savedPresets.filter((preset) => preset.name !== name);
+
             set({ savedPresets: presets });
           },
         }),

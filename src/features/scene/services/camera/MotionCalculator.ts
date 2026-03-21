@@ -13,11 +13,11 @@ import {
   calculateArc,
   calculateDollyZoom,
   calculateFlyBy,
+  calculateMotion,
   calculateOrbit,
   calculateProgress,
   calculateSpiral,
   calculateTracking,
-  calculateMotion,
   DEFAULT_MOTION_PARAMS,
   type MotionParams as MotionParamsInternal,
   type MotionResult,
@@ -34,11 +34,11 @@ export {
   calculateArc,
   calculateDollyZoom,
   calculateFlyBy,
+  calculateMotion,
   calculateOrbit,
+  calculateProgress,
   calculateSpiral,
   calculateTracking,
-  calculateMotion,
-  calculateProgress,
 } from '@/features/camera/logic/motion';
 
 export interface CalculatorConfig {
@@ -144,42 +144,61 @@ export class MotionCalculator {
    * Calculate orbit motion
    */
   orbit(progress: number, base: CameraPose, params?: Partial<MotionParams>): MotionResult {
-    return calculateOrbit(progress, base, { ...DEFAULT_MOTION_PARAMS, ...params } as MotionParamsInternal);
+    return calculateOrbit(progress, base, {
+      ...DEFAULT_MOTION_PARAMS,
+      ...params,
+    } as MotionParamsInternal);
   }
 
   /**
    * Calculate fly-by motion
    */
   flyBy(progress: number, base: CameraPose, params?: Partial<MotionParams>): MotionResult {
-    return calculateFlyBy(progress, base, { ...DEFAULT_MOTION_PARAMS, ...params } as MotionParamsInternal);
+    return calculateFlyBy(progress, base, {
+      ...DEFAULT_MOTION_PARAMS,
+      ...params,
+    } as MotionParamsInternal);
   }
 
   /**
    * Calculate spiral motion
    */
   spiral(progress: number, base: CameraPose, params?: Partial<MotionParams>): MotionResult {
-    return calculateSpiral(progress, base, { ...DEFAULT_MOTION_PARAMS, ...params } as MotionParamsInternal);
+    return calculateSpiral(progress, base, {
+      ...DEFAULT_MOTION_PARAMS,
+      ...params,
+    } as MotionParamsInternal);
   }
 
   /**
    * Calculate dolly-zoom motion
    */
   dollyZoom(progress: number, base: CameraPose, params?: Partial<MotionParams>): MotionResult {
-    return calculateDollyZoom(progress, base, { ...DEFAULT_MOTION_PARAMS, ...params } as MotionParamsInternal);
+    return calculateDollyZoom(progress, base, {
+      ...DEFAULT_MOTION_PARAMS,
+      ...params,
+    } as MotionParamsInternal);
   }
 
   /**
    * Calculate arc motion
    */
   arc(progress: number, base: CameraPose, params?: Partial<MotionParams>): MotionResult {
-    return calculateArc(progress, base, { ...DEFAULT_MOTION_PARAMS, ...params } as MotionParamsInternal);
+    return calculateArc(progress, base, {
+      ...DEFAULT_MOTION_PARAMS,
+      ...params,
+    } as MotionParamsInternal);
   }
 
   /**
    * Calculate tracking motion
    */
   tracking(base: CameraPose, params?: Partial<MotionParams>, trackingTarget?: Vec3): MotionResult {
-    return calculateTracking(base, { ...DEFAULT_MOTION_PARAMS, ...params } as MotionParamsInternal, trackingTarget);
+    return calculateTracking(
+      base,
+      { ...DEFAULT_MOTION_PARAMS, ...params } as MotionParamsInternal,
+      trackingTarget
+    );
   }
 
   /**
@@ -204,7 +223,7 @@ export class MotionCalculator {
     }
 
     const step = duration / samples;
-    const {params} = this.config;
+    const { params } = this.config;
 
     for (let i = 0; i <= samples; i++) {
       const time = i * step;

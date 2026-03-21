@@ -31,13 +31,14 @@ export function detectDeviceCapabilities(): DeviceCapabilities {
   const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
   const isTablet = /ipad|android.*tablet|playbook|silk/i.test(ua);
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  
+
   // Detect low-end devices
   const memory = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
-  const {hardwareConcurrency} = navigator;
-  const isLowEnd = (memory !== undefined && memory < 4) || 
-                   (hardwareConcurrency !== undefined && hardwareConcurrency < 4) ||
-                   /iphone 6|iphone 7|iphone 8|galaxy s[5-9]|pixel [1-3]/i.test(ua);
+  const { hardwareConcurrency } = navigator;
+  const isLowEnd =
+    (memory !== undefined && memory < 4) ||
+    (hardwareConcurrency !== undefined && hardwareConcurrency < 4) ||
+    /iphone 6|iphone 7|iphone 8|galaxy s[5-9]|pixel [1-3]/i.test(ua);
 
   // Get device pixel ratio (capped for performance)
   const pixelRatio = Math.min(window.devicePixelRatio || 1, isLowEnd ? 1.5 : 2);
@@ -49,7 +50,7 @@ export function detectDeviceCapabilities(): DeviceCapabilities {
     isLowEnd,
     pixelRatio,
   };
-  
+
   if (memory !== undefined) capabilities.memory = memory;
   if (hardwareConcurrency !== undefined) capabilities.hardwareConcurrency = hardwareConcurrency;
 
@@ -67,7 +68,7 @@ export function getOptimalRenderSettings(): {
   enableShadows: boolean;
 } {
   const capabilities = detectDeviceCapabilities();
-  
+
   return {
     pixelRatio: capabilities.pixelRatio,
     antialias: !capabilities.isLowEnd,
@@ -84,7 +85,7 @@ export function isWebGL2Supported(): boolean {
   try {
     const canvas = document.createElement('canvas');
 
-    return !!(canvas.getContext('webgl2'));
+    return !!canvas.getContext('webgl2');
   } catch {
     return false;
   }

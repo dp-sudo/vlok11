@@ -357,7 +357,10 @@ export const UploadPanel = memo(
           <HolographicGrid />
         </div>
 
-        <TechCard className="w-full max-w-lg mx-4 md:mx-auto relative overflow-hidden group/card shadow-[0_0_80px_rgba(6,182,212,0.15)] border border-cyan-500/20 backdrop-blur-xl bg-zinc-900/60 z-10">
+        <TechCard
+          className="w-full max-w-lg mx-4 md:mx-auto relative overflow-hidden group/card shadow-[0_0_80px_rgba(6,182,212,0.15)] border border-cyan-500/20 backdrop-blur-xl bg-zinc-900/60 z-10"
+          data-testid="upload-panel"
+        >
           <div className="flex flex-col items-center text-center space-y-6 relative z-10 p-4">
             <div className="mb-2 relative">
               <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
@@ -448,13 +451,15 @@ export const UploadPanel = memo(
                   </div>
                 )}
 
+                {/* biome-ignore lint/a11y/useSemanticElements: drag-drop zone requires div for drag event handling */}
                 <div
                   role="button"
                   tabIndex={0}
                   aria-label="拖放区域"
+                  data-testid="upload-dropzone"
                   className={`relative group w-full max-w-sm pt-6 pb-2 ${
                     isDragging ? 'scale-105' : ''
-                  } transition-transform duration-300`}
+                  } transition-transform duration-300 cursor-pointer`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -463,6 +468,7 @@ export const UploadPanel = memo(
                       fileInputRef.current?.click();
                     }
                   }}
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   <div
                     className={`absolute -inset-1 bg-gradient-to-r from-cyan-500/30 via-blue-600/30 to-cyan-500/30 rounded-xl blur-lg transition duration-500 animate-[pulse_3s_ease-in-out_infinite] ${
@@ -485,6 +491,7 @@ export const UploadPanel = memo(
                       ref={fileInputRef}
                       accept={acceptedFormats}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                      data-testid="upload-input"
                       onChange={handleFileChange}
                       type="file"
                     />

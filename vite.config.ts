@@ -12,6 +12,10 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      // Enable gzip compression headers
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+      },
     },
     plugins: [
       react(),
@@ -96,15 +100,33 @@ export default defineConfig(({ mode }) => {
       target: 'es2022',
       minify: 'esbuild',
       sourcemap: !isProd,
+      // Enable Vite's built-in gzip/brotli compression
+      reportCompressedSize: true,
       chunkSizeWarningLimit: 1000, // 提升警告阈值，Three.js和TF.js较大是正常的
       rollupOptions: {
         output: {
           manualChunks: (id): string | undefined => {
             // 生产环境优化：动态导入 TensorFlow.js 和 GenAI
             if (isProd) {
-              // AI/ML Features - TensorFlow (只在生产环境拆分)
-              if (id.includes('@tensorflow/tfjs') || id.includes('@tensorflow-models') || id.includes('@mediapipe')) {
-                return 'ai-ml';
+              // AI/ML Features - TensorFlow.js 核心
+              if (id.includes('@tensorflow/tfjs-core') || id.includes('@tensorflow/tfjs')) {
+                return 'tfjs-core';
+              }
+              // TensorFlow.js 转换器
+              if (id.includes('@tensorflow/tfjs-converter')) {
+                return 'tfjs-converter';
+              }
+              // TensorFlow.js WebGL 后端
+              if (id.includes('@tensorflow/tfjs-backend-webgl') || id.includes('@tensorflow/tfjs-backend')) {
+                return 'tfjs-backend';
+              }
+              // TensorFlow.js 任务库 (手势、人脸检测等)
+              if (id.includes('@tensorflow-models')) {
+                return 'tfjs-models';
+              }
+              // MediaPipe
+              if (id.includes('@mediapipe')) {
+                return 'mediapipe';
               }
             } else {
               // 开发环境跳过，避免循环依赖警告
@@ -113,28 +135,24 @@ export default defineConfig(({ mode }) => {
               }
             }
 
-            // Google GenAI - 独立 chunk
-            if (id.includes('@google/genai')) {
-              return 'genai';
-            }
-
             // Core React
             if (id.includes('react-dom') || id.includes('react/')) {
               return 'react-core';
             }
 
-            // 3D Rendering (largest chunk - 无法进一步拆分)
+            // 3D Rendering - Three.js 核心
+            if (id.includes('three/examples/jsm/loaders') || id.includes('three/examples/jsm/controls')) {
+              return 'three-loaders';
+            }
+            if (id.includes('three/examples/jsm') || id.includes('@react-three/drei')) {
+              return 'three-core';
+            }
             if (id.includes('three') || id.includes('@react-three')) {
               return 'three-core';
             }
 
-            // State Management
-            if (id.includes('zustand')) {
-              return 'state';
-            }
-
-            // Media Processing
-            if (id.includes('hls.js')) {
+            // Media Processing - HLS.js
+            if (id.includes('hls.js') || id.includes('video')) {
               return 'media';
             }
 

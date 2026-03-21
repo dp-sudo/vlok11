@@ -3,23 +3,18 @@ import { Canvas } from '@react-three/fiber';
 import { memo, Suspense } from 'react';
 import type { Group, VideoTexture } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import { CoreControllerProvider } from '@/features/scene/services/camera';
 import { ErrorBoundaryWithRecovery } from '@/shared/components';
 import { RENDERER, SCENE_CONFIG } from '@/shared/constants';
 import type { SceneConfig } from '@/shared/types';
+import CameraRig from './CameraRig';
+import { CanvasLoader } from './CanvasLoader';
+import { CoordinateDebug, InputBindingEffect, ToneMappingEffect, TrackingBridge } from './effects';
+import { SceneContent } from './SceneContent';
 import type { ExporterRef } from './SceneExporter';
+import { SceneExporter } from './SceneExporter';
 import type { RecordingRef } from './SceneRecorder';
 import { SceneRecorder } from './SceneRecorder';
-import { SceneExporter } from './SceneExporter';
-import { SceneContent } from './SceneContent';
-import { CanvasLoader } from './CanvasLoader';
-import {
-  CoordinateDebug,
-  InputBindingEffect,
-  ToneMappingEffect,
-  TrackingBridge,
-} from './effects';
-import { CoreControllerProvider } from '@/features/scene/services/camera';
-import CameraRig from './CameraRig';
 
 interface Scene3DContentProps {
   aspectRatio: number;

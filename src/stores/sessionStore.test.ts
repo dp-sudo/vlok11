@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { resetEventBus } from '@/core/EventBus';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { isValidStatusTransition } from '@/core/domain/types';
+import { resetEventBus } from '@/core/EventBus';
 
 import { DEFAULT_SESSION } from './sessionStore';
 
@@ -64,6 +64,23 @@ describe('sessionStore', () => {
     it('should reject invalid transitions from analyzing to analyzing', () => {
       expect(isValidStatusTransition('analyzing', 'analyzing')).toBe(false);
     });
+
+    it('should allow valid transitions from processing_depth', () => {
+      expect(isValidStatusTransition('processing_depth', 'ready')).toBe(true);
+      expect(isValidStatusTransition('processing_depth', 'error')).toBe(true);
+    });
+
+    it('should allow valid transitions from ready', () => {
+      expect(isValidStatusTransition('ready', 'idle')).toBe(true);
+    });
+
+    it('should reject transitions from idle to ready directly', () => {
+      expect(isValidStatusTransition('idle', 'ready')).toBe(false);
+    });
+
+    it('should reject transitions from ready to processing_depth', () => {
+      expect(isValidStatusTransition('ready', 'processing_depth')).toBe(false);
+    });
   });
 
   describe('SessionSlice type interface', () => {
@@ -116,7 +133,7 @@ describe('sessionStore', () => {
 
   describe('ExportState structure', () => {
     it('should have correct export state structure', () => {
-      const exportState = DEFAULT_SESSION.exportState;
+      const { exportState } = DEFAULT_SESSION;
 
       expect(exportState.isExporting).toBe(false);
       expect(exportState.progress).toBe(0);

@@ -39,22 +39,22 @@ interface PlayButtonProps {
 
 const PlayButton = memo<PlayButtonProps>(({ isPlaying, onClick }) => (
   <button
+    aria-label={isPlaying ? '暂停' : '播放'}
     className={`
       relative w-14 h-14 rounded-full flex items-center justify-center
       bg-gradient-to-br from-cyan-400 to-teal-500 hover:from-cyan-300 hover:to-teal-400
       active:scale-95 transition-all duration-300 ease-out
       shadow-[0_8px_20px_rgba(6,182,212,0.4)] hover:shadow-[0_12px_24px_rgba(6,182,212,0.5)]
-      border border-white/20 ring-4 ring-cyan-500/10
+      border border-white/20 ring-4 ring-cyan-500/10 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-800
     `}
     onClick={onClick}
-    title={isPlaying ? '暂停' : '播放'}
     type="button"
     style={{ willChange: 'transform, box-shadow' }}
   >
     {isPlaying ? (
-      <Pause className="w-6 h-6 text-white fill-white relative z-10" />
+      <Pause className="w-6 h-6 text-white fill-white relative z-10" aria-hidden="true" />
     ) : (
-      <Play className="w-6 h-6 text-white fill-white ml-1 relative z-10" />
+      <Play className="w-6 h-6 text-white fill-white ml-1 relative z-10" aria-hidden="true" />
     )}
   </button>
 ));
@@ -71,7 +71,9 @@ interface IconButtonProps {
 
 const IconButton = memo<IconButtonProps>(({ icon: Icon, onClick, title, active, label }) => (
   <button
-    className={`relative p-2 rounded-lg transition-all duration-200 group flex items-center gap-2 ${
+    aria-label={title}
+    aria-pressed={active}
+    className={`relative p-2 rounded-lg transition-all duration-200 group flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-800 ${
       active
         ? 'text-cyan-600 bg-cyan-100 border border-cyan-400'
         : 'text-slate-600 hover:text-cyan-600 hover:bg-cyan-50 border border-transparent'
@@ -116,18 +118,18 @@ interface ProgressTrackProps {
   progressPercent: number;
 }
 
+// 移至组件外部避免每次渲染重新创建
+const TICKS = Array.from({ length: 11 }, (_, i) => i * 10);
+
 const ProgressTrack = memo<ProgressTrackProps>(
   ({ progressPercent, bufferPercent, isHovering, isDragging }) => {
-    // 生成刻度标记
-    const ticks = Array.from({ length: 11 }, (_, i) => i * 10);
-
     return (
       <>
         {/* Background Track with ticks */}
         <div className="absolute left-0 right-0 h-3 bg-slate-200 border border-slate-300 rounded-full overflow-hidden">
           {/* 刻度标记 */}
           <div className="absolute inset-0 flex justify-between px-2 items-center pointer-events-none">
-            {ticks.map((tick) => (
+            {TICKS.map((tick) => (
               <div
                 key={tick}
                 className={`w-px ${tick % 50 === 0 ? 'h-1.5 bg-slate-400' : 'h-1 bg-slate-300'}`}
@@ -320,6 +322,7 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
     const handleSkip = useCallback(
       (direction: 'backward' | 'forward') => {
         const now = Date.now();
+
         if (now - lastSkipTime.current < 300) return;
         lastSkipTime.current = now;
 
@@ -350,20 +353,22 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
           {/* 快进/快退按钮 - 每次跳跃5秒 */}
           <div className="flex items-center gap-1">
             <button
-              className="p-2 rounded-md hover:bg-cyan-100 text-zinc-500 hover:text-cyan-600 transition-all duration-200 active:scale-95"
+              aria-label="快退 5 秒"
+              className="p-2 rounded-md hover:bg-cyan-100 text-zinc-500 hover:text-cyan-600 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
               onClick={() => handleSkip('backward')}
               title="快退 5 秒 (←)"
               type="button"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
-              className="p-2 rounded-md hover:bg-cyan-100 text-zinc-500 hover:text-cyan-600 transition-all duration-200 active:scale-95"
+              aria-label="快进 5 秒"
+              className="p-2 rounded-md hover:bg-cyan-100 text-zinc-500 hover:text-cyan-600 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
               onClick={() => handleSkip('forward')}
               title="快进 5 秒 (→)"
               type="button"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
@@ -378,11 +383,21 @@ export const VideoControls: React.FC<VideoControlsProps> = memo(
             <div
               ref={trackRef}
               role="slider"
+              tabIndex={0}
               aria-valuemin={0}
               aria-valuemax={videoState.duration}
               aria-valuenow={sliderValue}
               aria-label="视频进度"
               className="relative h-8 flex items-center cursor-pointer group/slider"
+              onKeyDown={(e) => {
+                const step = videoState.duration * 0.05;
+
+                if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                  onSeek?.(Math.min(sliderValue + step, videoState.duration));
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                  onSeek?.(Math.max(sliderValue - step, 0));
+                }
+              }}
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => !isDragging && setIsHovering(false)}
               onMouseMove={handleMouseMove}

@@ -128,37 +128,41 @@ export const ImmersiveTab: React.FC<ImmersiveTabProps> = memo(
   ({ config, set, expandedSections, toggleSection, searchQuery = '' }) => {
     // 保留searchQuery参数以支持未来搜索功能
     void searchQuery;
+
     return (
-    <>
-      <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-            <Brain className="w-5 h-5" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-zinc-100 tracking-wide font-tech">
-              AI智能沉浸体验
+      <>
+        <div className="mb-3 p-3 rounded-xl bg-zinc-900/50 border border-white/5 shadow-sm backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <Brain className="w-5 h-5" />
             </div>
-            <div className="text-[11px] text-zinc-400 font-normal mt-0.5">智能运镜 + 天气氛围</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-zinc-100 tracking-wide font-tech">
+                AI智能沉浸体验
+              </div>
+              <div className="text-[11px] text-zinc-400 font-normal mt-0.5">
+                智能运镜 + 天气氛围
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <AIMotionSection
-        config={config}
-        expandedSections={expandedSections}
-        set={set}
-        toggleSection={toggleSection}
-      />
-      <WeatherSection
-        config={config}
-        expandedSections={expandedSections}
-        set={set}
-        toggleSection={toggleSection}
-      />
-    </>
-  );
-});
+        <AIMotionSection
+          config={config}
+          expandedSections={expandedSections}
+          set={set}
+          toggleSection={toggleSection}
+        />
+        <WeatherSection
+          config={config}
+          expandedSections={expandedSections}
+          set={set}
+          toggleSection={toggleSection}
+        />
+      </>
+    );
+  }
+);
 
 export type { ImmersiveTabProps };
 

@@ -8,6 +8,7 @@ interface BtnProps {
   onClick: () => void;
   small?: boolean;
   disabled?: boolean;
+  role?: string;
 }
 interface CardBtnProps {
   active: boolean;
@@ -17,6 +18,7 @@ interface CardBtnProps {
   onMouseLeave?: () => void;
   small?: boolean;
   disabled?: boolean;
+  role?: string;
 }
 interface CollapsibleSectionProps {
   badge?: string | number;
@@ -44,80 +46,80 @@ interface ToggleProps {
   onChange: (v: boolean) => void;
 }
 
-export const Btn: React.FC<BtnProps> = memo(({ active, onClick, children, small, disabled }) => {
-  const getBtnStateClasses = () => {
-    if (disabled) {
-      return 'bg-zinc-800/50 border-zinc-700/50 text-zinc-600 cursor-not-allowed opacity-50';
-    }
-    if (active) {
-      return 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.2)]';
-    }
+// 移至组件外部避免每次渲染重新创建
+const getBtnStateClasses = (disabled: boolean, active: boolean): string => {
+  if (disabled) {
+    return 'bg-zinc-800/50 border-zinc-700/50 text-zinc-600 cursor-not-allowed opacity-50';
+  }
+  if (active) {
+    return 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.2)]';
+  }
 
-    return 'bg-zinc-900/40 border-white/5 text-zinc-400 hover:border-cyan-500/30 hover:text-cyan-300 hover:bg-white/5';
-  };
+  return 'bg-zinc-900/40 border-white/5 text-zinc-400 hover:border-cyan-500/30 hover:text-cyan-300 hover:bg-white/5';
+};
 
-  return (
-    <button
-      className={`
+export const Btn: React.FC<BtnProps> = memo(({ active, onClick, children, small, disabled }) => (
+  <button
+    aria-pressed={active}
+    className={`
       ${small ? 'py-1.5 px-3 text-[12px]' : 'py-2.5 px-4 text-[13px]'}
       rounded-lg border font-semibold tracking-wide transition-all duration-200 whitespace-nowrap
-      ${getBtnStateClasses()}
+      ${getBtnStateClasses(!!disabled, !!active)}
       active:scale-[0.96]
-      disabled:cursor-not-allowed
+      disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-cyan-500/50
     `}
-      onClick={onClick}
-      disabled={disabled}
-      type="button"
-    >
-      {children}
-    </button>
-  );
-});
+    disabled={disabled}
+    onClick={onClick}
+    type="button"
+  >
+    {children}
+  </button>
+));
 Btn.displayName = 'Btn';
 
+// 移至组件外部避免每次渲染重新创建
+const getCardBtnStateClasses = (disabled: boolean, active: boolean): string => {
+  if (disabled) {
+    return 'bg-zinc-900/20 border-zinc-800 text-zinc-700 opacity-60 cursor-not-allowed';
+  }
+  if (active) {
+    return 'bg-cyan-950/40 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.15)] scale-[1.02]';
+  }
+
+  return 'bg-zinc-900/40 border-white/5 text-zinc-400 hover:border-cyan-500/30 hover:bg-white/5 hover:shadow-lg hover:-translate-y-0.5';
+};
+
 export const CardBtn: React.FC<CardBtnProps> = memo(
-  ({ active, onClick, children, small, onMouseEnter, onMouseLeave, disabled }) => {
-    const getCardBtnStateClasses = () => {
-      if (disabled) {
-        return 'bg-zinc-900/20 border-zinc-800 text-zinc-700 opacity-60 cursor-not-allowed';
-      }
-      if (active) {
-        return 'bg-cyan-950/40 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.15)] scale-[1.02]';
-      }
-
-      return 'bg-zinc-900/40 border-white/5 text-zinc-400 hover:border-cyan-500/30 hover:bg-white/5 hover:shadow-lg hover:-translate-y-0.5';
-    };
-
-    return (
-      <button
-        className={`
+  ({ active, onClick, children, small, onMouseEnter, onMouseLeave, disabled }) => (
+    <button
+      aria-pressed={active}
+      className={`
       ${small ? 'py-2.5 px-2 min-h-[4.5rem]' : 'py-3 px-2.5 min-h-[6rem]'}
       rounded-xl border-2 transition-all duration-300
       flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group whitespace-nowrap
-      ${getCardBtnStateClasses()}
-      active:scale-[0.98] active:translate-y-0
+      ${getCardBtnStateClasses(!!disabled, !!active)}
+      active:scale-[0.98] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-cyan-500/50
     `}
-        onClick={onClick}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        disabled={disabled}
-        type="button"
-      >
-        {active && (
-          <>
-            {/* Active Indicator Dot */}
-            <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)] flex items-center justify-center z-10 animate-in fade-in zoom-in duration-200">
-              <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
-            </div>
-            {/* Top Gradient Line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 opacity-80" />
-          </>
-        )}
+      disabled={disabled}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      type="button"
+    >
+      {active && (
+        <>
+          {/* Active Indicator Dot */}
+          <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)] flex items-center justify-center z-10 animate-in fade-in zoom-in duration-200">
+            <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+          </div>
+          {/* Top Gradient Line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 opacity-80" />
+        </>
+      )}
 
-        <div className="relative z-10 flex flex-col items-center w-full">{children}</div>
-      </button>
-    );
-  }
+      <div className="relative z-10 flex flex-col items-center w-full">{children}</div>
+    </button>
+  )
 );
 CardBtn.displayName = 'CardBtn';
 
@@ -126,9 +128,12 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
     const [isOpen, setIsOpen] = useState(expanded);
     const handleToggle = onToggle ?? (() => setIsOpen(!isOpen));
     const open = onToggle ? expanded : isOpen;
+    const sectionId = `section-${title.replace(/\s+/g, '-').toLowerCase()}`;
 
     return (
+      // biome-ignore lint/a11y/useSemanticElements: region role with aria-labelledby is valid ARIA
       <div
+        aria-labelledby={sectionId}
         className={`
       rounded-xl overflow-hidden transition-all duration-200
       ${
@@ -137,9 +142,13 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
           : 'bg-zinc-900/40 border border-white/5 hover:bg-zinc-800/50'
       }
     `}
+        role="region"
       >
         <button
+          aria-controls={`${sectionId}-content`}
+          aria-expanded={open}
           className="w-full flex items-center justify-between p-3 bg-zinc-900/30 hover:bg-white/5 border border-transparent hover:border-white/5 rounded-lg transition-colors group"
+          id={sectionId}
           onClick={handleToggle}
           type="button"
         >
@@ -161,12 +170,15 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
           />
         </button>
         <div
+          aria-labelledby={sectionId}
           className={`
         transition-all duration-200 ease-out overflow-hidden
         ${open ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}
       `}
+          id={`${sectionId}-content`}
+          role="group"
         >
-          <div className="px-3 pb-3 space-y-2">{children}</div>
+          <fieldset className="px-3 pb-3 space-y-2">{children}</fieldset>
         </div>
       </div>
     );
@@ -174,29 +186,34 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
 );
 CollapsibleSection.displayName = 'CollapsibleSection';
 
+// 移至组件外部避免每次渲染重新创建
 const DECIMAL_PRECISION_THRESHOLD = 0.1;
 const PERCENTAGE_MULTIPLIER = 100;
+
+const getDisplayValue = (value: number, step: number): string => {
+  if (typeof value !== 'number') return String(value);
+  if (Number.isInteger(step)) return String(value);
+  const precision = step < DECIMAL_PRECISION_THRESHOLD ? 2 : 1;
+
+  return value.toFixed(precision);
+};
 
 export const Slider: React.FC<SliderProps> = memo(
   ({ label, value, min, max, step, onChange, showPresets, presets }) => {
     const percentage = max !== min ? ((value - min) / (max - min)) * PERCENTAGE_MULTIPLIER : 0;
     const [isDragging, setIsDragging] = useState(false);
+    const sliderId = `slider-${label.replace(/\s+/g, '-').toLowerCase()}`;
 
-    const getDisplayValue = () => {
-      if (typeof value !== 'number') return value;
-      if (Number.isInteger(step)) return value;
-      const precision = step < DECIMAL_PRECISION_THRESHOLD ? 2 : 1;
-
-      return value.toFixed(precision);
-    };
-
-    const displayValue = getDisplayValue();
+    const displayValue = getDisplayValue(value, step);
 
     return (
-      <div className="space-y-1.5">
+      <fieldset aria-label={label} className="space-y-1.5">
         <div className="flex justify-between items-center">
-          <span className="text-[11px] text-zinc-400 font-medium">{label}</span>
+          <span className="text-[11px] text-zinc-400 font-medium" id={`${sliderId}-label`}>
+            {label}
+          </span>
           <span
+            aria-live="polite"
             className={`
           text-[11px] font-mono px-2 py-0.5 rounded-md transition-all duration-150 font-bold
           ${
@@ -211,7 +228,11 @@ export const Slider: React.FC<SliderProps> = memo(
         </div>
         <div className="relative group">
           <input
-            className="w-full h-2 rounded-full appearance-none cursor-pointer relative z-10 slider-thumb bg-zinc-800"
+            aria-labelledby={`${sliderId}-label`}
+            aria-valuemax={max}
+            aria-valuemin={min}
+            aria-valuenow={value}
+            className="w-full h-2 rounded-full appearance-none cursor-pointer relative z-10 slider-thumb bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
             max={max}
             min={min}
             onChange={(e) => onChange(parseFloat(e.target.value))}
@@ -238,15 +259,16 @@ export const Slider: React.FC<SliderProps> = memo(
           ) : null}
         </div>
         {showPresets && presets ? (
-          <div className="flex gap-1.5 mt-2">
+          <div className="flex gap-1.5 mt-2" role="listbox" aria-label={`${label}预设值`}>
             {presets.map((p) => (
               <button
+                aria-pressed={Math.abs(value - p) < step}
                 className={`
                 flex-1 py-1.5 text-[10px] rounded-lg transition-all duration-200 font-medium
                 ${
                   Math.abs(value - p) < step
                     ? 'bg-cyan-600 text-white shadow-md shadow-cyan-500/20 scale-105'
-                    : 'bg-zinc-800 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600'
+                    : 'bg-zinc-800 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50'
                 }
               `}
                 key={p}
@@ -258,7 +280,7 @@ export const Slider: React.FC<SliderProps> = memo(
             ))}
           </div>
         ) : null}
-      </div>
+      </fieldset>
     );
   }
 );

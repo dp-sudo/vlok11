@@ -1,4 +1,4 @@
-import { forwardRef, memo, useImperativeHandle, useRef } from 'react';
+import { forwardRef, lazy, memo, Suspense, useImperativeHandle, useRef } from 'react';
 import type { Group, VideoTexture } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import type { CameraPresetType } from '@/features/scene/services/camera';
@@ -7,17 +7,23 @@ import {
   calculatePresetPoseForProjection,
 } from '@/features/scene/services/camera';
 import { PerformanceOverlay } from '@/shared/components';
-import { WebcamTracker } from './components/effects';
 import type { CameraViewPreset } from '@/shared/types';
 import { useSceneStore } from '@/stores/sharedStore';
 import type { ExporterRef, RecordingRef } from './components';
 import { Scene3DContent, SceneEffectsLayer } from './components';
 import { useColorGrade, useVideoControl } from './hooks';
 
+const WebcamTrackerLazy = lazy(() =>
+  import('./components/effects/WebcamTracker').then((module) => ({
+    default: module.WebcamTracker,
+  }))
+);
+
 export interface SceneViewerHandle {
   captureVideoFrame: () => void;
-  downloadSnapshot: () => void;
-  exportScene: () => void;
+  downloadSnapshot: () => boolean;
+  exportScene: () => boolean;
+  isReady: () => boolean;
   seekVideo: (time: number) => boolean;
   setCameraView: (view: CameraViewPreset) => void;
   startRecording: (withAudio?: boolean) => void;
@@ -32,6 +38,8 @@ interface SceneViewerProps {
   isVideoPlaying: boolean;
   onVideoDurationChange?: (duration: number) => void;
   onVideoEnded?: () => void;
+  onVideoLoopChange?: (isLooping: boolean) => void;
+  onVideoPlayStateChange?: (isPlaying: boolean) => void;
   onVideoTimeUpdate?: (time: number) => void;
   playbackRate: number;
   videoUrl: string | null;
@@ -51,6 +59,8 @@ export const SceneViewer = memo(
       onVideoTimeUpdate,
       onVideoDurationChange,
       onVideoEnded,
+      onVideoLoopChange,
+      onVideoPlayStateChange,
     } = props;
     // 合并为单次订阅，避免多次重渲染
     const config = useSceneStore((state) => state.config);
@@ -66,14 +76,17 @@ export const SceneViewer = memo(
       isPlaying: isVideoPlaying,
       isLooping,
       playbackRate,
+      ...(onVideoPlayStateChange ? { onPlayStateChange: onVideoPlayStateChange } : {}),
+      ...(onVideoLoopChange ? { onLoopChange: onVideoLoopChange } : {}),
       ...(onVideoTimeUpdate ? { onTimeUpdate: onVideoTimeUpdate } : {}),
       ...(onVideoDurationChange ? { onDurationChange: onVideoDurationChange } : {}),
       ...(onVideoEnded ? { onEnded: onVideoEnded } : {}),
     });
 
     useImperativeHandle(ref, () => ({
-      exportScene: () => exporterRef.current?.exportScene(),
-      downloadSnapshot: () => exporterRef.current?.downloadSnapshot(),
+      exportScene: () => exporterRef.current?.exportScene() === true,
+      downloadSnapshot: () => exporterRef.current?.downloadSnapshot() === true,
+      isReady: () => exporterRef.current?.isReady() === true,
       captureVideoFrame: () => recorderRef.current?.captureVideoFrame(),
       startRecording: (withAudio) => recorderRef.current?.startRecording(withAudio),
       stopRecording: () => recorderRef.current?.stopRecording(),
@@ -104,10 +117,15 @@ export const SceneViewer = memo(
     return (
       <div
         className="w-full h-full bg-black relative rounded-lg overflow-hidden shadow-2xl border border-zinc-800 transition-all duration-200"
+        data-testid="scene-viewer"
         style={colorGradeStyle}
       >
         <PerformanceOverlay position="bottom-left" visible />
-        {enableFaceTracking && <WebcamTracker />}
+        {enableFaceTracking ? (
+          <Suspense fallback={null}>
+            <WebcamTrackerLazy />
+          </Suspense>
+        ) : null}
 
         <SceneEffectsLayer
           enableVignette={enableVignette}

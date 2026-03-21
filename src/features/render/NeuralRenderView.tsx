@@ -17,14 +17,17 @@ export function NeuralRenderView({ className = '' }: Props) {
 
     // 检查容器尺寸
     const { clientWidth, clientHeight } = containerRef.current;
+
     if (clientWidth === 0 || clientHeight === 0) {
       setError('容器尺寸无效');
       setIsLoading(false);
+
       return;
     }
 
     // 创建渲染器 - 添加错误边界
     let renderer: GaussianSplattingRenderer;
+
     try {
       renderer = new GaussianSplattingRenderer({
         container: containerRef.current,
@@ -33,6 +36,7 @@ export function NeuralRenderView({ className = '' }: Props) {
     } catch (err) {
       setError(err instanceof Error ? err.message : '渲染器初始化失败');
       setIsLoading(false);
+
       return;
     }
 

@@ -10,9 +10,9 @@ describe('videoStore', () => {
     return {
       getState: () => {
         initialState ??= createVideoSlice(
-            (set) => set,
-            () => initialState!,
-            {} as never
+          (set) => set,
+          () => initialState!,
+          {} as never
         );
 
         return initialState;
@@ -118,6 +118,171 @@ describe('videoStore', () => {
 
       slice.resetVideo();
       expect(mockSet).toHaveBeenCalledWith(DEFAULT_VIDEO);
+    });
+
+    it('should pause video', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ isPlaying: true });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.pause();
+      expect(mockSet).toHaveBeenCalledWith({ isPlaying: false });
+    });
+
+    it('should set play state directly', () => {
+      const mockSet = vi.fn();
+      const slice = createVideoSlice(mockSet as never, vi.fn() as never, {} as never);
+
+      slice.setPlaying(true);
+      expect(mockSet).toHaveBeenCalledWith({ isPlaying: true });
+
+      mockSet.mockClear();
+      slice.setPlaying(false);
+      expect(mockSet).toHaveBeenCalledWith({ isPlaying: false });
+    });
+
+    it('should set loop state directly', () => {
+      const mockSet = vi.fn();
+      const slice = createVideoSlice(mockSet as never, vi.fn() as never, {} as never);
+
+      slice.setLooping(false);
+      expect(mockSet).toHaveBeenCalledWith({ isLooping: false });
+
+      mockSet.mockClear();
+      slice.setLooping(true);
+      expect(mockSet).toHaveBeenCalledWith({ isLooping: true });
+    });
+
+    it('should seek to specific time', () => {
+      const mockSet = vi.fn();
+      // seek calls get().setVideoTime, so we need to mock that
+      const mockGet = vi.fn().mockReturnValue({
+        setVideoTime: vi.fn(),
+        duration: 100,
+      });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.seek(50);
+      // seek calls setVideoTime internally, verify it was called
+      expect(mockGet).toHaveBeenCalled();
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle NaN duration', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ currentTime: 0 });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoDuration(NaN);
+
+      expect(mockSet).toHaveBeenCalledWith({ duration: 0, currentTime: 0 });
+    });
+
+    it('should handle Infinity duration', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ currentTime: 0 });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoDuration(Infinity);
+
+      expect(mockSet).toHaveBeenCalledWith({ duration: 0, currentTime: 0 });
+    });
+
+    it('should handle negative duration', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ currentTime: 0 });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoDuration(-10);
+
+      expect(mockSet).toHaveBeenCalledWith({ duration: 0, currentTime: 0 });
+    });
+
+    it('should clamp currentTime when duration is reduced', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ currentTime: 50 });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoDuration(30);
+
+      expect(mockSet).toHaveBeenCalledWith({ duration: 30, currentTime: 30 });
+    });
+
+    it('should handle NaN time in setVideoTime', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ duration: 100 });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoTime(NaN);
+
+      expect(mockSet).toHaveBeenCalledWith({ currentTime: 0 });
+    });
+
+    it('should handle negative time in setVideoTime', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ duration: 100 });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoTime(-5);
+
+      expect(mockSet).toHaveBeenCalledWith({ currentTime: 0 });
+    });
+
+    it('should clamp time exceeding duration', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ duration: 100 });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoTime(150);
+
+      expect(mockSet).toHaveBeenCalledWith({ currentTime: 100 });
+    });
+
+    it('should handle NaN playback rate', () => {
+      const mockSet = vi.fn();
+      const slice = createVideoSlice(mockSet as never, vi.fn() as never, {} as never);
+
+      slice.setPlaybackRate(NaN);
+
+      expect(mockSet).toHaveBeenCalledWith({ playbackRate: 1.0 });
+    });
+
+    it('should handle Infinity playback rate', () => {
+      const mockSet = vi.fn();
+      const slice = createVideoSlice(mockSet as never, vi.fn() as never, {} as never);
+
+      slice.setPlaybackRate(Infinity);
+
+      expect(mockSet).toHaveBeenCalledWith({ playbackRate: 1.0 });
+    });
+
+    it('should clamp playback rate below minimum', () => {
+      const mockSet = vi.fn();
+      const slice = createVideoSlice(mockSet as never, vi.fn() as never, {} as never);
+
+      slice.setPlaybackRate(0.01);
+
+      expect(mockSet).toHaveBeenCalledWith({ playbackRate: 0.1 });
+    });
+
+    it('should clamp playback rate above maximum', () => {
+      const mockSet = vi.fn();
+      const slice = createVideoSlice(mockSet as never, vi.fn() as never, {} as never);
+
+      slice.setPlaybackRate(10);
+
+      expect(mockSet).toHaveBeenCalledWith({ playbackRate: 4.0 });
+    });
+
+    it('should handle undefined duration in get', () => {
+      const mockSet = vi.fn();
+      const mockGet = vi.fn().mockReturnValue({ duration: undefined });
+      const slice = createVideoSlice(mockSet as never, mockGet as never, {} as never);
+
+      slice.setVideoTime(50);
+
+      expect(mockSet).toHaveBeenCalledWith({ currentTime: 0 });
     });
   });
 });

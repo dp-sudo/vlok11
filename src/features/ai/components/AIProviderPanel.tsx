@@ -43,14 +43,38 @@ export const AIProviderPanel = memo(() => {
   const { aiService } = useServices();
   const [activeSceneProvider, setActiveSceneProvider] = useState<string>('fallback');
   const [activeDepthProvider, setActiveDepthProvider] = useState<string>('fallback');
+  const [providerAvailability, setProviderAvailability] = useState<Record<string, boolean>>({
+    fallback: true,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (aiService) {
+    if (!aiService) return;
+
+    let disposed = false;
+
+    const syncProviderState = async () => {
+      const providerIds = [...SCENE_PROVIDERS, ...DEPTH_PROVIDERS].map((provider) => provider.id);
+      const availabilityEntries = await Promise.all(
+        providerIds.map(
+          async (providerId) =>
+            [providerId, await aiService.isProviderAvailable(providerId)] as const
+        )
+      );
+
+      if (disposed) return;
+
       setActiveSceneProvider(aiService.getActiveProviderId('scene'));
       setActiveDepthProvider(aiService.getActiveProviderId('depth'));
-    }
+      setProviderAvailability(Object.fromEntries(availabilityEntries));
+    };
+
+    void syncProviderState();
+
+    return () => {
+      disposed = true;
+    };
   }, [aiService]);
 
   const handleProviderChange = useCallback(
@@ -68,6 +92,8 @@ export const AIProviderPanel = memo(() => {
         } else {
           setActiveDepthProvider(providerId);
         }
+
+        setProviderAvailability((previous) => ({ ...previous, [providerId]: true }));
       } catch (err) {
         setError(err instanceof Error ? err.message : '切换Provider失败');
       } finally {
@@ -81,9 +107,9 @@ export const AIProviderPanel = memo(() => {
     (providerId: string) => {
       if (!aiService) return false;
 
-      return aiService.isProviderAvailable(providerId);
+      return providerAvailability[providerId] ?? false;
     },
-    [aiService]
+    [aiService, providerAvailability]
   );
 
   return (

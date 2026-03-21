@@ -247,4 +247,3 @@ class SmartAssistantImpl {
 }
 
 export const getSmartAssistant = (): SmartAssistantImpl => SmartAssistantImpl.getInstance();
-export const resetSmartAssistant = (): void => SmartAssistantImpl.resetInstance();

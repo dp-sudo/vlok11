@@ -5,7 +5,8 @@ export type LazyProvider = AIProvider & { initialize(): Promise<void> };
 type ProviderGetter = () => Promise<LazyProvider>;
 
 export class AIServiceProviderManager {
-  private providers: Map<string, { instance: LazyProvider | null; getter: ProviderGetter }> = new Map();
+  private providers: Map<string, { instance: LazyProvider | null; getter: ProviderGetter }> =
+    new Map();
 
   register(name: string, getter: ProviderGetter): void {
     this.providers.set(name, { instance: null, getter });
@@ -35,12 +36,12 @@ export class AIServiceProviderManager {
 
   async dispose(): Promise<void> {
     const disposePromises = Array.from(this.providers.values())
-      .filter(p => p.instance)
-      .map(p => p.instance!.dispose());
+      .filter((p) => p.instance)
+      .map((p) => p.instance!.dispose());
 
     await Promise.all(disposePromises);
 
-    this.providers.forEach(p => {
+    this.providers.forEach((p) => {
       p.instance = null;
     });
   }

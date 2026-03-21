@@ -1,21 +1,70 @@
-import * as tf from '@tensorflow/tfjs';
-import * as faceDetection from '@tensorflow-models/face-detection';
 import { useEffect, useRef, useState } from 'react';
 
 import { getEventBus } from '@/core/EventBus';
 import { TrackingEvents } from '@/core/EventTypes';
 import { createLogger } from '@/core/Logger';
+import { loadFaceDetectionModel, loadTensorFlow } from '@/features/ai/services/AIModuleLoader';
 import { FONT_SIZE, OPACITY, RADII, SPACING, Z_INDEX } from '@/shared/constants/ui';
+import { isRuntimeTestMode } from '@/shared/utils';
 
 import { COORDINATE_TRANSFORM, WEBCAM } from './constants';
 
 const logger = createLogger({ module: 'WebcamTracker' });
+
+interface FaceBox {
+  height: number;
+  width: number;
+  xMin: number;
+  yMin: number;
+}
+
+interface FaceDetectionResult {
+  box: FaceBox;
+}
+
+interface FaceDetector {
+  dispose: () => void;
+  estimateFaces: (
+    input: HTMLVideoElement,
+    options: { flipHorizontal: boolean }
+  ) => Promise<FaceDetectionResult[]>;
+}
+
+interface MediaPipeFaceDetectorConfig {
+  runtime: 'mediapipe';
+  solutionPath: string;
+}
+
+interface FaceDetectionModule {
+  SupportedModels: {
+    MediaPipeFaceDetector: string;
+  };
+  createDetector: (model: string, config: MediaPipeFaceDetectorConfig) => Promise<FaceDetector>;
+}
+
+interface TensorFlowModule {
+  ready: () => Promise<void>;
+}
+
+function isTensorFlowModule(module: unknown): module is TensorFlowModule {
+  return typeof module === 'object' && module !== null && 'ready' in module;
+}
+
+function isFaceDetectionModule(module: unknown): module is FaceDetectionModule {
+  return (
+    typeof module === 'object' &&
+    module !== null &&
+    'SupportedModels' in module &&
+    'createDetector' in module
+  );
+}
+
 const useFaceModel = (enabled: boolean) => {
-  const [model, setModel] = useState<faceDetection.FaceDetector | null>(null);
-  const modelRef = useRef<faceDetection.FaceDetector | null>(null);
+  const [model, setModel] = useState<FaceDetector | null>(null);
+  const modelRef = useRef<FaceDetector | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.__TEST_MODE__ === true) {
+    if (isRuntimeTestMode()) {
       return;
     }
 
@@ -25,14 +74,21 @@ const useFaceModel = (enabled: boolean) => {
 
     const initModel = async () => {
       try {
-        await tf.ready();
-        const modelType = faceDetection.SupportedModels.MediaPipeFaceDetector;
-        const detectorConfig: faceDetection.MediaPipeFaceDetectorMediaPipeModelConfig = {
+        const tfModule = await loadTensorFlow();
+        const faceDetectionModule = await loadFaceDetectionModel();
+
+        if (!isTensorFlowModule(tfModule) || !isFaceDetectionModule(faceDetectionModule)) {
+          throw new Error('人脸检测模块加载结果无效');
+        }
+
+        await tfModule.ready();
+        const modelType = faceDetectionModule.SupportedModels.MediaPipeFaceDetector;
+        const detectorConfig: MediaPipeFaceDetectorConfig = {
           runtime: 'mediapipe',
           solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection',
         };
 
-        const detector = await faceDetection.createDetector(modelType, detectorConfig);
+        const detector = await faceDetectionModule.createDetector(modelType, detectorConfig);
 
         if (!isCancelled) {
           modelRef.current = detector;
@@ -65,7 +121,7 @@ const useWebcamStream = (videoRef: React.RefObject<HTMLVideoElement | null>) => 
   const [isTracking, setIsTracking] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.__TEST_MODE__ === true) {
+    if (isRuntimeTestMode()) {
       return;
     }
 
@@ -201,7 +257,7 @@ export const WebcamTracker = () => {
     };
   }, [model, isTracking]);
 
-  if (typeof window !== 'undefined' && window.__TEST_MODE__ === true) {
+  if (isRuntimeTestMode()) {
     return null;
   }
 
@@ -230,7 +286,7 @@ export const WebcamTracker = () => {
           padding: SPACING.XS,
         }}
       >
-        Webcam Tracking Active
+        头部追踪已启用
       </div>
     </div>
   );

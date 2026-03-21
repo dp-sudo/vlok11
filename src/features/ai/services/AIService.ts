@@ -2,12 +2,20 @@ import { getEventBus } from '@/core/EventBus';
 import { AIEvents } from '@/core/EventTypes';
 import type { LifecycleAware } from '@/core/LifecycleManager';
 import { SceneType, TechPipeline } from '@/shared/types';
-import { createLogger, CACHE_DEFAULTS, PROGRESS, hashString } from './AIServiceCore';
-import type { AICacheConfig, AIProgressCallback, AIProvider, AIService as AIServiceType, DepthResult, ImageAnalysis } from './types';
-import { FallbackProvider } from './providers/FallbackProvider';
+import { isRuntimeTestMode } from '@/shared/utils';
 import { AIServiceCache } from './AIServiceCache';
-import { getGeminiProvider, getTensorFlowProvider } from './AIServiceProvider';
+import { CACHE_DEFAULTS, createLogger, hashString, PROGRESS } from './AIServiceCore';
 import type { LazyProvider } from './AIServiceProvider';
+import { getGeminiProvider, getTensorFlowProvider } from './AIServiceProvider';
+import { FallbackProvider } from './providers/FallbackProvider';
+import type {
+  AICacheConfig,
+  AIProgressCallback,
+  AIProvider,
+  AIService as AIServiceType,
+  DepthResult,
+  ImageAnalysis,
+} from './types';
 
 const logger = createLogger({ module: 'AIService' });
 
@@ -119,7 +127,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
   }
 
   private async doAnalyzeScene(base64Image: string, cacheKey: string): Promise<ImageAnalysis> {
-    const isTestMode = (window as { __TEST_MODE__?: boolean }).__TEST_MODE__;
+    const isTestMode = isRuntimeTestMode();
 
     if (isTestMode) {
       logger.info('Test mode detected, returning mock analysis');
@@ -149,7 +157,16 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
     try {
       if (this.activeSceneProvider?.analyzeScene) {
         this.emitProgress(PROGRESS.MIDPOINT, 'analyzing');
-        const result = await this.activeSceneProvider.analyzeScene(base64Image);
+
+        // Add 15-second timeout to prevent hanging on AI provider
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('AI analysis timeout after 15s')), 15000);
+        });
+
+        const result = await Promise.race([
+          this.activeSceneProvider.analyzeScene(base64Image),
+          timeoutPromise,
+        ]);
 
         this.analysisCache.set(cacheKey, result);
         this.emitProgress(PROGRESS.COMPLETE, 'analyzing');
@@ -192,7 +209,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
   }
 
   private async doEstimateDepth(imageUrl: string, cacheKey: string): Promise<DepthResult> {
-    const isTestMode = (window as { __TEST_MODE__?: boolean }).__TEST_MODE__;
+    const isTestMode = isRuntimeTestMode();
 
     if (isTestMode) {
       logger.info('Test mode detected, returning mock depth');
@@ -303,7 +320,7 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
       return;
     }
 
-    const testMode = (window as { __TEST_MODE__?: boolean }).__TEST_MODE__;
+    const testMode = isRuntimeTestMode();
 
     if (typeof window !== 'undefined' && testMode === true) {
       logger.info('Test mode detected, skipping real initialization');
@@ -447,6 +464,32 @@ class AIServiceImpl implements AIServiceType, LifecycleAware {
       to: 'active',
     });
   }
+
+  /**
+   * Get loading progress for UI feedback
+   */
+  getLoadingProgress(): { isLoading: boolean; loaded: number; total: number } {
+    const pending = this.pendingAnalysis.size + this.pendingDepth.size;
+
+    return {
+      isLoading: pending > 0 || !this.initialized,
+      loaded: this.initialized ? 1 : 0,
+      total: 1,
+    };
+  }
+}
+
+// Singleton instance for external access
+let aisServiceInstance: AIServiceImpl | null = null;
+
+export function getAIService(): AIServiceImpl {
+  aisServiceInstance ??= new AIServiceImpl();
+
+  return aisServiceInstance;
+}
+
+export function resetAIService(): void {
+  aisServiceInstance = null;
 }
 
 export { AIServiceImpl as AIService };

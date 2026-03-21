@@ -30,6 +30,73 @@ export class PipelineEngine implements PipelineEngineInterface {
     logger.info('PipelineEngine disposed');
   }
 
+  /**
+   * Execute a promise with timeout support, propagating AbortSignal
+   */
+  private executeWithTimeout<T>(promise: Promise<T>, timeoutMs: number | undefined): Promise<T> {
+    if (!timeoutMs || timeoutMs <= 0) {
+      return promise;
+    }
+
+    return Promise.race([
+      promise,
+      new Promise<T>((_resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          reject(new Error(`Stage timeout after ${timeoutMs}ms`));
+        }, timeoutMs);
+
+        // Clean up timeout if promise resolves first
+        promise.then(() => clearTimeout(timeoutId)).catch(() => clearTimeout(timeoutId));
+      }),
+    ]);
+  }
+
+  /**
+   * Execute a stage with retry logic and exponential backoff
+   */
+  private async executeWithRetry(
+    stage: PipelineStage,
+    inputData: unknown,
+    context: StageContext,
+    stageConfig: StageConfig
+  ): Promise<unknown> {
+    const retryCount = stageConfig.retryCount ?? 0;
+    const { timeoutMs } = stageConfig;
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= retryCount; attempt++) {
+      try {
+        // If not first attempt, wait before retry (exponential backoff)
+        if (attempt > 0) {
+          const delay = Math.min(1000 * 2 ** (attempt - 1), 10000);
+
+          logger.debug(
+            `Retrying stage ${stageConfig.type}, attempt ${attempt + 1}, delay ${delay}ms`
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+
+        // Execute with timeout wrapper
+        const result = await this.executeWithTimeout(stage.execute(inputData, context), timeoutMs);
+
+        return result;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        logger.warn(
+          `Stage ${stageConfig.type} attempt ${attempt + 1} failed: ${lastError.message}`
+        );
+
+        // If retries remain, continue loop
+        if (attempt < retryCount) {
+          // Continue to next iteration
+        }
+      }
+    }
+
+    // All retries failed, throw the last error
+    throw lastError;
+  }
+
   async execute<T>(initialInput: T, config: PipelineConfig, signal?: AbortSignal): Promise<T> {
     const enabledStages = config.stages.filter((s) => s.enabled !== false);
     const runId = generateUUID();
@@ -67,7 +134,7 @@ export class PipelineEngine implements PipelineEngineInterface {
       if (readyStages.length === 0 && pending.size > 0) {
         throw new Error(
           `Pipeline deadlock: no stages ready but ${pending.size} pending. ` +
-          `Pending stages: ${[...pending].join(', ')}`
+            `Pending stages: ${[...pending].join(', ')}`
         );
       }
 
@@ -103,71 +170,7 @@ export class PipelineEngine implements PipelineEngineInterface {
             total: enabledStages.length,
           });
 
-          // 使用 Promise.race 实现超时机制，同时传播 AbortSignal
-          const executeWithTimeout = async <T,>(
-            promise: Promise<T>,
-            timeoutMs: number | undefined
-          ): Promise<T> => {
-            if (!timeoutMs || timeoutMs <= 0) {
-              return promise;
-            }
-
-            return Promise.race([
-              promise,
-              new Promise<T>((_resolve, reject) => {
-                const timeoutId = setTimeout(() => {
-                  // Trigger abort signal when timeout occurs
-                  if (abortController) {
-                    abortController.abort(new Error(`Stage timeout after ${timeoutMs}ms`));
-                  }
-                  reject(new Error(`Stage timeout after ${timeoutMs}ms`));
-                }, timeoutMs);
-
-                // Clean up timeout if promise resolves first
-                promise.then(() => clearTimeout(timeoutId)).catch(() => clearTimeout(timeoutId));
-              }),
-            ]);
-          };
-
-          // 执行阶段，根据 retryCount 进行重试
-          const executeWithRetry = async (): Promise<unknown> => {
-            const retryCount = stageConfig.retryCount ?? 0;
-            const timeoutMs = stageConfig.timeoutMs;
-            let lastError: Error | null = null;
-
-            for (let attempt = 0; attempt <= retryCount; attempt++) {
-              try {
-                // 如果不是第一次尝试，等待后重试（指数退避）
-                if (attempt > 0) {
-                  const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
-                  logger.debug(`Retrying stage ${stageConfig.type}, attempt ${attempt + 1}, delay ${delay}ms`);
-                  await new Promise((resolve) => setTimeout(resolve, delay));
-                }
-
-                // 使用超时包装执行
-                const result = await executeWithTimeout(
-                  stage.execute(inputData, context),
-                  timeoutMs
-                );
-                return result;
-              } catch (error) {
-                lastError = error instanceof Error ? error : new Error(String(error));
-                logger.warn(
-                  `Stage ${stageConfig.type} attempt ${attempt + 1} failed: ${lastError.message}`
-                );
-
-                // 如果还有重试次数，继续循环
-                if (attempt < retryCount) {
-                  continue;
-                }
-              }
-            }
-
-            // 所有重试都失败，抛出最后一个错误
-            throw lastError;
-          };
-
-          const result = await executeWithRetry();
+          const result = await this.executeWithRetry(stage, inputData, context, stageConfig);
 
           getEventBus().emit('pipeline:stage-completed', {
             runId,

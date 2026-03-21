@@ -5,11 +5,12 @@ import type { Group } from 'three';
 import { GLTFExporter } from 'three-stdlib';
 import { createLogger } from '@/core/Logger';
 import { useAppViewModel } from '@/features/app/viewmodels/useAppViewModel';
-import { downloadBlob, downloadDataUrl, downloadText } from '@/shared/utils';
+import { downloadBlob, downloadDataUrl, downloadText, isRuntimeTestMode } from '@/shared/utils';
 
 export interface ExporterRef {
-  downloadSnapshot: () => void;
-  exportScene: () => void;
+  downloadSnapshot: () => boolean;
+  exportScene: () => boolean;
+  isReady: () => boolean;
 }
 interface SceneExporterProps {
   sceneGroupRef: RefObject<Group | null>;
@@ -19,13 +20,41 @@ const logger = createLogger({ module: 'SceneExporter' });
 
 export const SceneExporter = memo(
   forwardRef<ExporterRef, SceneExporterProps>(({ sceneGroupRef }, ref) => {
-    const { startExport, finishExport } = useAppViewModel();
+    const { startExport, finishExport } = useAppViewModel((vm) => ({
+      startExport: vm.startExport,
+      finishExport: vm.finishExport,
+    }));
     const { gl } = useThree();
 
-    const exportScene = () => {
-      if (!sceneGroupRef.current) return;
+    const exportScene = (): boolean => {
+      if (!sceneGroupRef.current) {
+        return false;
+      }
 
       startExport('glb');
+
+      if (isRuntimeTestMode()) {
+        try {
+          const sceneGroup = sceneGroupRef.current;
+          const exportPayload = JSON.stringify(
+            {
+              childCount: sceneGroup?.children.length ?? 0,
+              exportedAt: Date.now(),
+              mode: 'test',
+            },
+            null,
+            2
+          );
+
+          downloadText(exportPayload, `immersa_scene_${Date.now()}.gltf`, 'application/json');
+        } catch (error) {
+          logger.error('测试导出失败', { error: String(error) });
+        } finally {
+          finishExport();
+        }
+
+        return true;
+      }
 
       const EXPORT_DELAY_MS = 100;
 
@@ -65,12 +94,16 @@ export const SceneExporter = memo(
           { binary: true }
         );
       }, EXPORT_DELAY_MS);
+
+      return true;
     };
 
-    const downloadSnapshot = () => {
+    const downloadSnapshot = (): boolean => {
       const canvas = gl.domElement;
 
-      if (!canvas) return;
+      if (!canvas) {
+        return false;
+      }
 
       startExport('png');
 
@@ -80,11 +113,14 @@ export const SceneExporter = memo(
         downloadDataUrl(url, `snapshot_${Date.now()}.png`);
         finishExport();
       });
+
+      return true;
     };
 
     useImperativeHandle(ref, () => ({
       exportScene,
       downloadSnapshot,
+      isReady: () => sceneGroupRef.current !== null,
     }));
 
     return null;

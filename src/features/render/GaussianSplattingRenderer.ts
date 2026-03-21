@@ -117,6 +117,7 @@ export class GaussianSplattingRenderer {
 
       // 检查内容类型
       const contentType = response.headers.get('content-type');
+
       if (contentType && !contentType.includes('text') && !contentType.includes('octet-stream')) {
         console.warn(`警告: 意外的内容类型 ${contentType}，将继续尝试解析`);
       }
@@ -225,7 +226,7 @@ export class GaussianSplattingRenderer {
    */
   private disposePointCloud(): void {
     if (this.pointCloud) {
-      const geometry = this.pointCloud.geometry;
+      const { geometry } = this.pointCloud;
       const material = this.pointCloud.material as THREE.ShaderMaterial;
 
       geometry.deleteAttribute('position');
@@ -237,6 +238,7 @@ export class GaussianSplattingRenderer {
       if (material.uniforms) {
         for (const key in material.uniforms) {
           const uniform = material.uniforms[key];
+
           if (uniform && typeof uniform === 'object') {
             if ('value' in uniform && uniform.value instanceof THREE.Texture) {
               uniform.value.dispose();
@@ -474,12 +476,13 @@ export class GaussianSplattingRenderer {
     // 触摸开始
     this.boundTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
+
       if (e.touches.length === 1 && touch) {
         e.preventDefault();
         this.isDragging = true;
         this.previousMousePosition = {
           x: touch.clientX,
-          y: touch.clientY
+          y: touch.clientY,
         };
       }
     };
@@ -488,6 +491,7 @@ export class GaussianSplattingRenderer {
     // 触摸移动
     this.boundTouchMove = (e: TouchEvent) => {
       const touch = e.touches[0];
+
       if (!this.isDragging || e.touches.length !== 1 || !touch) return;
       e.preventDefault();
 
@@ -502,7 +506,7 @@ export class GaussianSplattingRenderer {
 
       this.previousMousePosition = {
         x: touch.clientX,
-        y: touch.clientY
+        y: touch.clientY,
       };
     };
     canvas.addEventListener('touchmove', this.boundTouchMove, { passive: false });
@@ -597,7 +601,7 @@ export class GaussianSplattingRenderer {
 
     // 清理点云资源
     if (this.pointCloud) {
-      const geometry = this.pointCloud.geometry;
+      const { geometry } = this.pointCloud;
       const material = this.pointCloud.material as THREE.ShaderMaterial;
 
       // 清理几何体的所有属性
@@ -612,6 +616,7 @@ export class GaussianSplattingRenderer {
         // 清理每个 uniform
         for (const key in material.uniforms) {
           const uniform = material.uniforms[key];
+
           if (uniform && typeof uniform === 'object') {
             // 处理纹理uniform
             if ('value' in uniform && uniform.value instanceof THREE.Texture) {

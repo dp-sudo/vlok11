@@ -25,6 +25,20 @@ const SENSITIVE_FIELDS = ['apiKey', 'token', 'password', 'secret', 'credential']
 // Lock for thread-safe history management
 let historyLock = false;
 
+// Pre-allocated error serializer to avoid creating new function on each log call
+const errorSerializer = (_key: string, value: unknown) => {
+  if (value instanceof Error) {
+    return {
+      message: value.message,
+      name: value.name,
+      stack: value.stack,
+      cause: 'cause' in value ? value.cause : undefined,
+    };
+  }
+
+  return value;
+};
+
 // 默认格式化器
 const defaultFormatter: LogFormatter = {
   format(entry: LogEntry): string {
@@ -109,6 +123,7 @@ class Logger implements LoggerContract {
    */
   private sanitizeContext(context: Record<string, unknown>): Record<string, unknown> {
     const sanitized: Record<string, unknown> = {};
+
     for (const [key, value] of Object.entries(context)) {
       if (SENSITIVE_FIELDS.some((field) => key.toLowerCase().includes(field))) {
         sanitized[key] = '[REDACTED]';
@@ -116,6 +131,7 @@ class Logger implements LoggerContract {
         sanitized[key] = value;
       }
     }
+
     return sanitized;
   }
 
@@ -172,20 +188,23 @@ class Logger implements LoggerContract {
       ...(sanitizedContext ? { context: sanitizedContext } : {}),
     };
 
-    // Use lock to prevent race conditions in history management
-    while (historyLock) {
-      // Spin wait - in practice this is very rare
-    }
-    historyLock = true;
-
-    try {
+    // Simple mutex lock for thread-safe history management
+    // Using a flag-based critical section - JS is single-threaded so this is safe
+    // The lock prevents re-entrant calls from corrupting history during async operations
+    if (historyLock) {
+      // If already locked, just push without trimming (trims happen on next unlocked call)
       Logger.history.push(entry);
+    } else {
+      historyLock = true;
+      try {
+        Logger.history.push(entry);
 
-      if (Logger.history.length > Logger.maxHistory) {
-        Logger.history = Logger.history.slice(-Logger.maxHistory);
+        if (Logger.history.length > Logger.maxHistory) {
+          Logger.history = Logger.history.slice(-Logger.maxHistory);
+        }
+      } finally {
+        historyLock = false;
       }
-    } finally {
-      historyLock = false;
     }
 
     this.output(entry);
@@ -193,18 +212,6 @@ class Logger implements LoggerContract {
 
   private output(entry: LogEntry): void {
     const prefix = `[${this.formatTime(entry.timestamp)}] [${this.module}]`;
-    const errorSerializer = (_key: string, value: unknown) => {
-      if (value instanceof Error) {
-        return {
-          message: value.message,
-          name: value.name,
-          stack: value.stack,
-          cause: 'cause' in value ? value.cause : undefined,
-        };
-      }
-
-      return value;
-    };
 
     const msg = entry.context
       ? `${prefix} ${entry.message} ${JSON.stringify(entry.context, errorSerializer)}`

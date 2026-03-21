@@ -1,16 +1,17 @@
 import type { StateCreator } from 'zustand';
-
+import { CameraMode, CameraMotionType, ProjectionMode } from '@/core/domain/types';
+import { createLogger } from '@/core/Logger';
 import { DEFAULT_SCENE_CONFIG } from '@/shared/config/defaultSceneConfig';
 import {
-  getRenderStylePreset,
   getMotionPreset,
   getProjectionPreset,
+  getRenderStylePreset,
   getScenePreset,
   sanitizeConfig,
 } from '@/shared/config/presets';
-
 import type { SceneConfig } from '@/shared/types';
-import { CameraMode, CameraMotionType, ProjectionMode } from '@/core/domain/types';
+
+const logger = createLogger({ module: 'sceneConfigStore' });
 
 export interface SceneState {
   config: SceneConfig;
@@ -62,6 +63,7 @@ export const createSceneSlice = <T extends SceneSlice>(
 
     if (nextChanges.projectionMode !== undefined) {
       const shouldImmersive = IMMERSIVE_MODES.includes(nextChanges.projectionMode);
+
       nextChanges.isImmersive = shouldImmersive;
       if (shouldImmersive) {
         nextChanges.cameraMode = CameraMode.PERSPECTIVE;
@@ -112,6 +114,7 @@ export const createSceneSlice = <T extends SceneSlice>(
 
     applyRenderStylePreset: (presetId: string) => {
       const preset = getRenderStylePreset(presetId);
+
       if (!preset) return;
 
       const oldConfig = get().config;
@@ -123,6 +126,7 @@ export const createSceneSlice = <T extends SceneSlice>(
 
     applyMotionPreset: (presetId: string) => {
       const preset = getMotionPreset(presetId);
+
       if (!preset) return;
 
       const oldConfig = get().config;
@@ -134,6 +138,7 @@ export const createSceneSlice = <T extends SceneSlice>(
 
     applyProjectionPreset: (presetId: string) => {
       const preset = getProjectionPreset(presetId);
+
       if (!preset) return;
 
       const oldConfig = get().config;
@@ -145,6 +150,7 @@ export const createSceneSlice = <T extends SceneSlice>(
 
     applyScenePreset: (presetId: string) => {
       const preset = getScenePreset(presetId);
+
       if (!preset) return;
 
       const oldConfig = get().config;
@@ -155,7 +161,8 @@ export const createSceneSlice = <T extends SceneSlice>(
     },
 
     exportConfig: () => {
-      const config = get().config;
+      const { config } = get();
+
       return JSON.stringify(sanitizeConfig(config), null, 2);
     },
 
@@ -168,11 +175,21 @@ export const createSceneSlice = <T extends SceneSlice>(
 
         // 验证基本结构：必须包含至少一个有效的配置字段
         const validKeys = [
-          'cameraMode', 'cameraMotionType', 'renderStyle', 'projectionMode',
-          'isImmersive', 'fov', 'displacementScale', 'depthEdgeStrength',
-          'motionSpeed', 'motionAmplitude', 'bloomStrength', 'chromaticAberration'
+          'cameraMode',
+          'cameraMotionType',
+          'renderStyle',
+          'projectionMode',
+          'isImmersive',
+          'fov',
+          'displacementScale',
+          'depthEdgeStrength',
+          'motionSpeed',
+          'motionAmplitude',
+          'bloomStrength',
+          'chromaticAberration',
         ];
-        const hasValidKey = validKeys.some(key => key in imported);
+        const hasValidKey = validKeys.some((key) => key in imported);
+
         if (!hasValidKey) return false;
 
         const oldConfig = get().config;
@@ -180,8 +197,13 @@ export const createSceneSlice = <T extends SceneSlice>(
 
         if (!hasSceneConfigChanges(oldConfig, nextChanges)) return true;
         set({ config: { ...oldConfig, ...nextChanges } } as Partial<T>);
+
         return true;
-      } catch {
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+        logger.warn('Failed to import config', { error: errorMessage });
+
         return false;
       }
     },

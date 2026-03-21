@@ -1,13 +1,19 @@
 import { getEventBus } from '@/core/EventBus';
 import { AIEvents } from '@/core/EventTypes';
-import type { AICacheConfig, CacheEntry } from './types';
 import { CACHE_DEFAULTS } from './AIService.constants';
+import type { AICacheConfig, CacheEntry } from './types';
 
 export class AIServiceCache<T> {
   private cache = new Map<string, CacheEntry<T>>();
   private config: AICacheConfig;
 
-  constructor(config: AICacheConfig = { enabled: true, maxSize: CACHE_DEFAULTS.MAX_SIZE, ttlMs: CACHE_DEFAULTS.TTL_MS }) {
+  constructor(
+    config: AICacheConfig = {
+      enabled: true,
+      maxSize: CACHE_DEFAULTS.MAX_SIZE,
+      ttlMs: CACHE_DEFAULTS.TTL_MS,
+    }
+  ) {
     this.config = config;
   }
 

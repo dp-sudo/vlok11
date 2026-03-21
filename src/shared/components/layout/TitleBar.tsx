@@ -87,9 +87,10 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
             type="button"
             onClick={() => {
               projectService.openProject().catch((err) => {
-                logger.error('Failed to open project', { error: err });
+                logger.error('打开项目失败', { error: err });
               });
             }}
+            data-testid="open-project-button"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-400 hover:text-cyan-300 hover:bg-cyan-950/30 border border-transparent hover:border-cyan-500/30 transition-all duration-200 group"
           >
             <FolderOpen className="w-4 h-4 group-hover:text-cyan-400 transition-colors" />
@@ -99,9 +100,10 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
             type="button"
             onClick={() => {
               projectService.saveProject().catch((err) => {
-                logger.error('Failed to save project', { error: err });
+                logger.error('保存项目失败', { error: err });
               });
             }}
+            data-testid="save-project-button"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-zinc-400 hover:text-purple-300 hover:bg-purple-950/30 border border-transparent hover:border-purple-500/30 transition-all duration-200 group"
           >
             <Save className="w-4 h-4 group-hover:text-purple-400 transition-colors" />
@@ -165,7 +167,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
                   type="button"
                   onClick={() => {
                     projectService.openProject().catch((err) => {
-                      logger.error('Failed to open project', { error: err });
+                      logger.error('打开项目失败', { error: err });
                     });
                     setMenuOpen(false);
                   }}
@@ -178,7 +180,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenModelManager, onOpenSe
                   type="button"
                   onClick={() => {
                     projectService.saveProject().catch((err) => {
-                      logger.error('Failed to save project', { error: err });
+                      logger.error('保存项目失败', { error: err });
                     });
                     setMenuOpen(false);
                   }}

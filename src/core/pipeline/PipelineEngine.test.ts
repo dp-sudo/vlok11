@@ -1,7 +1,7 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { getEventBus, resetEventBus } from '@/core/EventBus';
 import { PipelineEngine } from './PipelineEngine';
 import { getStageRegistry, StageRegistry } from './StageRegistry';
-import { getEventBus, resetEventBus } from '@/core/EventBus';
 import type { PipelineConfig, PipelineStage } from './types';
 
 describe('PipelineEngine', () => {
@@ -171,7 +171,9 @@ describe('PipelineEngine', () => {
 
       controller.abort();
 
-      await expect(engine.execute({}, config, controller.signal)).rejects.toThrow('Pipeline aborted');
+      await expect(engine.execute({}, config, controller.signal)).rejects.toThrow(
+        'Pipeline aborted'
+      );
     });
 
     it('should skip disabled stages', async () => {
@@ -297,6 +299,117 @@ describe('PipelineEngine', () => {
       const newEngine = PipelineEngine.getInstance();
 
       expect(newEngine).not.toBe(engine);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle stage execution error', async () => {
+      const errorStage: PipelineStage = {
+        name: 'errorStage',
+        async execute() {
+          throw new Error('Stage failed');
+        },
+      };
+
+      const registry = getStageRegistry();
+
+      registry.register('errorStage', errorStage);
+
+      const config: PipelineConfig = {
+        id: 'test-pipeline',
+        version: '1.0.0',
+        stages: [{ id: 'errorStage', type: 'errorStage', order: 0 }],
+      };
+
+      await expect(engine.execute({}, config)).rejects.toThrow('Stage failed');
+    });
+
+    it('should handle empty stages array', async () => {
+      const config: PipelineConfig = {
+        id: 'test-pipeline',
+        version: '1.0.0',
+        stages: [],
+      };
+
+      const result = await engine.execute({ initial: 'data' }, config);
+
+      expect(result).toEqual({ initial: 'data' });
+    });
+
+    it('should handle stages with no dependencies', async () => {
+      const executedStages: string[] = [];
+
+      const stage1: PipelineStage = {
+        name: 'stage1',
+        async execute() {
+          executedStages.push('stage1');
+
+          return { result: 1 };
+        },
+      };
+
+      const stage2: PipelineStage = {
+        name: 'stage2',
+        async execute() {
+          executedStages.push('stage2');
+
+          return { result: 2 };
+        },
+      };
+
+      const registry = getStageRegistry();
+
+      registry.register('stage1', stage1);
+      registry.register('stage2', stage2);
+
+      const config: PipelineConfig = {
+        id: 'test-pipeline',
+        version: '1.0.0',
+        stages: [
+          { id: 'stage1', type: 'stage1', order: 0 },
+          { id: 'stage2', type: 'stage2', order: 1 },
+        ],
+      };
+
+      await engine.execute({}, config);
+
+      expect(executedStages).toContain('stage1');
+      expect(executedStages).toContain('stage2');
+    });
+
+    it('should handle circular dependency detection', async () => {
+      const config: PipelineConfig = {
+        id: 'test-pipeline',
+        version: '1.0.0',
+        stages: [
+          { id: 'stage1', type: 'stage1', order: 0, dependsOn: ['stage2'] },
+          { id: 'stage2', type: 'stage2', order: 1, dependsOn: ['stage3'] },
+          { id: 'stage3', type: 'stage3', order: 2, dependsOn: ['stage1'] },
+        ],
+      };
+
+      await expect(engine.execute({}, config)).rejects.toThrow();
+    });
+
+    it('should handle missing dependency', async () => {
+      const stage1: PipelineStage = {
+        name: 'stage1',
+        async execute(input) {
+          return input;
+        },
+      };
+
+      const registry = getStageRegistry();
+
+      registry.register('stage1', stage1);
+
+      const config: PipelineConfig = {
+        id: 'test-pipeline',
+        version: '1.0.0',
+        stages: [{ id: 'stage1', type: 'stage1', order: 0, dependsOn: ['missing'] }],
+      };
+
+      await expect(engine.execute({}, config)).rejects.toThrow();
     });
   });
 });

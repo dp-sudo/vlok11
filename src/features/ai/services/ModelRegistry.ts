@@ -279,4 +279,3 @@ class ModelRegistryImpl {
 }
 
 export const getModelRegistry = (): ModelRegistryImpl => ModelRegistryImpl.getInstance();
-export const resetModelRegistry = (): void => ModelRegistryImpl.resetInstance();

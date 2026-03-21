@@ -1,7 +1,7 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { SceneType, TechPipeline } from '@/core/domain/types';
 import type { StageInput } from '../types';
 import { PrepareStage } from './PrepareStage';
-import { SceneType, TechPipeline } from '@/core/domain/types';
 
 describe('PrepareStage', () => {
   let stage: PrepareStage;
@@ -10,7 +10,20 @@ describe('PrepareStage', () => {
     stage = new PrepareStage();
   });
 
-  const createMockInput = (overrides?: Partial<StageInput> & { imageUrl?: string; depthUrl?: string; analysis?: { description: string; estimatedDepthScale: number; recommendedFov: number; reasoning: string; recommendedPipeline: TechPipeline; sceneType: SceneType } }): StageInput => {
+  const createMockInput = (
+    overrides?: Partial<StageInput> & {
+      imageUrl?: string;
+      depthUrl?: string;
+      analysis?: {
+        description: string;
+        estimatedDepthScale: number;
+        recommendedFov: number;
+        reasoning: string;
+        recommendedPipeline: TechPipeline;
+        sceneType: SceneType;
+      };
+    }
+  ): StageInput => {
     const base: StageInput = {
       imageUrl: 'https://example.com/image.jpg',
       depthUrl: 'https://example.com/depth.png',
@@ -60,8 +73,8 @@ describe('PrepareStage', () => {
       const result = await stage.execute(input);
 
       expect(result.success).toBe(true);
-      expect((result).metadata).toBeDefined();
-      const metadata = (result).metadata as Record<string, unknown>;
+      expect(result.metadata).toBeDefined();
+      const metadata = result.metadata as Record<string, unknown>;
 
       expect(metadata['recommendedConfig']).toEqual({
         displacementScale: 1.5,
@@ -74,7 +87,7 @@ describe('PrepareStage', () => {
       const result = await stage.execute(input);
 
       expect(result.success).toBe(true);
-      const metadata = (result).metadata as Record<string, unknown>;
+      const metadata = result.metadata as Record<string, unknown>;
 
       expect(metadata['ready']).toBe(true);
     });
@@ -86,7 +99,7 @@ describe('PrepareStage', () => {
       const result = await stage.execute(input);
 
       expect(result.success).toBe(true);
-      const metadata = (result).metadata!;
+      const metadata = result.metadata!;
 
       expect(metadata.width).toBe(1920);
       expect(metadata.height).toBe(1080);
@@ -142,9 +155,11 @@ describe('PrepareStage', () => {
       const result = await stage.execute(input);
 
       expect(result.success).toBe(true);
-      const metadata = (result).metadata as Record<string, unknown>;
+      const metadata = result.metadata as Record<string, unknown>;
 
-      expect((metadata['recommendedConfig'] as Record<string, unknown>)?.['displacementScale']).toBe(2.5);
+      expect(
+        (metadata['recommendedConfig'] as Record<string, unknown>)?.['displacementScale']
+      ).toBe(2.5);
     });
 
     it('should handle missing optional analysis fields', async () => {
@@ -161,7 +176,7 @@ describe('PrepareStage', () => {
       const result = await stage.execute(input);
 
       expect(result.success).toBe(true);
-      expect((result).metadata).toBeDefined();
+      expect(result.metadata).toBeDefined();
     });
   });
 });

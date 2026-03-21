@@ -43,17 +43,24 @@ export class FallbackProvider implements AIProvider {
       const imageBitmap = await createImageBitmap(img);
 
       const workerManager = getWorkerManager();
-      const depthBlob = await workerManager.execute<unknown, Blob>(
-        'image-processor',
-        'process_depth',
-        {
-          imageBitmap,
-          width,
-          height,
-          blurAmount: 0,
-        },
-        [imageBitmap]
-      );
+
+      // Worker call with 10-second timeout to prevent hanging
+      const depthBlob = await Promise.race([
+        workerManager.execute<unknown, Blob>(
+          'image-processor',
+          'process_depth',
+          {
+            imageBitmap,
+            width,
+            height,
+            blurAmount: 0,
+          },
+          [imageBitmap]
+        ),
+        new Promise<Blob>((_, reject) =>
+          setTimeout(() => reject(new Error('Worker timeout after 10s')), 10000)
+        ),
+      ]);
 
       const depthUrl = URL.createObjectURL(depthBlob);
 

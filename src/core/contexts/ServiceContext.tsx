@@ -1,22 +1,30 @@
-import { createContext, type ReactNode, useContext } from 'react';
+import { createContext, type ReactNode, useContext, useMemo } from 'react';
 
+import type { AppKernel } from '@/app/AppKernel';
 import type { AIService } from '@/features/ai/services/AIService';
 
 interface ServiceContextType {
   aiService: AIService | null;
+  kernel: AppKernel | null;
 }
 
-const ServiceContext = createContext<ServiceContextType>({
-  aiService: null,
-});
+const ServiceContext = createContext<ServiceContextType | undefined>(undefined);
 
 export const ServiceProvider = ({
   children,
-  services,
+  kernel,
 }: {
   children: ReactNode;
-  services: ServiceContextType;
+  kernel: AppKernel | null;
 }) => {
+  const services = useMemo(
+    () => ({
+      kernel,
+      aiService: kernel?.getServices().aiService ?? null,
+    }),
+    [kernel]
+  );
+
   return <ServiceContext.Provider value={services}>{children}</ServiceContext.Provider>;
 };
 
@@ -39,4 +47,14 @@ export const useAIService = () => {
   }
 
   return aiService;
+};
+
+export const useAppKernel = () => {
+  const { kernel } = useServices();
+
+  if (!kernel) {
+    throw new Error('应用内核尚未初始化');
+  }
+
+  return kernel;
 };

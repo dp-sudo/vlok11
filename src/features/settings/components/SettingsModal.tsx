@@ -25,6 +25,14 @@ const RESOLUTIONS = [
 
 const FPS_OPTIONS = [15, 30, 60, 90, 120] as const;
 
+const SETTINGS_SECTIONS = [
+  { id: 'ai', label: 'AI 设置' },
+  { id: 'theme', label: '主题' },
+  { id: 'audio', label: '音频' },
+  { id: 'export', label: '导出' },
+  { id: 'presets', label: '预设' },
+] as const;
+
 const getVolumeLabel = (volume: number): string => {
   if (volume === 0) return '静音';
   if (volume < 0.5) return '低';
@@ -68,27 +76,15 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
   const [activeSection, setActiveSection] = useState<string>('ai');
   const [presetName, setPresetName] = useState('');
 
-  const sections = [
-    { id: 'ai', label: 'AI 设置' },
-    { id: 'theme', label: '主题' },
-    { id: 'audio', label: '音频' },
-    { id: 'export', label: '导出' },
-    { id: 'presets', label: '预设' },
-  ];
-
   const handleSavePreset = () => {
     const trimmedName = presetName.trim();
 
     // 验证：长度限制和存在性检查
     if (!trimmedName) return;
     if (trimmedName.length > 50) {
-      console.warn('预设名称不能超过50个字符');
-
       return;
     }
-    if ((savedPresets as { name: string }[]).some((p) => p.name === trimmedName)) {
-      console.warn('预设名称已存在，请使用其他名称');
-
+    if (savedPresets.some((preset) => preset.name === trimmedName)) {
       return;
     }
     // 获取当前场景配置并序列化保存
@@ -111,13 +107,16 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
   };
 
   // API Key 输入验证
-  const handleApiKeyChange = useCallback((value: string) => {
-    // 基本格式验证：Google API Key 通常以 AIzaSy 开头，长度在 30-50 字符之间
-    if (value && !value.startsWith('AIzaSy')) {
-      // 仍然允许输入，只是不做严格验证
-    }
-    setApiKey(value);
-  }, [setApiKey]);
+  const handleApiKeyChange = useCallback(
+    (value: string) => {
+      // 基本格式验证：Google API Key 通常以 AIzaSy 开头，长度在 30-50 字符之间
+      if (value && !value.startsWith('AIzaSy')) {
+        // 仍然允许输入，只是不做严格验证
+      }
+      setApiKey(value);
+    },
+    [setApiKey]
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -135,7 +134,7 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
 
         {/* 标签导航 */}
         <div className="flex border-b border-zinc-800">
-          {sections.map((section) => (
+          {SETTINGS_SECTIONS.map((section) => (
             <button
               key={section.id}
               className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
@@ -182,8 +181,8 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                 </p>
                 <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                   <p className="text-xs text-amber-400">
-                    安全提示: API Key 已加密存储在 sessionStorage 中，关闭浏览器标签页后会自动清除。
-                    请勿在公共设备上保存 API Key。
+                    安全提示: API Key 仅保存在当前浏览器会话存储中，并做了基础编码混淆。
+                    前端无法提供真正的密钥级安全隔离，请勿在公共设备上保存敏感 Key。
                   </p>
                 </div>
               </div>
@@ -191,7 +190,10 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
               <div className="h-px bg-zinc-800" />
 
               <div className="space-y-3">
-                <span id="processing-mode-label" className="block text-sm font-medium text-zinc-300">
+                <span
+                  id="processing-mode-label"
+                  className="block text-sm font-medium text-zinc-300"
+                >
                   处理模式
                 </span>
                 <fieldset
@@ -247,8 +249,8 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
           {/* 主题设置 */}
           {activeSection === 'theme' && (
             <div className="space-y-4">
-              <div className="space-y-3">
-                <span className="block text-sm font-medium text-zinc-300">主题模式</span>
+              <fieldset className="space-y-3">
+                <legend className="block text-sm font-medium text-zinc-300">主题模式</legend>
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
@@ -287,7 +289,7 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                     <span className="text-sm">跟随系统</span>
                   </button>
                 </div>
-              </div>
+              </fieldset>
             </div>
           )}
 
@@ -312,10 +314,13 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
               {audioEnabled && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-zinc-300">音量</span>
+                    <label htmlFor="audio-volume" className="text-sm font-medium text-zinc-300">
+                      音量
+                    </label>
                     <span className="text-xs text-zinc-500">{Math.round(audioVolume * 100)}%</span>
                   </div>
                   <input
+                    id="audio-volume"
                     className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
                     max={1}
                     min={0}
@@ -330,9 +335,7 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                     ) : (
                       <Volume2 className="w-4 h-4" />
                     )}
-                    <span className="text-xs">
-                    {getVolumeLabel(audioVolume)}
-                    </span>
+                    <span className="text-xs">{getVolumeLabel(audioVolume)}</span>
                   </div>
                 </div>
               )}
@@ -343,10 +346,15 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
           {activeSection === 'export' && (
             <div className="space-y-4">
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-zinc-300">导出格式</label>
+                <label htmlFor="export-format" className="block text-sm font-medium text-zinc-300">
+                  导出格式
+                </label>
                 <select
+                  id="export-format"
                   className="w-full px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-white focus:outline-none focus:border-indigo-500"
-                  onChange={(e) => setExportFormat(e.target.value as 'webm' | 'mp4' | 'gif' | 'png' | 'jpg')}
+                  onChange={(e) =>
+                    setExportFormat(e.target.value as 'webm' | 'mp4' | 'gif' | 'png' | 'jpg')
+                  }
                   value={exportFormat}
                 >
                   {EXPORT_FORMATS.map((fmt) => (
@@ -358,8 +366,14 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
               </div>
 
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-zinc-300">分辨率</label>
+                <label
+                  htmlFor="export-resolution"
+                  className="block text-sm font-medium text-zinc-300"
+                >
+                  分辨率
+                </label>
                 <select
+                  id="export-resolution"
                   className="w-full px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-white focus:outline-none focus:border-indigo-500"
                   onChange={(e) => setExportResolution(e.target.value)}
                   value={exportResolution}
@@ -372,8 +386,8 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                 </select>
               </div>
 
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-zinc-300">帧率 (FPS)</label>
+              <fieldset className="space-y-3">
+                <legend className="block text-sm font-medium text-zinc-300">帧率 (FPS)</legend>
                 <div className="grid grid-cols-5 gap-2">
                   {FPS_OPTIONS.map((fps) => (
                     <button
@@ -390,10 +404,10 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                     </button>
                   ))}
                 </div>
-              </div>
+              </fieldset>
 
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-zinc-300">编码格式</label>
+              <fieldset className="space-y-3">
+                <legend className="block text-sm font-medium text-zinc-300">编码格式</legend>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     className={`px-4 py-2 text-sm rounded-lg border transition-all ${
@@ -440,12 +454,15 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                     GIF
                   </button>
                 </div>
-              </div>
+              </fieldset>
 
               <div className="p-3 bg-zinc-800/50 rounded-lg">
                 <div className="text-xs text-zinc-400">
                   <p className="font-medium text-zinc-300 mb-1">当前导出设置:</p>
-                  <p>格式: {exportFormat.toUpperCase()} | 分辨率: {exportResolution} | 帧率: {exportFps}fps | 编码: {exportCodec}</p>
+                  <p>
+                    格式: {exportFormat.toUpperCase()} | 分辨率: {exportResolution} | 帧率:{' '}
+                    {exportFps}fps | 编码: {exportCodec}
+                  </p>
                 </div>
               </div>
             </div>
@@ -455,9 +472,12 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
           {activeSection === 'presets' && (
             <div className="space-y-4">
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-zinc-300">保存当前配置</label>
+                <label htmlFor="preset-name" className="block text-sm font-medium text-zinc-300">
+                  保存当前配置
+                </label>
                 <div className="flex gap-2">
                   <input
+                    id="preset-name"
                     className="flex-1 px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500"
                     onChange={(e) => setPresetName(e.target.value)}
                     placeholder="预设名称..."
@@ -483,7 +503,7 @@ export const SettingsModal = memo(({ onClose }: SettingsModalProps) => {
                   <p className="text-sm text-zinc-500">暂无保存的预设</p>
                 ) : (
                   <div className="space-y-2">
-                    {(savedPresets as { name: string; timestamp: number }[]).map((preset) => (
+                    {savedPresets.map((preset) => (
                       <div
                         key={preset.name}
                         className="flex items-center justify-between p-3 bg-zinc-950 border border-zinc-800 rounded-lg"

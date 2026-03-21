@@ -18,17 +18,15 @@ import {
 export function computeLightDirection(angleX: number, angleY: number): [number, number, number] {
   const radX = (angleX * Math.PI) / 180;
   const radY = (angleY * Math.PI) / 180;
-  return [
-    Math.cos(radX) * Math.sin(radY),
-    Math.sin(radX),
-    Math.cos(radX) * Math.cos(radY),
-  ];
+
+  return [Math.cos(radX) * Math.sin(radY), Math.sin(radX), Math.cos(radX) * Math.cos(radY)];
 }
 
 // Build common light uniforms from config
 export function buildLightUniforms(config: SceneConfig): Record<string, unknown> {
   const angleX = config.lightAngleX ?? LIGHT.DEFAULT_ANGLE_X;
   const angleY = config.lightAngleY ?? LIGHT.DEFAULT_ANGLE_Y;
+
   return {
     uLightIntensity: config.lightIntensity ?? LIGHT.DEFAULT_INTENSITY,
     uLightDirection: computeLightDirection(angleX, angleY),

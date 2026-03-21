@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
+import { RenderStyle } from '@/core/domain/types';
 import { DEFAULT_SCENE_CONFIG } from '@/shared/config/defaultSceneConfig';
 import {
-  getRenderStylePreset,
   getMotionPreset,
   getProjectionPreset,
+  getRenderStylePreset,
   getScenePreset,
   sanitizeConfig,
 } from '@/shared/config/presets';
-import { RenderStyle } from '@/core/domain/types';
 
 import { createSceneSlice } from './sceneConfigStore';
 
@@ -21,6 +21,7 @@ describe('sceneConfigStore', () => {
     const mockSet = vi.fn((updater) => {
       if (typeof updater === 'function') {
         const result = updater(state);
+
         Object.assign(state, result);
       } else {
         Object.assign(state, updater);
@@ -67,6 +68,7 @@ describe('sceneConfigStore', () => {
   describe('resetConfig', () => {
     it('should reset config to default', () => {
       const { slice, state, mockSet } = createTestSceneSlice();
+
       state.config.fov = 100;
       state.config.renderStyle = RenderStyle.CEL_SHADING;
 
@@ -79,6 +81,7 @@ describe('sceneConfigStore', () => {
   describe('resetViewConfig', () => {
     it('should reset only view-related config', () => {
       const { slice, state } = createTestSceneSlice();
+
       state.config.fov = 100;
       state.config.renderStyle = RenderStyle.CEL_SHADING;
 
@@ -185,48 +188,74 @@ describe('preset functions', () => {
   describe('getRenderStylePreset', () => {
     it('should return preset for valid id', () => {
       const preset = getRenderStylePreset('cel');
+
       expect(preset).toBeDefined();
       expect(preset?.id).toBe('cel');
     });
 
     it('should return undefined for invalid id', () => {
       const preset = getRenderStylePreset('nonexistent');
+
       expect(preset).toBeUndefined();
+    });
+
+    it('should return all available presets', () => {
+      const preset = getRenderStylePreset('normal');
+
+      expect(preset).toBeDefined();
     });
   });
 
   describe('getMotionPreset', () => {
     it('should return preset for valid id', () => {
       const preset = getMotionPreset('orbit');
+
       expect(preset).toBeDefined();
     });
 
     it('should return undefined for invalid id', () => {
       const preset = getMotionPreset('nonexistent');
+
       expect(preset).toBeUndefined();
+    });
+
+    it('should return static preset', () => {
+      const preset = getMotionPreset('static');
+
+      expect(preset).toBeDefined();
     });
   });
 
   describe('getProjectionPreset', () => {
     it('should return preset for valid id', () => {
       const preset = getProjectionPreset('panorama');
+
       expect(preset).toBeDefined();
     });
 
     it('should return undefined for invalid id', () => {
       const preset = getProjectionPreset('nonexistent');
+
       expect(preset).toBeUndefined();
+    });
+
+    it('should return perspective preset', () => {
+      const preset = getProjectionPreset('plane');
+
+      expect(preset).toBeDefined();
     });
   });
 
   describe('getScenePreset', () => {
     it('should return preset for valid id', () => {
       const preset = getScenePreset('default');
+
       expect(preset).toBeDefined();
     });
 
     it('should return undefined for invalid id', () => {
       const preset = getScenePreset('nonexistent');
+
       expect(preset).toBeUndefined();
     });
   });
@@ -234,12 +263,26 @@ describe('preset functions', () => {
   describe('sanitizeConfig', () => {
     it('should return valid config unchanged', () => {
       const result = sanitizeConfig(DEFAULT_SCENE_CONFIG);
+
       expect(result).toBeDefined();
     });
 
     it('should handle partial config', () => {
       const partial = { fov: 75 };
       const result = sanitizeConfig(partial as never);
+
+      expect(result).toBeDefined();
+    });
+
+    it('should handle empty config', () => {
+      const result = sanitizeConfig({} as never);
+
+      expect(result).toBeDefined();
+    });
+
+    it('should handle undefined values', () => {
+      const result = sanitizeConfig({ fov: undefined, renderStyle: undefined } as never);
+
       expect(result).toBeDefined();
     });
   });

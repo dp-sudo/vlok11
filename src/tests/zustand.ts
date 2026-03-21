@@ -31,13 +31,22 @@ export function createStoreResetHelper<T extends Record<string, unknown>>(getSto
     reset: () => {
       const state = getStore();
       // Reset all state keys to initial values
-      const resetState = Object.keys(state).reduce((acc, key) => {
-        acc[key] = undefined;
-        return acc;
-      }, {} as Record<string, undefined>);
+      const resetState = Object.keys(state).reduce(
+        (acc, key) => {
+          acc[key] = undefined;
+
+          return acc;
+        },
+        {} as Record<string, undefined>
+      );
       const stateAny = state as Record<string, unknown>;
+
       if (stateAny['$persist']) {
-        (stateAny['$persist'] as (state: unknown, method: string, stateAny: unknown) => void)(resetState, 'reset', resetState);
+        (stateAny['$persist'] as (state: unknown, method: string, stateAny: unknown) => void)(
+          resetState,
+          'reset',
+          resetState
+        );
       }
     },
   };

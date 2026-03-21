@@ -100,57 +100,61 @@ export const EffectsTab: React.FC<EffectsTabProps> = memo(
   ({ config, set, expandedSections, toggleSection, activeStyle, searchQuery = '' }) => {
     // 保留searchQuery参数以支持未来搜索功能
     void searchQuery;
+
     return (
-    <>
-      <div className="mb-3 p-3 rounded-xl bg-white border border-zinc-200 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600">
-            {typeof activeStyle?.icon === 'string' ? (
-              <span className="text-lg">{activeStyle.icon}</span>
-            ) : (
-              activeStyle?.icon
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-zinc-800 tracking-wide">
-              {activeStyle?.label}风格
+      <>
+        <div className="mb-3 p-3 rounded-xl bg-white border border-zinc-200 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600">
+              {typeof activeStyle?.icon === 'string' ? (
+                <span className="text-lg">{activeStyle.icon}</span>
+              ) : (
+                activeStyle?.icon
+              )}
             </div>
-            <div className="text-[11px] text-zinc-500 font-normal mt-0.5">{activeStyle?.desc}</div>
-          </div>
-          <div className="flex gap-1 flex-shrink-0">
-            {config.enableParticles ? (
-              <span className="px-1.5 py-0.5 rounded text-[9px] bg-violet-100 text-violet-700 font-medium">
-                粒子
-              </span>
-            ) : null}
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-zinc-800 tracking-wide">
+                {activeStyle?.label}风格
+              </div>
+              <div className="text-[11px] text-zinc-500 font-normal mt-0.5">
+                {activeStyle?.desc}
+              </div>
+            </div>
+            <div className="flex gap-1 flex-shrink-0">
+              {config.enableParticles ? (
+                <span className="px-1.5 py-0.5 rounded text-[9px] bg-violet-100 text-violet-700 font-medium">
+                  粒子
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
 
-      <RenderStyleSection
-        config={config}
-        expandedSections={expandedSections}
-        set={set}
-        toggleSection={toggleSection}
-      />
-      <ColorGradeSection
-        config={config}
-        expandedSections={expandedSections}
-        set={set}
-        toggleSection={toggleSection}
-      />
-      <LightingSection
-        config={config}
-        expandedSections={expandedSections}
-        set={set}
-        toggleSection={toggleSection}
-      />
-      <EffectsToggleSection config={config} set={set} />
-      <MaterialSection config={config} set={set} />
-      <RecordingSettings config={config} set={set} />
-    </>
-  );
-});
+        <RenderStyleSection
+          config={config}
+          expandedSections={expandedSections}
+          set={set}
+          toggleSection={toggleSection}
+        />
+        <ColorGradeSection
+          config={config}
+          expandedSections={expandedSections}
+          set={set}
+          toggleSection={toggleSection}
+        />
+        <LightingSection
+          config={config}
+          expandedSections={expandedSections}
+          set={set}
+          toggleSection={toggleSection}
+        />
+        <EffectsToggleSection config={config} set={set} />
+        <MaterialSection config={config} set={set} />
+        <RecordingSettings config={config} set={set} />
+      </>
+    );
+  }
+);
 
 const EffectsToggleSection = memo<{
   config: SceneConfig;

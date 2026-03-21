@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand';
 
+import { getKernelAIService, hasKernelAIService } from '@/app/kernelRuntime';
 import { isValidStatusTransition } from '@/core/domain/types';
 import type { AIService } from '@/features/ai/services/AIService';
 import { createUploadPipeline, type UploadPipeline } from '@/features/upload/pipeline';
@@ -46,6 +47,7 @@ export interface SessionActions {
   finishExport: () => void;
   initServices: (aiService: AIService) => void;
   resetSession: () => void;
+  restoreSnapshot: (payload: { currentAsset: Asset; result: ProcessingResult }) => void;
   startExport: (format: ExportStateInfo['format']) => void;
   updateExportProgress: (progress: number) => void;
   uploadComplete: (result: ProcessingResult) => void;
@@ -73,13 +75,19 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
 ): SessionSlice => {
   let pipeline: UploadPipeline | null = null;
   let pipelineCallbacksCleaned = false;
-  let aiService: AIService | null = null;
+  const isPipelineActiveStatus = (
+    status: SessionState['status']
+  ): status is ProcessingStatus | 'uploading' =>
+    status === 'uploading' || status === 'analyzing' || status === 'processing_depth';
 
   const ensurePipeline = () => {
     if (!pipeline) {
+      const aiService = getKernelAIService();
+
       if (!aiService) {
-        throw new Error('AI Service not initialized');
+        throw new Error('AI 服务尚未初始化');
       }
+
       pipeline = createUploadPipeline({ aiService });
 
       pipeline.onProgress((p) => {
@@ -89,7 +97,8 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
 
         // S3 - 竞态条件：检查当前状态
         const currentStatus = get().status;
-        if (currentStatus !== 'uploading') return;
+
+        if (!isPipelineActiveStatus(currentStatus)) return;
 
         let status: ProcessingStatus = 'analyzing';
 
@@ -102,7 +111,8 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
         if (pipelineCallbacksCleaned) return;
         // S3 - 竞态条件：检查当前状态
         const currentStatus = get().status;
-        if (currentStatus !== 'uploading') return;
+
+        if (!isPipelineActiveStatus(currentStatus)) return;
         get().uploadError(err.message);
       });
 
@@ -111,7 +121,8 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
         if (pipelineCallbacksCleaned) return;
         // S3 - 竞态条件：检查当前状态
         const currentStatus = get().status;
-        if (currentStatus !== 'uploading') return;
+
+        if (!isPipelineActiveStatus(currentStatus)) return;
 
         if (isProcessingResult(result)) {
           get().uploadComplete(result);
@@ -129,8 +140,7 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
   return {
     ...DEFAULT_SESSION,
 
-    initServices: (service: AIService) => {
-      aiService = service;
+    initServices: (_service: AIService) => {
       set({ isServiceInitialized: true } as Partial<T>);
     },
 
@@ -141,9 +151,7 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       if (get().status === 'uploading') return;
 
       if (!isValidStatusTransition(currentStatus, 'uploading')) {
-        get().uploadError(
-          `Invalid status transition: cannot start upload from '${currentStatus}' status`
-        );
+        get().uploadError(`状态流转无效：当前处于 ${currentStatus}，无法开始上传`);
 
         return;
       }
@@ -151,8 +159,9 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       set({
         status: 'uploading',
         progress: 0,
-        statusMessage: 'Starting upload...',
+        statusMessage: '开始上传...',
         error: undefined,
+        isServiceInitialized: hasKernelAIService(),
       } as Partial<T>);
 
       try {
@@ -161,11 +170,11 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
         p.process(input).catch((error) => {
           // Rejection now caught and delegated cleanly to error handler
           get().uploadError(
-            error instanceof Error ? error.message : 'Pipeline aborted or threw unexpectedly'
+            error instanceof Error ? error.message : '处理流水线已中止或发生未预期异常'
           );
         });
       } catch (error) {
-        get().uploadError(error instanceof Error ? error.message : 'Unknown initialization error');
+        get().uploadError(error instanceof Error ? error.message : '初始化过程中发生未知错误');
       }
     },
 
@@ -186,6 +195,18 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
       } as Partial<T>);
     },
 
+    restoreSnapshot: ({ currentAsset, result }) => {
+      set({
+        status: 'ready',
+        progress: 100,
+        currentAsset,
+        result,
+        error: undefined,
+        statusMessage: '项目快照恢复完成',
+        isServiceInitialized: hasKernelAIService(),
+      } as Partial<T>);
+    },
+
     resetSession: () => {
       // S1 - 清理 pipeline 回调以防止内存泄漏
       if (pipeline) {
@@ -200,7 +221,7 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
         currentAsset: undefined,
         result: undefined,
         error: undefined,
-        isServiceInitialized: !!aiService,
+        isServiceInitialized: hasKernelAIService(),
       } as Partial<T>);
       get().resetVideo();
     },

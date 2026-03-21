@@ -41,11 +41,8 @@ const DEFAULT_TEXEL_SIZE: [number, number] = [
 const computeLightDirection = (angleX: number, angleY: number): [number, number, number] => {
   const radX = (angleX * Math.PI) / 180;
   const radY = (angleY * Math.PI) / 180;
-  return [
-    Math.cos(radX) * Math.sin(radY),
-    Math.sin(radX),
-    Math.cos(radX) * Math.cos(radY),
-  ];
+
+  return [Math.cos(radX) * Math.sin(radY), Math.sin(radX), Math.cos(radX) * Math.cos(radY)];
 };
 
 const DEFAULT_LIGHT_DIRECTION: [number, number, number] = computeLightDirection(

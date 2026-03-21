@@ -28,11 +28,21 @@ export const AITab: React.FC<AITabProps> = memo(({ config, set, searchQuery = ''
 
   // 搜索过滤 - 过滤包含关键词的组件
   const searchLower = searchQuery.toLowerCase();
-  const showProgress = !searchQuery || 'ai处理进度'.includes(searchLower) || 'progress'.includes(searchLower);
-  const showApiKey = !searchQuery || 'api配置'.includes(searchLower) || 'apikey'.includes(searchLower) || 'api key'.includes(searchLower);
-  const showProvider = !searchQuery || 'provider'.includes(searchLower) || '提供商'.includes(searchLower);
+  const showProgress =
+    !searchQuery || 'ai处理进度'.includes(searchLower) || 'progress'.includes(searchLower);
+  const showApiKey =
+    !searchQuery ||
+    'api配置'.includes(searchLower) ||
+    'apikey'.includes(searchLower) ||
+    'api key'.includes(searchLower);
+  const showProvider =
+    !searchQuery || 'provider'.includes(searchLower) || '提供商'.includes(searchLower);
   const showCache = !searchQuery || '缓存'.includes(searchLower) || 'cache'.includes(searchLower);
-  const showSmart = !searchQuery || '智能'.includes(searchLower) || 'smart'.includes(searchLower) || 'ai'.includes(searchLower);
+  const showSmart =
+    !searchQuery ||
+    '智能'.includes(searchLower) ||
+    'smart'.includes(searchLower) ||
+    'ai'.includes(searchLower);
 
   return (
     <div className="space-y-4">
@@ -49,7 +59,9 @@ export const AITab: React.FC<AITabProps> = memo(({ config, set, searchQuery = ''
       {showCache && <CacheManager />}
 
       {/* 智能场景分析 */}
-      {showSmart && <SmartSuggestions currentConfig={config} onApplyOptimization={handleApplyOptimization} />}
+      {showSmart && (
+        <SmartSuggestions currentConfig={config} onApplyOptimization={handleApplyOptimization} />
+      )}
     </div>
   );
 });

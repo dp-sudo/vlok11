@@ -3,8 +3,12 @@
  * 移动端优化 Hook
  */
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
-import { detectDeviceCapabilities, getOptimalRenderSettings, type DeviceCapabilities } from '../utils/deviceDetection';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type DeviceCapabilities,
+  detectDeviceCapabilities,
+  getOptimalRenderSettings,
+} from '../utils/deviceDetection';
 
 export interface MobileOptimizations {
   device: DeviceCapabilities;
@@ -21,9 +25,11 @@ export function useMobileOptimization(): MobileOptimizations {
   // 监听系统偏好变化 - reduced motion
   useEffect(() => {
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
     setReducedMotion(motionQuery.matches);
 
     const motionHandler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+
     motionQuery.addEventListener('change', motionHandler);
 
     return () => {
@@ -34,9 +40,11 @@ export function useMobileOptimization(): MobileOptimizations {
   // 监听系统偏好变化 - dark mode
   useEffect(() => {
     const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
     setPrefersDarkMode(darkQuery.matches);
 
     const darkHandler = (e: MediaQueryListEvent) => setPrefersDarkMode(e.matches);
+
     darkQuery.addEventListener('change', darkHandler);
 
     return () => {
@@ -77,7 +85,7 @@ export function useMobileOptimization(): MobileOptimizations {
   }, []);
 
   // 使用useMemo缓存renderSettings，避免每次渲染时重新计算
-  const renderSettings = useMemo(() => getOptimalRenderSettings(), [device]);
+  const renderSettings = useMemo(() => getOptimalRenderSettings(), []);
 
   return {
     device,
@@ -92,7 +100,9 @@ export function useMobileOptimization(): MobileOptimizations {
  */
 export function useMobileGestures(containerRef: React.RefObject<HTMLElement>) {
   const [isSwiping, setIsSwiping] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | 'up' | 'down' | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | 'up' | 'down' | null>(
+    null
+  );
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
     if (e.touches.length === 1) {

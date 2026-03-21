@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage, subscribeWithSelector } from 'zustand/middleware';
+import { createJSONStorage, persist, subscribeWithSelector } from 'zustand/middleware';
 
 import { createSceneSlice, type SceneSlice } from './sceneConfigStore';
 import { createSessionSlice, type SessionSlice } from './sessionStore';
@@ -14,6 +14,7 @@ const localStorageStorage = {
       return localStorage.getItem(name);
     } catch (error) {
       console.warn(`[localStorage] Failed to get item "${name}":`, error);
+
       return null;
     }
   },

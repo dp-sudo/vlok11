@@ -158,8 +158,12 @@ export const ErrorMessages: Record<ErrorCode, string> = {
 };
 
 // Recovery action helpers - defined as stable references
-const reloadPage = (): void => { window.location.reload(); };
-const noOp = (): void => { /* No automatic recovery available */ };
+const reloadPage = (): void => {
+  window.location.reload();
+};
+const noOp = (): void => {
+  /* No automatic recovery available */
+};
 
 // Specific recovery actions for different error types
 const requestCameraPermission = async (): Promise<void> => {
@@ -209,7 +213,9 @@ export const RecoveryOptions: Record<ErrorCode, RecoveryOption[]> = {
   [ErrorCodes.INIT_FAILED]: [{ label: '重试', action: reloadPage }],
   [ErrorCodes.INIT_DEPENDENCY_MISSING]: [{ label: '刷新页面', action: reloadPage }],
   [ErrorCodes.INIT_CANCELLED]: [{ label: '重试', action: reloadPage }],
-  [ErrorCodes.INIT_WEBGL_NOT_SUPPORTED]: [{ label: '查看支持的浏览器', action: openBrowserSupport }],
+  [ErrorCodes.INIT_WEBGL_NOT_SUPPORTED]: [
+    { label: '查看支持的浏览器', action: openBrowserSupport },
+  ],
 
   // 相机错误
   [ErrorCodes.CAMERA_SYNC_FAILED]: [{ label: '重试', action: retryAction }],
@@ -235,7 +241,10 @@ export const RecoveryOptions: Record<ErrorCode, RecoveryOption[]> = {
 
   // AI错误
   [ErrorCodes.AI_MODEL_LOAD_FAILED]: [{ label: '重试加载模型', action: retryAction }],
-  [ErrorCodes.AI_INFERENCE_FAILED]: [{ label: '重试AI', action: retryAction }, { label: '跳过AI处理', action: noOp }],
+  [ErrorCodes.AI_INFERENCE_FAILED]: [
+    { label: '重试AI', action: retryAction },
+    { label: '跳过AI处理', action: noOp },
+  ],
   [ErrorCodes.AI_INPUT_INVALID]: [{ label: '尝试其他输入', action: retryAction }],
   [ErrorCodes.AI_OUTPUT_INVALID]: [{ label: '重试', action: retryAction }],
   [ErrorCodes.AI_QUOTA_EXCEEDED]: [{ label: '检查配额', action: openSettings }],

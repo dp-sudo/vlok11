@@ -5,4 +5,3 @@ export { ParallaxRig } from './ParallaxRig';
 export { SimulatedTracker } from './SimulatedTracker';
 export { ToneMappingEffect } from './ToneMappingEffect';
 export { TrackingBridge } from './TrackingBridge';
-export { WebcamTracker } from './WebcamTracker';

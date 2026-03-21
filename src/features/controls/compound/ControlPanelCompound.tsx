@@ -1,6 +1,14 @@
 import { Loader2, Search, X } from 'lucide-react';
 import type React from 'react';
-import { createContext, memo, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  memo,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import type { CameraViewPreset, SceneConfig } from '@/shared/types';
 import { AITab } from '../AITab';
 import { CameraTab } from '../CameraTab';
@@ -51,13 +59,15 @@ interface TabBarProps {
 
 interface VideoControlsWrapperProps {
   hasVideo: boolean;
-  videoState?: {
-    currentTime: number;
-    duration: number;
-    isLooping: boolean;
-    isPlaying: boolean;
-    playbackRate: number;
-  } | undefined;
+  videoState?:
+    | {
+        currentTime: number;
+        duration: number;
+        isLooping: boolean;
+        isPlaying: boolean;
+        playbackRate: number;
+      }
+    | undefined;
   onVideoTogglePlay?: (() => void) | undefined;
   onVideoSeek?: ((time: number) => void) | undefined;
   onSetPlaybackRate: (rate: number) => void;
@@ -83,13 +93,15 @@ interface ControlPanelCompoundProps {
   isExporting: boolean;
   activeTab: TabType;
   hasVideo: boolean;
-  videoState?: {
-    currentTime: number;
-    duration: number;
-    isLooping: boolean;
-    isPlaying: boolean;
-    playbackRate: number;
-  } | undefined;
+  videoState?:
+    | {
+        currentTime: number;
+        duration: number;
+        isLooping: boolean;
+        isPlaying: boolean;
+        playbackRate: number;
+      }
+    | undefined;
   onVideoTogglePlay?: (() => void) | undefined;
   onVideoSeek?: ((time: number) => void) | undefined;
   onSetPlaybackRate: (rate: number) => void;
@@ -104,104 +116,104 @@ interface ControlPanelCompoundProps {
 }
 
 // Main compound component
-const ControlPanelCompoundInner: React.FC<ControlPanelCompoundProps> = memo((props: ControlPanelCompoundProps) => {
-  const {
-    children,
-    config,
-    setConfig,
-    expandedSections,
-    toggleSection,
-    hoveredItem,
-    setHoveredItem,
-    isExporting,
-  } = props;
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const activeProjection = useMemo(
-    () => PROJECTIONS.find((p) => p.mode === config.projectionMode),
-    [config.projectionMode]
-  );
-
-  const activeStyle = useMemo(
-    () => RENDER_STYLES.find((r) => r.style === config.renderStyle),
-    [config.renderStyle]
-  );
-
-  const activeMotion = useMemo(
-    () => MOTIONS.find((m) => m.type === config.cameraMotionType),
-    [config.cameraMotionType]
-  );
-
-  const ctxValue = useMemo(
-    () => ({
+const ControlPanelCompoundInner: React.FC<ControlPanelCompoundProps> = memo(
+  (props: ControlPanelCompoundProps) => {
+    const {
+      children,
       config,
       setConfig,
       expandedSections,
       toggleSection,
       hoveredItem,
       setHoveredItem,
-      activeProjection,
-      activeStyle,
-      activeMotion,
-      searchQuery,
-      setSearchQuery,
-    }),
-    [
-      config,
-      setConfig,
-      expandedSections,
-      toggleSection,
-      hoveredItem,
-      setHoveredItem,
-      activeProjection,
-      activeStyle,
-      activeMotion,
-      searchQuery,
-    ]
-  );
+      isExporting,
+    } = props;
 
-  return (
-    <ControlPanelContext.Provider value={ctxValue}>
-      <div className="w-full lg:w-80 bg-zinc-950/90 backdrop-blur-xl flex flex-col h-full border-l border-white/10 shadow-2xl relative text-zinc-100">
-        {/* 搜索栏 */}
-        <div className="px-3 pt-3 pb-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <input
-              className="w-full pl-9 pr-8 py-2 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 transition-colors"
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜索参数..."
-              type="text"
-              value={searchQuery}
-            />
-            {searchQuery && (
-              <button
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-white transition-colors"
-                onClick={() => setSearchQuery('')}
-                type="button"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
-        </div>
+    const [searchQuery, setSearchQuery] = useState('');
 
-        {isExporting ? (
-          <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
-            <div className="flex flex-col items-center gap-2 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl">
-              <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
-              <div className="text-sm font-semibold text-slate-200">
-                导出中...
-              </div>
+    const activeProjection = useMemo(
+      () => PROJECTIONS.find((p) => p.mode === config.projectionMode),
+      [config.projectionMode]
+    );
+
+    const activeStyle = useMemo(
+      () => RENDER_STYLES.find((r) => r.style === config.renderStyle),
+      [config.renderStyle]
+    );
+
+    const activeMotion = useMemo(
+      () => MOTIONS.find((m) => m.type === config.cameraMotionType),
+      [config.cameraMotionType]
+    );
+
+    const ctxValue = useMemo(
+      () => ({
+        config,
+        setConfig,
+        expandedSections,
+        toggleSection,
+        hoveredItem,
+        setHoveredItem,
+        activeProjection,
+        activeStyle,
+        activeMotion,
+        searchQuery,
+        setSearchQuery,
+      }),
+      [
+        config,
+        setConfig,
+        expandedSections,
+        toggleSection,
+        hoveredItem,
+        setHoveredItem,
+        activeProjection,
+        activeStyle,
+        activeMotion,
+        searchQuery,
+      ]
+    );
+
+    return (
+      <ControlPanelContext.Provider value={ctxValue}>
+        <div className="w-full lg:w-80 bg-zinc-950/90 backdrop-blur-xl flex flex-col h-full border-l border-white/10 shadow-2xl relative text-zinc-100">
+          {/* 搜索栏 */}
+          <div className="px-3 pt-3 pb-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <input
+                className="w-full pl-9 pr-8 py-2 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 transition-colors"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="搜索参数..."
+                type="text"
+                value={searchQuery}
+              />
+              {searchQuery && (
+                <button
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-white transition-colors"
+                  onClick={() => setSearchQuery('')}
+                  type="button"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </div>
           </div>
-        ) : null}
-        {children}
-      </div>
-    </ControlPanelContext.Provider>
-  );
-});
+
+          {isExporting ? (
+            <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
+              <div className="flex flex-col items-center gap-2 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl">
+                <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+                <div className="text-sm font-semibold text-slate-200">导出中...</div>
+              </div>
+            </div>
+          ) : null}
+          {children}
+        </div>
+      </ControlPanelContext.Provider>
+    );
+  }
+);
 
 // VideoControlsWrapper component
 const VideoControlsWrapper: React.FC<VideoControlsWrapperProps> = memo(
@@ -299,10 +311,27 @@ const TabBar: React.FC<TabBarProps> = memo(({ activeTab, onTabChange }) => {
 
 // Content sub-component - renders the active tab
 const Content: React.FC<ContentProps> = memo(({ activeTab, activeCameraView, onSetCameraView }) => {
-  const { config, setConfig, expandedSections, toggleSection, hoveredItem, setHoveredItem, activeProjection, activeStyle, activeMotion, searchQuery } = useControlPanel();
+  const {
+    config,
+    setConfig,
+    expandedSections,
+    toggleSection,
+    hoveredItem,
+    setHoveredItem,
+    activeProjection,
+    activeStyle,
+    activeMotion,
+    searchQuery,
+  } = useControlPanel();
 
   // 搜索过滤 - 过滤tab显示
-  const showContent = !searchQuery || activeTab === 'scene' || activeTab === 'camera' || activeTab === 'effects' || activeTab === 'immersive' || activeTab === 'ai';
+  const showContent =
+    !searchQuery ||
+    activeTab === 'scene' ||
+    activeTab === 'camera' ||
+    activeTab === 'effects' ||
+    activeTab === 'immersive' ||
+    activeTab === 'ai';
 
   return (
     <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
@@ -322,7 +351,9 @@ const Content: React.FC<ContentProps> = memo(({ activeTab, activeCameraView, onS
 
         {showContent && activeTab === 'camera' && (
           <CameraTab
-            {...(activeCameraView !== undefined ? { activeCameraView: activeCameraView ?? null } : {})}
+            {...(activeCameraView !== undefined
+              ? { activeCameraView: activeCameraView ?? null }
+              : {})}
             activeMotion={activeMotion}
             config={config}
             expandedSections={expandedSections}
@@ -354,7 +385,9 @@ const Content: React.FC<ContentProps> = memo(({ activeTab, activeCameraView, onS
           />
         )}
 
-        {showContent && activeTab === 'ai' && <AITab config={config} set={setConfig} searchQuery={searchQuery} />}
+        {showContent && activeTab === 'ai' && (
+          <AITab config={config} set={setConfig} searchQuery={searchQuery} />
+        )}
       </div>
     </div>
   );
@@ -370,5 +403,12 @@ const ControlPanelCompound = Object.assign(ControlPanelCompoundInner, {
 
 ControlPanelCompound.displayName = 'ControlPanelCompound';
 
-export type { ControlPanelContextValue, ControlPanelCompoundProps, HeaderProps, TabBarProps, VideoControlsWrapperProps, ContentProps };
+export type {
+  ControlPanelContextValue,
+  ControlPanelCompoundProps,
+  HeaderProps,
+  TabBarProps,
+  VideoControlsWrapperProps,
+  ContentProps,
+};
 export { ControlPanelCompound };

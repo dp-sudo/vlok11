@@ -1,10 +1,10 @@
 export {
+  type ContentProps,
   ControlPanelCompound,
-  useControlPanel,
   type ControlPanelCompoundProps,
   type ControlPanelContextValue,
   type HeaderProps,
   type TabBarProps,
+  useControlPanel,
   type VideoControlsWrapperProps,
-  type ContentProps,
 } from './ControlPanelCompound';

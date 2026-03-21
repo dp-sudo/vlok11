@@ -9,11 +9,19 @@ export function useVideoControl({
   isPlaying,
   isLooping,
   playbackRate,
+  onPlayStateChange,
+  onLoopChange,
   onTimeUpdate,
   onDurationChange,
   onEnded,
 }: VideoControlOptions): VideoControlReturn {
-  const callbacksRef = useRef({ onTimeUpdate, onDurationChange, onEnded });
+  const callbacksRef = useRef({
+    onTimeUpdate,
+    onDurationChange,
+    onEnded,
+    onPlayStateChange,
+    onLoopChange,
+  });
   const lastDurationRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
   const boundVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -22,8 +30,14 @@ export function useVideoControl({
   const [isSeekable, setIsSeekable] = useState(false);
 
   useEffect(() => {
-    callbacksRef.current = { onTimeUpdate, onDurationChange, onEnded };
-  }, [onTimeUpdate, onDurationChange, onEnded]);
+    callbacksRef.current = {
+      onTimeUpdate,
+      onDurationChange,
+      onEnded,
+      onPlayStateChange,
+      onLoopChange,
+    };
+  }, [onTimeUpdate, onDurationChange, onEnded, onPlayStateChange, onLoopChange]);
 
   useEffect(() => {
     const video = videoTextureRef.current?.image;
@@ -40,6 +54,7 @@ export function useVideoControl({
     if (isPlaying && video.paused) {
       void video.play().catch((err) => {
         logger.warn('Video auto-play blocked', { error: err });
+        callbacksRef.current.onPlayStateChange?.(false);
       });
     } else if (!isPlaying && !video.paused) {
       video.pause();
@@ -104,6 +119,18 @@ export function useVideoControl({
         callbacksRef.current.onEnded?.();
       };
 
+      const handlePlay = () => {
+        callbacksRef.current.onPlayStateChange?.(true);
+      };
+
+      const handlePause = () => {
+        callbacksRef.current.onPlayStateChange?.(false);
+      };
+
+      const handleLoopChange = () => {
+        callbacksRef.current.onLoopChange?.(video.loop);
+      };
+
       const handleCanSeek = () => {
         setIsSeekable(video.duration > 0);
       };
@@ -111,15 +138,22 @@ export function useVideoControl({
       video.addEventListener('timeupdate', handleTimeUpdate);
       video.addEventListener('durationchange', handleDurationChange);
       video.addEventListener('ended', handleEnded);
+      video.addEventListener('play', handlePlay);
+      video.addEventListener('pause', handlePause);
+      video.addEventListener('ratechange', handleLoopChange);
       video.addEventListener('canplay', handleCanSeek);
 
       handleDurationChange();
       handleCanSeek();
+      handleLoopChange();
 
       cleanupRef.current = () => {
         video.removeEventListener('timeupdate', handleTimeUpdate);
         video.removeEventListener('durationchange', handleDurationChange);
         video.removeEventListener('ended', handleEnded);
+        video.removeEventListener('play', handlePlay);
+        video.removeEventListener('pause', handlePause);
+        video.removeEventListener('ratechange', handleLoopChange);
         video.removeEventListener('canplay', handleCanSeek);
       };
     };
@@ -195,6 +229,8 @@ export interface VideoControlOptions {
   isPlaying: boolean;
   onDurationChange?: (duration: number) => void;
   onEnded?: () => void;
+  onLoopChange?: (isLooping: boolean) => void;
+  onPlayStateChange?: (isPlaying: boolean) => void;
   onTimeUpdate?: (time: number) => void;
   playbackRate: number;
   videoTextureRef: React.RefObject<VideoTexture | null>;

@@ -4,12 +4,7 @@ import {
   LONG_PRESS_THRESHOLD,
   SWIPE_VELOCITY_THRESHOLD,
 } from '@/shared/constants';
-import type {
-  GestureEvent,
-  InputSensitivity,
-  InteractionType,
-  Point2D,
-} from '@/shared/types';
+import type { GestureEvent, InputSensitivity, InteractionType, Point2D } from '@/shared/types';
 import { clientPointToElementPoint } from '@/shared/utils';
 
 import type { InputStateManager } from './InputState';

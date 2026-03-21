@@ -7,9 +7,8 @@ import type {
   InteractionState,
   InteractionType,
 } from '@/shared/types';
-
-import { InputStateManager } from './InputState';
 import { InputHandler } from './InputHandler';
+import { InputStateManager } from './InputState';
 
 const logger = createLogger({ module: 'InputService' });
 

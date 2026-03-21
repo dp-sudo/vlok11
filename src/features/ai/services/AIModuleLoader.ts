@@ -33,7 +33,11 @@ export async function loadTensorFlow(retries = 3): Promise<unknown> {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         logger.info(`Loading TensorFlow.js (attempt ${attempt}/${retries})...`);
-        const tf = await import('@tensorflow/tfjs');
+        const [tf] = await Promise.all([
+          import('@tensorflow/tfjs-core'),
+          import('@tensorflow/tfjs-converter'),
+          import('@tensorflow/tfjs-backend-webgl'),
+        ]);
 
         // Initialize backend with timeout
         const backendPromise = tf.setBackend('webgl');
@@ -233,38 +237,4 @@ export async function loadMediaPipeFaceDetection(): Promise<unknown> {
   loadingPromises.set(cacheKey, loadPromise);
 
   return loadPromise;
-}
-
-/**
- * Preload AI modules (call when idle)
- */
-export function preloadAIModules(): void {
-  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-    window.requestIdleCallback(
-      () => {
-        logger.info('Preloading AI modules during idle time...');
-        // Preload TensorFlow in background
-        loadTensorFlow().catch((error) => {
-          logger.warn('Failed to preload TensorFlow', { error });
-        });
-      },
-      { timeout: 2000 }
-    );
-  }
-}
-
-/**
- * Clear all cached modules
- */
-export function clearAIModuleCache(): void {
-  moduleCache.clear();
-  loadingPromises.clear();
-  logger.info('AI module cache cleared');
-}
-
-/**
- * Check if a module is loaded
- */
-export function isModuleLoaded(moduleName: string): boolean {
-  return moduleCache.has(moduleName);
 }

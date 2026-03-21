@@ -1,7 +1,13 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetEventBus } from '@/core/EventBus';
 
-import { createCameraSlice, DEFAULT_CAMERA_POSE, DEFAULT_INTERACTION_STATE, DEFAULT_MOTION_STATE, type CameraSlice } from './cameraStore';
+import {
+  type CameraSlice,
+  createCameraSlice,
+  DEFAULT_CAMERA_POSE,
+  DEFAULT_INTERACTION_STATE,
+  DEFAULT_MOTION_STATE,
+} from './cameraStore';
 
 describe('cameraStore', () => {
   beforeEach(() => {
@@ -31,6 +37,7 @@ describe('cameraStore', () => {
     const mockSet = vi.fn((updater) => {
       if (typeof updater === 'function') {
         const result = updater(state);
+
         Object.assign(state, result);
       } else {
         Object.assign(state, updater);
@@ -42,10 +49,13 @@ describe('cameraStore', () => {
 
     // Make get() return an object with both state and slice methods that use get()
     // This is needed because some slice methods call get().otherMethod()
-    mockGet.mockImplementation(() => ({
-      ...state,
-      setPose: slice.setPose,
-    }) as typeof state);
+    mockGet.mockImplementation(
+      () =>
+        ({
+          ...state,
+          setPose: slice.setPose,
+        }) as typeof state
+    );
 
     return { slice, state, mockSet, mockGet };
   };
@@ -154,7 +164,10 @@ describe('cameraStore', () => {
 
     it('should remove a bookmark', () => {
       const { slice, state } = createTestCameraSlice();
-      state.bookmarks = [{ id: '1', name: 'Test', pose: DEFAULT_CAMERA_POSE, createdAt: Date.now() }];
+
+      state.bookmarks = [
+        { id: '1', name: 'Test', pose: DEFAULT_CAMERA_POSE, createdAt: Date.now() },
+      ];
 
       slice.removeBookmark('1');
 
@@ -163,12 +176,15 @@ describe('cameraStore', () => {
 
     it('should apply a bookmark', () => {
       const { slice, state } = createTestCameraSlice();
-      state.bookmarks = [{
-        id: '1',
-        name: 'Test',
-        pose: { ...DEFAULT_CAMERA_POSE, position: { x: 10, y: 20, z: 30 } },
-        createdAt: Date.now()
-      }];
+
+      state.bookmarks = [
+        {
+          id: '1',
+          name: 'Test',
+          pose: { ...DEFAULT_CAMERA_POSE, position: { x: 10, y: 20, z: 30 } },
+          createdAt: Date.now(),
+        },
+      ];
 
       slice.applyBookmark('1');
 
@@ -198,6 +214,7 @@ describe('cameraStore', () => {
 
     it('should stop motion', () => {
       const { slice, state } = createTestCameraSlice();
+
       state.motion.isActive = true;
 
       slice.stopMotion();
@@ -207,6 +224,7 @@ describe('cameraStore', () => {
 
     it('should pause motion', () => {
       const { slice, state } = createTestCameraSlice();
+
       state.motion.isActive = true;
       state.motion.progress = 0.5;
 
@@ -218,6 +236,7 @@ describe('cameraStore', () => {
 
     it('should update motion progress', () => {
       const { slice, state } = createTestCameraSlice();
+
       state.motion.isActive = true;
 
       slice.updateMotionProgress(0.75);
@@ -227,6 +246,7 @@ describe('cameraStore', () => {
 
     it('should clamp progress to valid range', () => {
       const { slice, state } = createTestCameraSlice();
+
       state.motion.isActive = true;
 
       slice.updateMotionProgress(1.5);
@@ -249,6 +269,7 @@ describe('cameraStore', () => {
 
     it('should end interaction', () => {
       const { slice, state } = createTestCameraSlice();
+
       state.interaction.isInteracting = true;
 
       slice.endInteraction();
@@ -266,6 +287,7 @@ describe('cameraStore', () => {
 
     it('should clear base pose', () => {
       const { slice, state } = createTestCameraSlice();
+
       state.basePose = DEFAULT_CAMERA_POSE;
 
       slice.clearBasePose();
@@ -279,8 +301,15 @@ describe('cameraStore', () => {
       const { slice, state } = createTestCameraSlice();
 
       // Modify state
-      state.pose = { position: { x: 100, y: 200, z: 300 }, target: { x: 1, y: 2, z: 3 }, up: { x: 0, y: 1, z: 0 }, fov: 75 };
-      state.bookmarks = [{ id: '1', name: 'Test', pose: DEFAULT_CAMERA_POSE, createdAt: Date.now() }];
+      state.pose = {
+        position: { x: 100, y: 200, z: 300 },
+        target: { x: 1, y: 2, z: 3 },
+        up: { x: 0, y: 1, z: 0 },
+        fov: 75,
+      };
+      state.bookmarks = [
+        { id: '1', name: 'Test', pose: DEFAULT_CAMERA_POSE, createdAt: Date.now() },
+      ];
       state.history = [{ pose: DEFAULT_CAMERA_POSE, source: 'user', timestamp: Date.now() }];
 
       slice.resetAll();
@@ -311,12 +340,36 @@ describe('cameraStore', () => {
       expect(state.orthoZoomMemory).toBe(1);
     });
 
+    it('should handle NaN ortho zoom', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      slice.setOrthoZoom(NaN);
+
+      expect(state.orthoZoomMemory).toBe(20); // default
+    });
+
+    it('should handle Infinity ortho zoom', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      slice.setOrthoZoom(Infinity);
+
+      expect(state.orthoZoomMemory).toBe(20); // default
+    });
+
     it('should set perspective FOV', () => {
       const { slice, state } = createTestCameraSlice();
 
       slice.setPerspectiveFov(60);
 
       expect(state.perspectiveFovMemory).toBe(60);
+    });
+
+    it('should handle NaN perspective FOV', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      slice.setPerspectiveFov(NaN);
+
+      expect(state.perspectiveFovMemory).toBe(50); // default
     });
 
     it('should save and get camera mode settings', () => {
@@ -338,6 +391,104 @@ describe('cameraStore', () => {
       slice.setCurrentOrthoPreset('front');
 
       expect(state.currentOrthoPreset).toBe('front');
+    });
+
+    it('should set current ortho preset to null', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      state.currentOrthoPreset = 'front';
+
+      slice.setCurrentOrthoPreset(null);
+
+      expect(state.currentOrthoPreset).toBeNull();
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle applyPreset with valid preset', () => {
+      const { slice } = createTestCameraSlice();
+
+      expect(() => slice.applyPreset('FRONT')).not.toThrow();
+    });
+
+    it('should handle undo with insufficient history', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      state.history = [];
+
+      slice.undo();
+
+      // Should not throw
+    });
+
+    it('should handle undo with single history entry', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      state.history = [{ pose: DEFAULT_CAMERA_POSE, source: 'user', timestamp: Date.now() }];
+
+      slice.undo();
+
+      // Should not throw
+    });
+
+    it('should handle applyBookmark with non-existent id', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      state.bookmarks = [];
+
+      slice.applyBookmark('nonexistent');
+
+      // Should not throw, just do nothing
+    });
+
+    it('should handle removeBookmark with empty id', () => {
+      const { slice } = createTestCameraSlice();
+
+      slice.removeBookmark('');
+
+      // Should not throw
+    });
+
+    it('should handle resumeMotion when not paused', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      state.motion.isPaused = false;
+
+      expect(() => slice.resumeMotion()).not.toThrow();
+    });
+
+    it('should handle startMotion with NaN duration', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      slice.startMotion('orbit', NaN);
+
+      expect(state.motion.duration).toBe(0);
+    });
+
+    it('should handle startMotion with negative duration', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      slice.startMotion('orbit', -100);
+
+      expect(state.motion.duration).toBe(0);
+    });
+
+    it('should handle startMotion with Infinity duration', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      slice.startMotion('orbit', Infinity);
+
+      expect(state.motion.duration).toBe(0);
+    });
+
+    it('should handle pauseMotion when not active', () => {
+      const { slice, state } = createTestCameraSlice();
+
+      state.motion.isActive = false;
+
+      slice.pauseMotion();
+
+      // Should not throw
     });
   });
 });

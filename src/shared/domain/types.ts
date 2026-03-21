@@ -1,35 +1,17 @@
-export type AssetType = 'image' | 'video';
+import type { Asset, ProcessedAsset, SessionStatus } from '@/core/domain/types';
+import type { ExportStateInfo } from './types.export';
 
-export interface Asset {
-  aspectRatio: number;
-  dimensions: { height: number; width: number };
-  duration?: number;
-  file?: File;
-  id: string;
-  sourceUrl: string;
-  type: AssetType;
-}
+export type {
+  Asset,
+  AssetType,
+  BaseAsset,
+  ImageAsset,
+  ProcessedAsset as ProcessingResult,
+  SessionStatus as ProcessingStatus,
+  VideoAsset,
+} from '@/core/domain/types';
 
-export type ProcessingStatus =
-  | 'analyzing'
-  | 'error'
-  | 'idle'
-  | 'processing_depth'
-  | 'ready'
-  | 'uploading';
-
-export interface ProcessingResult {
-  asset: Asset;
-  backgroundUrl?: string;
-  depthMapUrl: string;
-  imageUrl: string;
-}
-
-export interface ExportStateInfo {
-  format: 'gltf' | 'glb' | 'png' | 'video' | null;
-  isExporting: boolean;
-  progress: number;
-}
+export type { ExportStateInfo } from '@/shared/domain/types.export';
 
 export interface SessionState {
   currentAsset?: Asset;
@@ -37,7 +19,7 @@ export interface SessionState {
   exportState: ExportStateInfo;
   id: string;
   progress: number;
-  result?: ProcessingResult;
-  status: ProcessingStatus;
+  result?: ProcessedAsset;
+  status: SessionStatus;
   statusMessage?: string;
 }

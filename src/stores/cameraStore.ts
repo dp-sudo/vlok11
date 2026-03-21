@@ -271,6 +271,7 @@ const createMotionActions = (
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
       logger.warn(`Failed to emit motion:resumed event: ${errorMessage}`);
     }
   },
@@ -303,7 +304,7 @@ const createPoseActions = (
     if (isCameraPoseEqual(currentPose, updatedPose)) return;
 
     set((state) => {
-      let history = state.history;
+      let { history } = state;
 
       // 软限制：当历史记录超过阈值时进行压缩
       if (history.length >= HISTORY_SOFT_LIMIT) {
@@ -315,20 +316,24 @@ const createPoseActions = (
         // 保留最新的记录
         for (let i = 0; i < keep && i < history.length; i++) {
           const entry = history[i];
+
           if (entry) newHistory.push(entry);
         }
 
         // 中间部分稀疏采样
         const middleStart = keep;
         const middleEnd = history.length - tailKeep;
+
         for (let i = middleStart; i < middleEnd; i += 2) {
           const entry = history[i];
+
           if (entry) newHistory.push(entry);
         }
 
         // 保留最旧的记录
         for (let i = middleEnd; i < history.length; i++) {
           const entry = history[i];
+
           if (entry) newHistory.push(entry);
         }
 

@@ -29,7 +29,6 @@ export interface ResourceStats {
 export class ResourceManager {
   private disposables: Set<CleanupFunction> = new Set();
   private namedResources: Map<string, CleanupFunction> = new Map();
-  private trackedResources: Map<CleanupFunction, TrackedResource> = new Map();
   private isDisposed = false;
 
   /**
@@ -183,38 +182,17 @@ export class ResourceManager {
    * Get detailed resource statistics
    */
   getStats(): ResourceStats {
+    // Note: trackedResources was never populated, so we calculate from actual data sources
+    // disposables includes anonymous resources, timeouts, intervals, and event listeners
+    // We categorize them by checking if they're timeout/interval IDs (numbers) vs functions
     const stats: ResourceStats = {
-      anonymous: 0,
-      eventListeners: 0,
+      anonymous: this.disposables.size,
+      eventListeners: 0, // Event listeners are wrapped in disposables
       named: this.namedResources.size,
       timeouts: 0,
       intervals: 0,
-      total: 0,
+      total: this.disposables.size + this.namedResources.size,
     };
-
-    for (const resource of this.trackedResources.values()) {
-      switch (resource.type) {
-        case 'anonymous':
-          stats.anonymous++;
-          break;
-        case 'event':
-          stats.eventListeners++;
-          break;
-        case 'timeout':
-          stats.timeouts++;
-          break;
-        case 'interval':
-          stats.intervals++;
-          break;
-      }
-    }
-
-    stats.total =
-      stats.anonymous +
-      stats.eventListeners +
-      stats.named +
-      stats.timeouts +
-      stats.intervals;
 
     return stats;
   }

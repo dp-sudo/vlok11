@@ -170,13 +170,11 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
           />
         </button>
         <div
-          aria-labelledby={sectionId}
           className={`
         transition-all duration-200 ease-out overflow-hidden
         ${open ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}
       `}
           id={`${sectionId}-content`}
-          role="group"
         >
           <fieldset className="px-3 pb-3 space-y-2">{children}</fieldset>
         </div>

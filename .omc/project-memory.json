@@ -212,14 +212,14 @@
   "hotPaths": [
     {
       "path": "src\\features\\controls\\components\\ControlComponents.tsx",
-      "accessCount": 19,
-      "lastAccessed": 1774107586448,
+      "accessCount": 24,
+      "lastAccessed": 1774108622981,
       "type": "file"
     },
     {
       "path": "src\\core\\Logger.ts",
-      "accessCount": 9,
-      "lastAccessed": 1774108179083,
+      "accessCount": 13,
+      "lastAccessed": 1774108721141,
       "type": "file"
     },
     {

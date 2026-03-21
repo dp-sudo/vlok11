@@ -217,22 +217,34 @@
       "type": "file"
     },
     {
+      "path": "src\\core\\Logger.ts",
+      "accessCount": 9,
+      "lastAccessed": 1774108179083,
+      "type": "file"
+    },
+    {
       "path": "src\\features\\scene\\hooks\\useWeatherEffect.ts",
       "accessCount": 3,
       "lastAccessed": 1774106819436,
       "type": "file"
     },
     {
-      "path": "src\\core\\Logger.ts",
+      "path": "vite.config.ts",
       "accessCount": 3,
-      "lastAccessed": 1774107221401,
+      "lastAccessed": 1774107794629,
       "type": "file"
     },
     {
       "path": "",
-      "accessCount": 2,
-      "lastAccessed": 1774106624866,
+      "accessCount": 3,
+      "lastAccessed": 1774108122777,
       "type": "directory"
+    },
+    {
+      "path": "src\\stores\\sharedStore.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774108232504,
+      "type": "file"
     },
     {
       "path": "src\\types\\globals.d.ts",
@@ -245,6 +257,12 @@
       "accessCount": 2,
       "lastAccessed": 1774107024289,
       "type": "file"
+    },
+    {
+      "path": "src",
+      "accessCount": 2,
+      "lastAccessed": 1774108113264,
+      "type": "directory"
     },
     {
       "path": "biome-report.txt",

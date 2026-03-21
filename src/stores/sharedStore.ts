@@ -56,5 +56,7 @@ export const useAppStore = create<AppStore>()(
   )
 );
 
+// knip-ignore-next-line duplicate
 export const useSceneStore = useAppStore;
+// knip-ignore-next-line duplicate
 export const useSessionStore = useAppStore;

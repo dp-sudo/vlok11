@@ -26,9 +26,6 @@ import {
 import { DEFAULT_FOV } from '@/shared/constants';
 import type { CameraPose, MotionParams, Vec3 } from '@/shared/types';
 
-export type { MotionParams, MotionResult, MotionType };
-export { DEFAULT_MOTION_PARAMS };
-
 // Re-export calculation functions from motion.ts
 export {
   calculateArc,
@@ -40,6 +37,8 @@ export {
   calculateSpiral,
   calculateTracking,
 } from '@/features/camera/logic/motion';
+export type { MotionParams, MotionResult, MotionType };
+export { DEFAULT_MOTION_PARAMS };
 
 export interface CalculatorConfig {
   /** Base speed multiplier */

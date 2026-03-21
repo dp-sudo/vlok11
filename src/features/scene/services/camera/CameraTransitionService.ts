@@ -318,6 +318,14 @@ class CameraTransitionServiceImpl implements LifecycleAware {
       distance
     );
 
+    // 计算目标位置：沿相机方向移动相同距离
+    const direction = new Vector3().subVectors(startPosition, startTarget).normalize();
+    const targetPosition = new Vector3(
+      startTarget.x + direction.x * distance,
+      startTarget.y + direction.y * distance,
+      startTarget.z + direction.z * distance
+    );
+
     // 发射过渡开始事件
     getEventBus().emit('camera:projection-transition-start', {
       from: fromMode,
@@ -333,8 +341,8 @@ class CameraTransitionServiceImpl implements LifecycleAware {
       duration: 600,
       easing: 'ease-in-out-cubic',
       onUpdate: (progress) => {
-        // 插值位置
-        toCamera.position.lerpVectors(startPosition, startPosition, progress);
+        // 插值位置：正确地从start向targetPosition插值
+        toCamera.position.lerpVectors(startPosition, targetPosition, progress);
         toCamera.up.lerpVectors(startUp, startUp, progress);
         controls.target.lerpVectors(startTarget, startTarget, progress);
 

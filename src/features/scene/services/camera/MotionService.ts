@@ -27,7 +27,7 @@ export type { MotionParams, MotionResult, MotionType } from './MotionCalculator'
 export { getMotionCalculator, MotionCalculator } from './MotionCalculator';
 
 // Re-export types for convenience
-export type { MotionPoint, MotionConfig, MotionState };
+export type { MotionConfig, MotionPoint, MotionState };
 
 const BASE_RATE = 0.5;
 const DEFAULT_PARAMS: MotionParams = {

@@ -404,11 +404,11 @@ const ControlPanelCompound = Object.assign(ControlPanelCompoundInner, {
 ControlPanelCompound.displayName = 'ControlPanelCompound';
 
 export type {
-  ControlPanelContextValue,
+  ContentProps,
   ControlPanelCompoundProps,
+  ControlPanelContextValue,
   HeaderProps,
   TabBarProps,
   VideoControlsWrapperProps,
-  ContentProps,
 };
 export { ControlPanelCompound };

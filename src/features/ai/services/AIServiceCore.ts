@@ -1,8 +1,6 @@
 import { createLogger } from '@/core/Logger';
 import { HASH_CALC } from './AIService.constants';
 
-export { createLogger };
-
 // Re-export constants
 export {
   CACHE_DEFAULTS,
@@ -20,6 +18,7 @@ export type {
   DepthResult,
   ImageAnalysis,
 } from './types';
+export { createLogger };
 
 // Utility function for hashing strings
 export function hashString(str: string): string {

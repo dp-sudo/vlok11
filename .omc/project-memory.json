@@ -211,27 +211,45 @@
   },
   "hotPaths": [
     {
+      "path": "src\\core\\Logger.ts",
+      "accessCount": 25,
+      "lastAccessed": 1774110495980,
+      "type": "file"
+    },
+    {
       "path": "src\\features\\controls\\components\\ControlComponents.tsx",
       "accessCount": 24,
       "lastAccessed": 1774108622981,
       "type": "file"
     },
     {
-      "path": "src\\core\\Logger.ts",
-      "accessCount": 13,
-      "lastAccessed": 1774108721141,
-      "type": "file"
-    },
-    {
       "path": "src",
-      "accessCount": 9,
-      "lastAccessed": 1774109619122,
+      "accessCount": 19,
+      "lastAccessed": 1774110538931,
       "type": "directory"
     },
     {
+      "path": "src\\features\\scene\\services\\camera\\CameraTransitionService.ts",
+      "accessCount": 16,
+      "lastAccessed": 1774110300821,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera",
+      "accessCount": 5,
+      "lastAccessed": 1774110270139,
+      "type": "directory"
+    },
+    {
+      "path": "src\\stores\\sharedStore.ts",
+      "accessCount": 4,
+      "lastAccessed": 1774109721316,
+      "type": "file"
+    },
+    {
       "path": "src\\features\\scene\\hooks\\useWeatherEffect.ts",
-      "accessCount": 3,
-      "lastAccessed": 1774106819436,
+      "accessCount": 4,
+      "lastAccessed": 1774109746716,
       "type": "file"
     },
     {
@@ -245,12 +263,6 @@
       "accessCount": 3,
       "lastAccessed": 1774108122777,
       "type": "directory"
-    },
-    {
-      "path": "src\\stores\\sharedStore.ts",
-      "accessCount": 3,
-      "lastAccessed": 1774108232504,
-      "type": "file"
     },
     {
       "path": "package.json",
@@ -271,6 +283,18 @@
       "type": "file"
     },
     {
+      "path": "src\\features\\scene\\services\\camera\\PerspectiveOrthoBridge.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774109985836,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera\\CameraStateSnapshot.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774110190221,
+      "type": "file"
+    },
+    {
       "path": "biome-report.txt",
       "accessCount": 1,
       "lastAccessed": 1774106635894,
@@ -287,6 +311,72 @@
       "accessCount": 1,
       "lastAccessed": 1774109610788,
       "type": "directory"
+    },
+    {
+      "path": "src\\features\\scene\\SceneViewer.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774109721155,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\sessionStore.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109721206,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\services\\ProjectService.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109721264,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera\\CoreController.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109721284,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\sceneConfigStore.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109721391,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\cameraStore.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109731041,
+      "type": "file"
+    },
+    {
+      "path": "src\\core\\EventBus.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109731139,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109746775,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\services\\camera\\index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109755808,
+      "type": "file"
+    },
+    {
+      "path": "src\\stores\\videoStore.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774109755873,
+      "type": "file"
+    },
+    {
+      "path": "src\\features\\scene\\components\\CameraRig.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774110124723,
+      "type": "file"
     }
   ],
   "userDirectives": []

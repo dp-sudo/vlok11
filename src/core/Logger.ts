@@ -113,6 +113,18 @@ class Logger implements LoggerContract {
     return [...Logger.history];
   }
 
+  getHistory(limit?: number): LogEntry[] {
+    if (limit) {
+      return Logger.history.slice(-limit);
+    }
+
+    return [...Logger.history];
+  }
+
+  getLevel(): LogLevel {
+    return this.getEffectiveLevel();
+  }
+
   private getEffectiveLevel(): LogLevel {
     return this.localLevel ?? Logger.moduleFilters.get(this.module) ?? Logger.globalLevel;
   }
@@ -150,18 +162,6 @@ class Logger implements LoggerContract {
     const d = new Date(timestamp);
 
     return d.toISOString().slice(TIME_SLICE_START, TIME_SLICE_END);
-  }
-
-  getHistory(limit?: number): LogEntry[] {
-    if (limit) {
-      return Logger.history.slice(-limit);
-    }
-
-    return [...Logger.history];
-  }
-
-  getLevel(): LogLevel {
-    return this.getEffectiveLevel();
   }
 
   info(message: string, context?: Record<string, unknown>): void {

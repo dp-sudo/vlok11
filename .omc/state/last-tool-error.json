@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd A:/3d && cat package.json | node -e \\\"const p=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); console.log('Dependencies:', Object.keys(p.dependencies).length); console.log(...",
-  "error": "Exit code 1\nnode:fs:440\r\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\r\n                   ^\r\n\r\nError: ENOENT: no such file or directory, open 'A:\\dev\\stdin'\r\n    at Object.readFileSync (node:fs:440:20)\r\n    at [eval]:1:34\r\n    at runScriptInThisContext (node:internal/vm:219:10)\r\n    at node:internal/process/execution:451:12\r\n    at [eval]-wrapper:6:24\r\n    at runScriptInContext (node:internal/process/execution:449:60)\r\n    at evalFunction (node:internal/process/execution:2...",
-  "timestamp": "2026-03-21T15:31:53.786Z",
+  "tool_input_preview": "{\"command\":\"cd A:/3d && npx biome check src/core/Logger.ts 2>&1\",\"description\":\"Check exact Biome errors in Logger\"}",
+  "error": "Exit code 1\nsrc\\core\\Logger.ts:167:3 lint/suspicious/useAdjacentOverloadSignatures ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n  ! All getHistory signatures must be adjacent.\n  \n    165 │   }\n    166 │ \n  > 167 │   getHistory(limit?: number): LogEntry[] {\n        │   ^^^^^^^^^^\n    168 │     if (limit) {\n    169 │       return Logger.history.slice(-limit);\n  \n  i All getLevel signatures must be adjacent.\n  \n    173 │   }\n    174 │ \n  > 175 │   getLevel(): LogLevel {\n        │   ^^^^^^^^\n    176 │     return ...",
+  "timestamp": "2026-03-21T16:27:40.397Z",
   "retry_count": 1
 }

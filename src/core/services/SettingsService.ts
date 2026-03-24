@@ -1,5 +1,4 @@
 import { createStore } from 'zustand';
-import type { StateStorage } from 'zustand/middleware';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type ThemeMode = 'dark' | 'light' | 'system';
@@ -49,66 +48,112 @@ export interface SettingsStore extends AppSettings {
 
 let settingsServiceInstance: SettingsService | null = null;
 
-// Simple encryption helper (base64 encoding for demonstration)
-// In production, use a proper encryption library
+// Web Crypto API based encryption for sensitive values
+// Uses AES-GCM for authenticated encryption
 
-const encryptValue = (value: string): string => {
+const ENCRYPTION_KEY_NAME = 'immersa-settings-key';
+const ENCRYPTED_API_KEY_NAME = 'immersa-settings-encrypted';
+
+/**
+ * Get or create the AES-GCM encryption key
+ */
+const getEncryptionKey = async (): Promise<CryptoKey> => {
+  const rawKey = sessionStorage.getItem(ENCRYPTION_KEY_NAME);
+  if (rawKey) {
+    const keyData = JSON.parse(rawKey);
+    return crypto.subtle.importKey(
+      'jwk',
+      keyData,
+      { name: 'AES-GCM', length: 256 },
+      true,
+      ['encrypt', 'decrypt']
+    );
+  }
+  const key = await crypto.subtle.generateKey(
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt', 'decrypt']
+  );
+  const exportedKey = await crypto.subtle.exportKey('jwk', key);
+  sessionStorage.setItem(ENCRYPTION_KEY_NAME, JSON.stringify(exportedKey));
+  return key;
+};
+
+/**
+ * Encrypt a string value using AES-GCM
+ */
+const encryptValue = async (value: string): Promise<string> => {
   if (!value) return value;
   try {
-    return btoa(encodeURIComponent(value));
+    const key = await getEncryptionKey();
+    const encoder = new TextEncoder();
+    const data = encoder.encode(value);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+    const encryptedBuffer = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      data
+    );
+
+    const combined = new Uint8Array(iv.length + encryptedBuffer.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(encryptedBuffer), iv.length);
+
+    return btoa(String.fromCharCode(...combined));
   } catch {
-    // 编码失败时返回原值
     return value;
   }
 };
 
-const decryptValue = (value: string): string => {
+/**
+ * Decrypt a string value using AES-GCM
+ */
+const decryptValue = async (value: string): Promise<string> => {
   if (!value) return value;
   try {
-    return decodeURIComponent(atob(value));
+    if (!value.includes('-')) {
+      return decodeURIComponent(atob(value));
+    }
+
+    const key = await getEncryptionKey();
+    const combined = Uint8Array.from(atob(value), c => c.charCodeAt(0));
+
+    const iv = combined.slice(0, 12);
+    const ciphertext = combined.slice(12);
+
+    const decryptedBuffer = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      ciphertext
+    );
+
+    const decoder = new TextDecoder();
+    return decoder.decode(decryptedBuffer);
   } catch {
-    // 解码失败时返回原值
     return value;
   }
 };
 
-// Custom storage using sessionStorage with encryption
-const createEncryptedStorage = (): StateStorage => {
-  return {
-    getItem: (name: string): string | null => {
-      const value = sessionStorage.getItem(name);
+/**
+ * Store encrypted API key to sessionStorage
+ */
+const storeEncryptedApiKey = async (apiKey: string): Promise<void> => {
+  if (!apiKey) {
+    sessionStorage.removeItem(ENCRYPTED_API_KEY_NAME);
+    return;
+  }
+  const encrypted = await encryptValue(apiKey);
+  sessionStorage.setItem(ENCRYPTED_API_KEY_NAME, encrypted);
+};
 
-      if (!value) return null;
-      try {
-        const parsed = JSON.parse(value);
-
-        if (parsed.state?.geminiApiKey) {
-          parsed.state.geminiApiKey = decryptValue(parsed.state.geminiApiKey);
-        }
-
-        return JSON.stringify(parsed);
-      } catch {
-        // JSON 解析失败时返回原始值
-        return value;
-      }
-    },
-    setItem: (name: string, value: string): void => {
-      try {
-        const parsed = JSON.parse(value);
-
-        if (parsed.state?.geminiApiKey) {
-          parsed.state.geminiApiKey = encryptValue(parsed.state.geminiApiKey);
-        }
-        sessionStorage.setItem(name, JSON.stringify(parsed));
-      } catch {
-        // JSON 解析失败时直接存储原始值
-        sessionStorage.setItem(name, value);
-      }
-    },
-    removeItem: (name: string): void => {
-      sessionStorage.removeItem(name);
-    },
-  };
+/**
+ * Retrieve and decrypt API key from sessionStorage
+ */
+const getEncryptedApiKey = async (): Promise<string> => {
+  const stored = sessionStorage.getItem(ENCRYPTED_API_KEY_NAME);
+  if (!stored) return '';
+  return decryptValue(stored);
 };
 
 export class SettingsService {
@@ -118,23 +163,23 @@ export class SettingsService {
     this.store = createStore<SettingsStore>()(
       persist(
         (set, get) => ({
-          geminiApiKey: import.meta.env['VITE_GEMINI_API_KEY'] ?? '',
+          geminiApiKey: '',
           performanceMode: 'quality',
           useLocalAi: false,
-          // 主题设置
           themeMode: 'dark' as ThemeMode,
-          // 音频设置
           audioEnabled: true,
           audioVolume: 0.8,
-          // 导出设置
           exportFormat: 'webm' as ExportFormat,
           exportFps: 60,
           exportResolution: '1920x1080',
           exportCodec: 'vp9',
-          // 预设管理
           savedPresets: [],
 
-          setApiKey: (key) => set({ geminiApiKey: key }),
+          setApiKey: async (key) => {
+            set({ geminiApiKey: key });
+            await storeEncryptedApiKey(key);
+          },
+
           setPerformanceMode: (mode) => set({ performanceMode: mode }),
           toggleLocalAi: (useLocal) => set({ useLocalAi: useLocal }),
           setThemeMode: (mode) => set({ themeMode: mode }),
@@ -144,9 +189,9 @@ export class SettingsService {
           setExportFps: (fps) => set({ exportFps: Math.max(15, Math.min(120, fps)) }),
           setExportResolution: (resolution) => set({ exportResolution: resolution }),
           setExportCodec: (codec) => set({ exportCodec: codec }),
+
           savePreset: (name, config) => {
             const trimmedName = name.trim();
-
             if (!trimmedName) return;
 
             const nextPreset: SavedPreset = {
@@ -164,26 +209,44 @@ export class SettingsService {
                   index === existing ? nextPreset : preset
                 ),
               });
-
               return;
             }
 
             set({ savedPresets: [...presets, nextPreset] });
           },
+
           loadPreset: (name) => {
             const preset = get().savedPresets.find((savedPreset) => savedPreset.name === name);
-
             return preset?.config ?? null;
           },
+
           deletePreset: (name) => {
             const presets = get().savedPresets.filter((preset) => preset.name !== name);
-
             set({ savedPresets: presets });
           },
         }),
         {
           name: 'immersa-settings',
-          storage: createJSONStorage(createEncryptedStorage),
+          storage: createJSONStorage(() => ({
+            getItem: (name) => sessionStorage.getItem(name),
+            setItem: (name, value) => sessionStorage.setItem(name, value),
+            removeItem: (name) => sessionStorage.removeItem(name),
+          })),
+          partialize: (state) => {
+            // Exclude geminiApiKey from persist - we handle it separately with encryption
+            const { geminiApiKey: _omit, ...rest } = state;
+            return rest;
+          },
+          onRehydrateStorage: () => (state) => {
+            // After rehydration, load encrypted API key
+            if (state) {
+              getEncryptedApiKey().then((key) => {
+                if (key && !state.geminiApiKey) {
+                  state.geminiApiKey = key;
+                }
+              });
+            }
+          },
         }
       )
     );
@@ -191,7 +254,6 @@ export class SettingsService {
 
   static getInstance(): SettingsService {
     settingsServiceInstance ??= new SettingsService();
-
     return settingsServiceInstance;
   }
 

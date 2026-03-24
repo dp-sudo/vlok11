@@ -86,22 +86,42 @@
     {
       "id": "TD-2026-005",
       "title": "SettingsService weak encryption",
-      "description": "Base64 encoding used for sensitive data (encryption key) is easily reversible, not true encryption.",
+      "description": "Base64 encoding used for sensitive data (API key) is easily reversible, not true encryption.",
       "severity": "critical",
       "interestRate": 5,
       "category": "security",
       "affectedModules": [
-        "src/features/settings"
+        "src/core/services/SettingsService.ts"
       ],
       "introducedIn": {
         "commit": "unknown"
       },
       "reportedBy": "Claude Code Analysis",
       "reportedAt": "2026-03-24T18:49:42.979Z",
-      "status": "acknowledged",
+      "status": "paid",
       "repaymentEstimate": 2,
-      "evidence": [],
-      "repayments": []
+      "actualRepaymentHours": 2,
+      "evidence": [
+        {
+          "type": "code",
+          "content": "Implemented AES-GCM encryption using Web Crypto API for API key storage",
+          "location": {
+            "file": "src/core/services/SettingsService.ts"
+          },
+          "capturedAt": "2026-03-25T07:55:00.000Z"
+        }
+      ],
+      "repayments": [
+        {
+          "id": "PAY-2026-001",
+          "debtId": "TD-2026-005",
+          "amount": 2,
+          "description": "Replaced btoa/atob Base64 encoding with Web Crypto API AES-GCM encryption",
+          "committedAt": "2026-03-25T07:55:00.000Z",
+          "completedAt": "2026-03-25T07:55:00.000Z",
+          "status": "completed"
+        }
+      ]
     },
     {
       "id": "TD-2026-006",
@@ -230,7 +250,7 @@
   "summary": {
     "total": 11,
     "bySeverity": {
-      "critical": 1,
+      "critical": 0,
       "major": 5,
       "minor": 4,
       "cosmetic": 1

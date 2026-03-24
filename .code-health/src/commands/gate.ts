@@ -2,15 +2,26 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { checkExplicitAny } from '../scripts/check-explicit-any.js';
+import { checkNewAny } from '../scripts/check-new-any.js';
 
 export function gateCommand(): Command {
   return new Command('gate')
     .description('Run quality gate checks')
     .option('--strict', 'Fail on warnings')
+    .option('--allow-existing', 'Allow existing debts, only block new')
     .action((opts) => {
       console.log(chalk.bold('\n=== Quality Gate ===\n'));
 
-      const anyFindings = checkExplicitAny();
+      let anyFindings = checkExplicitAny();
+
+      // If --allow-existing, filter to only new findings
+      if (opts.allowExisting) {
+        const newAny = checkNewAny();
+        anyFindings = anyFindings.filter(f =>
+          newAny.some(n => n.file === f.file && n.line === f.line)
+        );
+      }
+
       console.log(`Explicit 'any' usage: ${anyFindings.length}`);
       if (anyFindings.length > 0) {
         for (const f of anyFindings.slice(0, 5)) {

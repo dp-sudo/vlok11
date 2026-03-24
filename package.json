@@ -44,7 +44,8 @@
     "test:e2e": "playwright test",
     "code-health": "node .code-health/cli.js",
     "code-health:debt": "node .code-health/cli.js debt",
-    "code-health:report": "node .code-health/cli.js report"
+    "code-health:report": "node .code-health/cli.js report",
+    "typecheck:strict": "tsc -p .code-health/tsconfig.strict.json --noEmit"
   },
   "keywords": [
     "react",

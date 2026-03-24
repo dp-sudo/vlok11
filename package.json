@@ -45,7 +45,11 @@
     "code-health": "node .code-health/cli.js",
     "code-health:debt": "node .code-health/cli.js debt",
     "code-health:report": "node .code-health/cli.js report",
-    "typecheck:strict": "tsc -p .code-health/tsconfig.strict.json --noEmit"
+    "typecheck:strict": "tsc -p .code-health/tsconfig.strict.json --noEmit",
+    "docs:api": "npx typedoc --options .code-health/config/typedoc.json",
+    "docs:architecture": "node .code-health/cli.js docs architecture -o ./docs/architecture",
+    "docs:onboarding": "node .code-health/cli.js docs onboarding -o ./docs/ONBOARDING.md",
+    "docs:all": "npm run docs:api && npm run docs:architecture && npm run docs:onboarding"
   },
   "keywords": [
     "react",
@@ -103,6 +107,7 @@
     "prettier": "^3.8.0",
     "rimraf": "^6.1.2",
     "tailwind-merge": "^3.4.0",
+    "typedoc": "^0.27.9",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.0",
     "vite": "^7.0.0",

@@ -4,6 +4,7 @@ import { debtCommands } from './dist/commands/debt.js';
 import { reportCommand } from './dist/commands/report.js';
 import { gateCommand } from './dist/commands/gate.js';
 import { dashboardCommand } from './dist/commands/dashboard.js';
+import { docsCommand } from './dist/commands/docs.js';
 
 const program = new Command();
 
@@ -16,5 +17,6 @@ program.addCommand(debtCommands());
 program.addCommand(reportCommand());
 program.addCommand(gateCommand());
 program.addCommand(dashboardCommand());
+program.addCommand(docsCommand());
 
 program.parse();

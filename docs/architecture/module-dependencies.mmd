@@ -1,0 +1,447 @@
+```mermaid
+graph TD
+    app_AppKernel["app/AppKernel"]
+    app_bootstrap["app/bootstrap"]
+    app_kernelRuntime["app/kernelRuntime"]
+    App["App"]
+    core_contexts_ServiceContext["core/contexts/ServiceContext"]
+    core_domain_types["core/domain/types"]
+    core_ErrorCodes["core/ErrorCodes"]
+    core_ErrorHandler["core/ErrorHandler"]
+    core_EventBus_test["core/EventBus.test"]
+    core_EventBus["core/EventBus"]
+    core_EventTypes["core/EventTypes"]
+    core_LifecycleManager["core/LifecycleManager"]
+    core_Logger_test["core/Logger.test"]
+    core_Logger["core/Logger"]
+    core_monitoring_initSentry["core/monitoring/initSentry"]
+    core_monitoring_SentryConfig["core/monitoring/SentryConfig"]
+    core_PerformanceMonitor["core/PerformanceMonitor"]
+    core_pipeline_PipelineEngine_test["core/pipeline/PipelineEngine.test"]
+    core_pipeline_PipelineEngine["core/pipeline/PipelineEngine"]
+    core_pipeline_StageRegistry["core/pipeline/StageRegistry"]
+    core_pipeline_types["core/pipeline/types"]
+    core_ResourceManager["core/ResourceManager"]
+    core_services_ProjectService_test["core/services/ProjectService.test"]
+    core_services_ProjectService["core/services/ProjectService"]
+    core_services_projectValidation_test["core/services/projectValidation.test"]
+    core_services_projectValidation["core/services/projectValidation"]
+    core_services_SettingsService["core/services/SettingsService"]
+    core_types_project["core/types/project"]
+    core_workers_image_processor_worker["core/workers/image-processor.worker"]
+    core_workers_WorkerManager["core/workers/WorkerManager"]
+    features_ai_components_AIProgressPanel["features/ai/components/AIProgressPanel"]
+    features_ai_components_AIProviderPanel["features/ai/components/AIProviderPanel"]
+    features_ai_components_ApiKeySettings["features/ai/components/ApiKeySettings"]
+    features_ai_components_CacheManager["features/ai/components/CacheManager"]
+    features_ai_components_index["features/ai/components/index"]
+    features_ai_components_ModelCard["features/ai/components/ModelCard"]
+    features_ai_components_ModelDetails["features/ai/components/ModelDetails"]
+    features_ai_components_ModelManager["features/ai/components/ModelManager"]
+    features_ai_components_SmartSuggestions["features/ai/components/SmartSuggestions"]
+    features_ai_hooks_useAIMotion["features/ai/hooks/useAIMotion"]
+    features_ai_modelManager_index["features/ai/modelManager/index"]
+    features_ai_services_AIModuleLoader["features/ai/services/AIModuleLoader"]
+    features_ai_services_AIService_constants["features/ai/services/AIService.constants"]
+    features_ai_services_AIService["features/ai/services/AIService"]
+    features_ai_services_AIServiceCache["features/ai/services/AIServiceCache"]
+    features_ai_services_AIServiceCore["features/ai/services/AIServiceCore"]
+    features_ai_services_AIServiceProvider["features/ai/services/AIServiceProvider"]
+    features_ai_services_index["features/ai/services/index"]
+    features_ai_services_LightSceneAnalyzer["features/ai/services/LightSceneAnalyzer"]
+    features_ai_services_ModelCacheService["features/ai/services/ModelCacheService"]
+    features_ai_services_ModelRegistry["features/ai/services/ModelRegistry"]
+    features_ai_services_providers_FallbackProvider["features/ai/services/providers/FallbackProvider"]
+    features_ai_services_providers_GeminiProvider["features/ai/services/providers/GeminiProvider"]
+    features_ai_services_providers_TensorFlowProvider["features/ai/services/providers/TensorFlowProvider"]
+    features_ai_services_SmartAssistant["features/ai/services/SmartAssistant"]
+    features_ai_services_SmartMotionEngine["features/ai/services/SmartMotionEngine"]
+    features_ai_services_types["features/ai/services/types"]
+    features_app_viewmodels_useAppViewModel["features/app/viewmodels/useAppViewModel"]
+    features_camera_hooks_useCameraInput["features/camera/hooks/useCameraInput"]
+    features_camera_logic_motion["features/camera/logic/motion"]
+    features_controls_AITab["features/controls/AITab"]
+    features_controls_CameraTab_constants["features/controls/CameraTab.constants"]
+    features_controls_CameraTab["features/controls/CameraTab"]
+    features_controls_components_ControlComponents["features/controls/components/ControlComponents"]
+    features_controls_components_index["features/controls/components/index"]
+    features_controls_components_RecordingSettings["features/controls/components/RecordingSettings"]
+    features_controls_components_RenderStyleControls["features/controls/components/RenderStyleControls"]
+    features_controls_components_StateIndicators["features/controls/components/StateIndicators"]
+    features_controls_components_VideoControls["features/controls/components/VideoControls"]
+    features_controls_compound_ControlPanelCompound["features/controls/compound/ControlPanelCompound"]
+    features_controls_compound_index["features/controls/compound/index"]
+    features_controls_constants["features/controls/constants"]
+    features_controls_ControlPanel["features/controls/ControlPanel"]
+    features_controls_EffectsTab_constants["features/controls/EffectsTab.constants"]
+    features_controls_EffectsTab["features/controls/EffectsTab"]
+    features_controls_FloatingControls["features/controls/FloatingControls"]
+    features_controls_ImmersiveTab["features/controls/ImmersiveTab"]
+    features_controls_index["features/controls/index"]
+    features_controls_parts_ControlPanelHeader["features/controls/parts/ControlPanelHeader"]
+    features_controls_parts_ControlPanelTabBar["features/controls/parts/ControlPanelTabBar"]
+    features_controls_parts_index["features/controls/parts/index"]
+    features_controls_parts_SceneTab["features/controls/parts/SceneTab"]
+    features_render_GaussianSplattingRenderer["features/render/GaussianSplattingRenderer"]
+    features_render_index["features/render/index"]
+    features_render_NeuralRenderView["features/render/NeuralRenderView"]
+    features_scene_components_cameraMotion_CameraMotionLogic["features/scene/components/cameraMotion/CameraMotionLogic"]
+    features_scene_components_cameraMotion_constants["features/scene/components/cameraMotion/constants"]
+    features_scene_components_cameraMotion_index["features/scene/components/cameraMotion/index"]
+    features_scene_components_cameraMotion_useMotionAutoResume["features/scene/components/cameraMotion/useMotionAutoResume"]
+    features_scene_components_cameraMotion_useUserInteraction["features/scene/components/cameraMotion/useUserInteraction"]
+    features_scene_components_CameraMotionLogic["features/scene/components/CameraMotionLogic"]
+    features_scene_components_CameraRig["features/scene/components/CameraRig"]
+    features_scene_components_CanvasLoader["features/scene/components/CanvasLoader"]
+    features_scene_components_effects_AtmosphereParticles["features/scene/components/effects/AtmosphereParticles"]
+    features_scene_components_effects_constants["features/scene/components/effects/constants"]
+    features_scene_components_effects_CoordinateDebug["features/scene/components/effects/CoordinateDebug"]
+    features_scene_components_effects_index["features/scene/components/effects/index"]
+    features_scene_components_effects_InputBindingEffect["features/scene/components/effects/InputBindingEffect"]
+    features_scene_components_effects_ParallaxRig["features/scene/components/effects/ParallaxRig"]
+    features_scene_components_effects_SimulatedTracker["features/scene/components/effects/SimulatedTracker"]
+    features_scene_components_effects_ToneMappingEffect["features/scene/components/effects/ToneMappingEffect"]
+    features_scene_components_effects_TrackingBridge["features/scene/components/effects/TrackingBridge"]
+    features_scene_components_effects_WebcamTracker["features/scene/components/effects/WebcamTracker"]
+    features_scene_components_index["features/scene/components/index"]
+    features_scene_components_renderers_AdvancedPointCloudRenderer["features/scene/components/renderers/AdvancedPointCloudRenderer"]
+    features_scene_components_renderers_CornerSystemRenderer["features/scene/components/renderers/CornerSystemRenderer"]
+    features_scene_components_renderers_CylinderRenderer["features/scene/components/renderers/CylinderRenderer"]
+    features_scene_components_renderers_DomeSphereRenderer["features/scene/components/renderers/DomeSphereRenderer"]
+    features_scene_components_renderers_GaussianSplatRenderer["features/scene/components/renderers/GaussianSplatRenderer"]
+    features_scene_components_renderers_index["features/scene/components/renderers/index"]
+    features_scene_components_renderers_PanoramaSphereRenderer["features/scene/components/renderers/PanoramaSphereRenderer"]
+    features_scene_components_renderers_SphereRenderer["features/scene/components/renderers/SphereRenderer"]
+    features_scene_components_Scene3DContent["features/scene/components/Scene3DContent"]
+    features_scene_components_SceneCanvas["features/scene/components/SceneCanvas"]
+    features_scene_components_SceneContent_constants["features/scene/components/SceneContent.constants"]
+    features_scene_components_SceneContent["features/scene/components/SceneContent"]
+    features_scene_components_SceneEffectsLayer["features/scene/components/SceneEffectsLayer"]
+    features_scene_components_SceneExporter["features/scene/components/SceneExporter"]
+    features_scene_components_SceneGeometry_constants["features/scene/components/SceneGeometry.constants"]
+    features_scene_components_SceneGeometry["features/scene/components/SceneGeometry"]
+    features_scene_components_SceneRecorder["features/scene/components/SceneRecorder"]
+    features_scene_components_VideoManager["features/scene/components/VideoManager"]
+    features_scene_hooks_index["features/scene/hooks/index"]
+    features_scene_hooks_useActiveMaterial["features/scene/hooks/useActiveMaterial"]
+    features_scene_hooks_useAdvancedPointCloudMaterial["features/scene/hooks/useAdvancedPointCloudMaterial"]
+    features_scene_hooks_useColorGrade_constants["features/scene/hooks/useColorGrade.constants"]
+    features_scene_hooks_useColorGrade["features/scene/hooks/useColorGrade"]
+    features_scene_hooks_useDepthImageData["features/scene/hooks/useDepthImageData"]
+    features_scene_hooks_useMaterialUpdater["features/scene/hooks/useMaterialUpdater"]
+    features_scene_hooks_usePointCloudMaterial["features/scene/hooks/usePointCloudMaterial"]
+    features_scene_hooks_useSceneConfigSubscriber["features/scene/hooks/useSceneConfigSubscriber"]
+    features_scene_hooks_useSceneMaterials_constants["features/scene/hooks/useSceneMaterials.constants"]
+    features_scene_hooks_useSceneMaterials_helpers["features/scene/hooks/useSceneMaterials.helpers"]
+    features_scene_hooks_useSceneMaterials["features/scene/hooks/useSceneMaterials"]
+    features_scene_hooks_useVideoControl["features/scene/hooks/useVideoControl"]
+    features_scene_hooks_useWeatherEffect["features/scene/hooks/useWeatherEffect"]
+    features_scene_index["features/scene/index"]
+    features_scene_materials_index["features/scene/materials/index"]
+    features_scene_materials_materials_constants["features/scene/materials/materials.constants"]
+    features_scene_scene_module["features/scene/scene-module"]
+    features_scene_SceneViewer["features/scene/SceneViewer"]
+    features_scene_services_camera_AnimationScheduler_constants["features/scene/services/camera/AnimationScheduler.constants"]
+    features_scene_services_camera_AnimationScheduler["features/scene/services/camera/AnimationScheduler"]
+    features_scene_services_camera_CameraAnimator["features/scene/services/camera/CameraAnimator"]
+    features_scene_services_camera_CameraPresets["features/scene/services/camera/CameraPresets"]
+    features_scene_services_camera_CameraService["features/scene/services/camera/CameraService"]
+    features_scene_services_camera_CameraStateBridge["features/scene/services/camera/CameraStateBridge"]
+    features_scene_services_camera_CameraStateSnapshot["features/scene/services/camera/CameraStateSnapshot"]
+    features_scene_services_camera_CameraTransitionService["features/scene/services/camera/CameraTransitionService"]
+    features_scene_services_camera_ConfigService["features/scene/services/camera/ConfigService"]
+    features_scene_services_camera_CoreController["features/scene/services/camera/CoreController"]
+    features_scene_services_camera_CoreControllerProvider["features/scene/services/camera/CoreControllerProvider"]
+    features_scene_services_camera_index["features/scene/services/camera/index"]
+    features_scene_services_camera_InputHandler["features/scene/services/camera/InputHandler"]
+    features_scene_services_camera_InputService["features/scene/services/camera/InputService"]
+    features_scene_services_camera_InputState["features/scene/services/camera/InputState"]
+    features_scene_services_camera_MotionCalculator["features/scene/services/camera/MotionCalculator"]
+    features_scene_services_camera_MotionService["features/scene/services/camera/MotionService"]
+    features_scene_services_camera_OrthographicPresets["features/scene/services/camera/OrthographicPresets"]
+    features_scene_services_camera_PerspectiveOrthoBridge["features/scene/services/camera/PerspectiveOrthoBridge"]
+    features_scene_services_camera_PrecisionConfigService["features/scene/services/camera/PrecisionConfigService"]
+    features_scene_services_camera_ProjectionCameraPresets["features/scene/services/camera/ProjectionCameraPresets"]
+    features_scene_services_material_MaterialFactory_constants["features/scene/services/material/MaterialFactory.constants"]
+    features_scene_services_material_MaterialFactory["features/scene/services/material/MaterialFactory"]
+    features_scene_services_measurement_MeasurementService["features/scene/services/measurement/MeasurementService"]
+    features_scene_services_shader_index["features/scene/services/shader/index"]
+    features_settings_components_SettingsModal["features/settings/components/SettingsModal"]
+    features_settings_viewmodels_useSettingsViewModel["features/settings/viewmodels/useSettingsViewModel"]
+    features_upload_index["features/upload/index"]
+    features_upload_pipeline_index["features/upload/pipeline/index"]
+    features_upload_pipeline_stages_AnalyzeStage["features/upload/pipeline/stages/AnalyzeStage"]
+    features_upload_pipeline_stages_DepthStage["features/upload/pipeline/stages/DepthStage"]
+    features_upload_pipeline_stages_index["features/upload/pipeline/stages/index"]
+    features_upload_pipeline_stages_PrepareStage_test["features/upload/pipeline/stages/PrepareStage.test"]
+    features_upload_pipeline_stages_PrepareStage["features/upload/pipeline/stages/PrepareStage"]
+    features_upload_pipeline_stages_ReadStage_test["features/upload/pipeline/stages/ReadStage.test"]
+    features_upload_pipeline_stages_ReadStage["features/upload/pipeline/stages/ReadStage"]
+    features_upload_pipeline_types["features/upload/pipeline/types"]
+    features_upload_pipeline_UploadPipeline_constants["features/upload/pipeline/UploadPipeline.constants"]
+    features_upload_pipeline_UploadPipeline["features/upload/pipeline/UploadPipeline"]
+    features_upload_StatusDisplay["features/upload/StatusDisplay"]
+    features_upload_UploadPanel["features/upload/UploadPanel"]
+    global_d["global.d"]
+    main["main"]
+    shared_components_ErrorBoundaryWithRecovery["shared/components/ErrorBoundaryWithRecovery"]
+    shared_components_index["shared/components/index"]
+    shared_components_layout_MobileDrawer["shared/components/layout/MobileDrawer"]
+    shared_components_layout_TitleBar["shared/components/layout/TitleBar"]
+    shared_components_ui_ErrorModal["shared/components/ui/ErrorModal"]
+    shared_components_ui_ErrorToast["shared/components/ui/ErrorToast"]
+    shared_components_ui_HexIcon["shared/components/ui/HexIcon"]
+    shared_components_ui_PerformanceOverlay["shared/components/ui/PerformanceOverlay"]
+    shared_components_ui_TechCard["shared/components/ui/TechCard"]
+    shared_config_defaultSceneConfig["shared/config/defaultSceneConfig"]
+    shared_config_presets["shared/config/presets"]
+    shared_constants_camera["shared/constants/camera"]
+    shared_constants_image["shared/constants/image"]
+    shared_constants_index["shared/constants/index"]
+    shared_constants_motion["shared/constants/motion"]
+    shared_constants_performance["shared/constants/performance"]
+    shared_constants_ui["shared/constants/ui"]
+    shared_constants_utils["shared/constants/utils"]
+    shared_domain_types_export["shared/domain/types.export"]
+    shared_domain_types["shared/domain/types"]
+    shared_hooks_useMobileOptimization["shared/hooks/useMobileOptimization"]
+    shared_hooks_useProjectShortcuts["shared/hooks/useProjectShortcuts"]
+    shared_shaders_index["shared/shaders/index"]
+    shared_types_index["shared/types/index"]
+    shared_types_sceneConfig["shared/types/sceneConfig"]
+    shared_utils_cn["shared/utils/cn"]
+    shared_utils_coordinates_index["shared/utils/coordinates/index"]
+    shared_utils_deviceDetection["shared/utils/deviceDetection"]
+    shared_utils_index["shared/utils/index"]
+    shared_utils_math_common_test["shared/utils/math/common.test"]
+    shared_utils_math_common["shared/utils/math/common"]
+    shared_utils_math_easing["shared/utils/math/easing"]
+    shared_utils_math_index["shared/utils/math/index"]
+    shared_utils_math_vector["shared/utils/math/vector"]
+    shared_utils_media_download["shared/utils/media/download"]
+    shared_utils_media_image_index["shared/utils/media/image/index"]
+    shared_utils_media_image_loading["shared/utils/media/image/loading"]
+    shared_utils_media_image_processing["shared/utils/media/image/processing"]
+    shared_utils_media_index["shared/utils/media/index"]
+    shared_utils_media_video_extraction["shared/utils/media/video/extraction"]
+    shared_utils_media_video_index["shared/utils/media/video/index"]
+    shared_utils_presets_index["shared/utils/presets/index"]
+    shared_utils_runtimeFlags["shared/utils/runtimeFlags"]
+    shared_utils_uuid_test["shared/utils/uuid.test"]
+    shared_utils_uuid["shared/utils/uuid"]
+    stores_cameraStore_test["stores/cameraStore.test"]
+    stores_cameraStore["stores/cameraStore"]
+    stores_index["stores/index"]
+    stores_sceneConfigStore_test["stores/sceneConfigStore.test"]
+    stores_sceneConfigStore["stores/sceneConfigStore"]
+    stores_sessionStore_test["stores/sessionStore.test"]
+    stores_sessionStore["stores/sessionStore"]
+    stores_sharedStore["stores/sharedStore"]
+    stores_videoStore_test["stores/videoStore.test"]
+    stores_videoStore["stores/videoStore"]
+    tests_setup["tests/setup"]
+    tests_zustand["tests/zustand"]
+    types_globals_d["types/globals.d"]
+    vite_env_d["vite-env.d"]
+    App --> lucide_react
+    App --> react
+    core_contexts_ServiceContext --> react
+    core_EventBus_test --> vitest
+    core_Logger_test --> vitest
+    core_pipeline_PipelineEngine_test --> vitest
+    core_services_ProjectService_test --> vitest
+    core_services_projectValidation_test --> vitest
+    core_services_SettingsService --> zustand
+    core_services_SettingsService --> zustand_middleware
+    core_services_SettingsService --> zustand_middleware
+    features_ai_components_AIProgressPanel --> react
+    features_ai_components_AIProviderPanel --> react
+    features_ai_components_ApiKeySettings --> react
+    features_ai_components_CacheManager --> react
+    features_ai_components_ModelManager --> react
+    features_ai_components_SmartSuggestions --> react
+    features_ai_hooks_useAIMotion --> react
+    features_app_viewmodels_useAppViewModel --> react
+    features_app_viewmodels_useAppViewModel --> zustand_react_shallow
+    features_camera_hooks_useCameraInput --> react
+    features_controls_AITab --> react
+    features_controls_AITab --> react
+    features_controls_CameraTab --> react
+    features_controls_CameraTab --> react
+    features_controls_components_ControlComponents --> lucide_react
+    features_controls_components_ControlComponents --> react
+    features_controls_components_ControlComponents --> react
+    features_controls_components_RecordingSettings --> react
+    features_controls_components_RecordingSettings --> react
+    features_controls_components_RenderStyleControls --> react
+    features_controls_components_StateIndicators --> lucide_react
+    features_controls_components_StateIndicators --> react
+    features_controls_components_StateIndicators --> react
+    features_controls_components_VideoControls --> react
+    features_controls_components_VideoControls --> react
+    features_controls_compound_ControlPanelCompound --> lucide_react
+    features_controls_compound_ControlPanelCompound --> react
+    features_controls_constants --> lucide_react
+    features_controls_constants --> react
+    features_controls_ControlPanel --> react
+    features_controls_ControlPanel --> react
+    features_controls_EffectsTab --> lucide_react
+    features_controls_EffectsTab --> react
+    features_controls_EffectsTab --> react
+    features_controls_FloatingControls --> react
+    features_controls_FloatingControls --> react
+    features_controls_ImmersiveTab --> lucide_react
+    features_controls_ImmersiveTab --> react
+    features_controls_ImmersiveTab --> react
+    features_controls_parts_ControlPanelHeader --> lucide_react
+    features_controls_parts_ControlPanelHeader --> react
+    features_controls_parts_ControlPanelHeader --> react
+    features_controls_parts_ControlPanelTabBar --> react
+    features_controls_parts_ControlPanelTabBar --> react
+    features_controls_parts_SceneTab --> lucide_react
+    features_controls_parts_SceneTab --> react
+    features_controls_parts_SceneTab --> react
+    features_render_GaussianSplattingRenderer --> three
+    features_render_NeuralRenderView --> react
+    features_scene_components_cameraMotion_CameraMotionLogic --> react
+    features_scene_components_cameraMotion_CameraMotionLogic --> react
+    features_scene_components_cameraMotion_CameraMotionLogic --> three
+    features_scene_components_cameraMotion_CameraMotionLogic --> three_stdlib
+    features_scene_components_cameraMotion_useMotionAutoResume --> react
+    features_scene_components_cameraMotion_useUserInteraction --> react
+    features_scene_components_CameraRig --> react
+    features_scene_components_CameraRig --> three_stdlib
+    features_scene_components_CanvasLoader --> react
+    features_scene_components_effects_AtmosphereParticles --> react
+    features_scene_components_effects_AtmosphereParticles --> three
+    features_scene_components_effects_CoordinateDebug --> react
+    features_scene_components_effects_CoordinateDebug --> three
+    features_scene_components_effects_InputBindingEffect --> react
+    features_scene_components_effects_ParallaxRig --> react
+    features_scene_components_effects_ParallaxRig --> react
+    features_scene_components_effects_ParallaxRig --> three
+    features_scene_components_effects_ParallaxRig --> three
+    features_scene_components_effects_SimulatedTracker --> react
+    features_scene_components_effects_ToneMappingEffect --> react
+    features_scene_components_effects_ToneMappingEffect --> three
+    features_scene_components_effects_TrackingBridge --> react
+    features_scene_components_effects_TrackingBridge --> three
+    features_scene_components_effects_WebcamTracker --> react
+    features_scene_components_renderers_AdvancedPointCloudRenderer --> react
+    features_scene_components_renderers_AdvancedPointCloudRenderer --> three
+    features_scene_components_renderers_AdvancedPointCloudRenderer --> three
+    features_scene_components_renderers_CornerSystemRenderer --> react
+    features_scene_components_renderers_CornerSystemRenderer --> three
+    features_scene_components_renderers_CylinderRenderer --> react
+    features_scene_components_renderers_CylinderRenderer --> three
+    features_scene_components_renderers_DomeSphereRenderer --> react
+    features_scene_components_renderers_DomeSphereRenderer --> three
+    features_scene_components_renderers_GaussianSplatRenderer --> react
+    features_scene_components_renderers_GaussianSplatRenderer --> three
+    features_scene_components_renderers_GaussianSplatRenderer --> three
+    features_scene_components_renderers_PanoramaSphereRenderer --> react
+    features_scene_components_renderers_PanoramaSphereRenderer --> three
+    features_scene_components_renderers_SphereRenderer --> react
+    features_scene_components_renderers_SphereRenderer --> three
+    features_scene_components_Scene3DContent --> react
+    features_scene_components_Scene3DContent --> three
+    features_scene_components_Scene3DContent --> three_stdlib
+    features_scene_components_SceneCanvas --> react
+    features_scene_components_SceneContent --> react
+    features_scene_components_SceneContent --> three
+    features_scene_components_SceneEffectsLayer --> react
+    features_scene_components_SceneExporter --> react
+    features_scene_components_SceneExporter --> react
+    features_scene_components_SceneExporter --> three
+    features_scene_components_SceneExporter --> three_stdlib
+    features_scene_components_SceneGeometry --> react
+    features_scene_components_SceneGeometry --> react
+    features_scene_components_SceneRecorder --> react
+    features_scene_components_SceneRecorder --> three
+    features_scene_components_VideoManager --> hls_js
+    features_scene_components_VideoManager --> react
+    features_scene_components_VideoManager --> three
+    features_scene_hooks_useActiveMaterial --> react
+    features_scene_hooks_useActiveMaterial --> three
+    features_scene_hooks_useActiveMaterial --> three
+    features_scene_hooks_useAdvancedPointCloudMaterial --> react
+    features_scene_hooks_useAdvancedPointCloudMaterial --> three
+    features_scene_hooks_useAdvancedPointCloudMaterial --> three
+    features_scene_hooks_useColorGrade --> react
+    features_scene_hooks_useDepthImageData --> react
+    features_scene_hooks_useMaterialUpdater --> react
+    features_scene_hooks_useMaterialUpdater --> three
+    features_scene_hooks_usePointCloudMaterial --> react
+    features_scene_hooks_usePointCloudMaterial --> three
+    features_scene_hooks_useSceneConfigSubscriber --> react
+    features_scene_hooks_useSceneMaterials_helpers --> three
+    features_scene_hooks_useSceneMaterials --> react
+    features_scene_hooks_useSceneMaterials --> three
+    features_scene_hooks_useVideoControl --> react
+    features_scene_hooks_useVideoControl --> three
+    features_scene_hooks_useWeatherEffect --> react
+    features_scene_materials_index --> three
+    features_scene_SceneViewer --> react
+    features_scene_SceneViewer --> three
+    features_scene_SceneViewer --> three_stdlib
+    features_scene_services_camera_CameraAnimator --> three
+    features_scene_services_camera_CameraAnimator --> three_stdlib
+    features_scene_services_camera_CameraService --> three
+    features_scene_services_camera_CameraService --> three_stdlib
+    features_scene_services_camera_CameraTransitionService --> three
+    features_scene_services_camera_CameraTransitionService --> three
+    features_scene_services_camera_CameraTransitionService --> three_stdlib
+    features_scene_services_camera_CoreControllerProvider --> react
+    features_scene_services_camera_CoreControllerProvider --> react
+    features_scene_services_measurement_MeasurementService --> three
+    features_settings_components_SettingsModal --> lucide_react
+    features_settings_components_SettingsModal --> react
+    features_settings_viewmodels_useSettingsViewModel --> react
+    features_settings_viewmodels_useSettingsViewModel --> zustand
+    features_upload_pipeline_stages_PrepareStage_test --> vitest
+    features_upload_pipeline_stages_ReadStage_test --> vitest
+    features_upload_StatusDisplay --> react
+    features_upload_UploadPanel --> react
+    features_upload_UploadPanel --> react
+    main --> react_dom_client
+    shared_components_ErrorBoundaryWithRecovery --> react
+    shared_components_layout_MobileDrawer --> lucide_react
+    shared_components_layout_MobileDrawer --> react
+    shared_components_layout_MobileDrawer --> react
+    shared_components_layout_TitleBar --> lucide_react
+    shared_components_layout_TitleBar --> react
+    shared_components_layout_TitleBar --> react
+    shared_components_ui_ErrorModal --> react
+    shared_components_ui_ErrorToast --> react
+    shared_components_ui_HexIcon --> react
+    shared_components_ui_PerformanceOverlay --> lucide_react
+    shared_components_ui_PerformanceOverlay --> react
+    shared_components_ui_TechCard --> react
+    shared_hooks_useMobileOptimization --> react
+    shared_hooks_useProjectShortcuts --> react
+    shared_types_index --> three
+    shared_types_index --> three_stdlib
+    shared_utils_cn --> clsx
+    shared_utils_cn --> tailwind_merge
+    shared_utils_coordinates_index --> three
+    shared_utils_math_common_test --> vitest
+    shared_utils_math_vector --> three
+    shared_utils_media_video_extraction --> hls_js
+    shared_utils_uuid_test --> vitest
+    stores_cameraStore_test --> vitest
+    stores_cameraStore --> zustand
+    stores_cameraStore --> zustand
+    stores_cameraStore --> zustand_middleware
+    stores_sceneConfigStore_test --> vitest
+    stores_sceneConfigStore --> zustand
+    stores_sessionStore_test --> vitest
+    stores_sessionStore --> zustand
+    stores_sharedStore --> zustand
+    stores_sharedStore --> zustand_middleware
+    stores_videoStore_test --> vitest
+    stores_videoStore --> zustand
+    tests_setup --> vitest
+    tests_zustand --> zustand
+    vite_env_d --> vite
+    vite_env_d --> rollup
+```

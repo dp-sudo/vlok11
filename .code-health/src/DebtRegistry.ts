@@ -125,9 +125,21 @@ export class DebtRegistryManager {
       'naming': 0, 'obsolete': 0, 'other': 0,
     };
     summary.totalRepaymentHours = 0;
+    summary.totalInterestHours = 0;
+    const now = new Date();
+    const quarterlyRates: Record<string, number> = { critical: 15, major: 10, minor: 5, cosmetic: 2 };
     for (const debt of this.registry.debts) {
       summary.bySeverity[debt.severity]++;
       summary.byCategory[debt.category]++;
+      if (debt.status === 'paid') continue;
+      const reported = new Date(debt.reportedAt);
+      const months = (now.getFullYear() - reported.getFullYear()) * 12 + (now.getMonth() - reported.getMonth());
+      const quarters = Math.floor(months / 3);
+      if (quarters > 0) {
+        const rate = quarterlyRates[debt.severity] ?? 5;
+        const baseHours = debt.repaymentEstimate ?? 4;
+        summary.totalInterestHours += (baseHours * rate / 100) * quarters;
+      }
       for (const repayment of debt.repayments) {
         if (repayment.status === 'completed') {
           summary.totalRepaymentHours += repayment.amount;

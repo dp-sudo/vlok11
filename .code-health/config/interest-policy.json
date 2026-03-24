@@ -1,0 +1,31 @@
+{
+  "$schema": "./schemas/interest-policy.schema.json",
+  "enabled": true,
+  "calculationPeriod": "quarterly",
+  "baseCurrency": "hours",
+  "quarterlyInterestRate": {
+    "critical": 15,
+    "major": 10,
+    "minor": 5,
+    "cosmetic": 2
+  },
+  "escalationRules": [
+    {
+      "fromSeverity": "minor",
+      "quartersUntilEscalation": 4,
+      "newSeverity": "major",
+      "blockMerge": false
+    },
+    {
+      "fromSeverity": "major",
+      "quartersUntilEscalation": 2,
+      "newSeverity": "critical",
+      "blockMerge": true
+    }
+  ],
+  "blockMergeThresholds": {
+    "criticalDebtCount": 0,
+    "totalInterestHours": 40,
+    "debtAgeQuarters": 6
+  }
+}

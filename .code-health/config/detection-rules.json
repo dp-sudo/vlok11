@@ -1,0 +1,73 @@
+{
+  "$schema": "./schemas/detection-rules.schema.json",
+  "rules": [
+    {
+      "id": "no-explicit-any",
+      "pattern": ": any",
+      "severity": "minor",
+      "category": "type-safety",
+      "autoRegister": true,
+      "dryRun": false,
+      "description": "禁止使用 explicit any 类型"
+    },
+    {
+      "id": "circular-dependency",
+      "tool": "depcheck",
+      "severity": "major",
+      "category": "architecture",
+      "autoRegister": true,
+      "description": "检测循环依赖"
+    },
+    {
+      "id": "large-file",
+      "threshold": 500,
+      "unit": "lines",
+      "severity": "cosmetic",
+      "category": "complexity",
+      "autoRegister": true,
+      "description": "文件超过 500 行"
+    },
+    {
+      "id": "deep-nesting",
+      "pattern": "if.*if.*if.*if",
+      "severity": "minor",
+      "category": "complexity",
+      "autoRegister": false,
+      "description": "检测深层嵌套 (4+ 层)"
+    },
+    {
+      "id": "code-duplication",
+      "tool": "tscpd",
+      "threshold": 3,
+      "severity": "major",
+      "category": "duplication",
+      "autoRegister": false,
+      "description": "代码重复 3 次以上"
+    },
+    {
+      "id": "unused-export",
+      "tool": "tsc",
+      "flags": ["--noUnusedLocals", "--noUnusedParameters"],
+      "severity": "minor",
+      "category": "complexity",
+      "autoRegister": false,
+      "description": "未使用的导出"
+    },
+    {
+      "id": "event-string-literal",
+      "pattern": "as never",
+      "severity": "major",
+      "category": "type-safety",
+      "autoRegister": true,
+      "description": "事件类型使用 string literal 而非联合类型"
+    },
+    {
+      "id": "magic-number",
+      "pattern": "Math\\.pow|parseInt\\(.*,\\s*[89]",
+      "severity": "minor",
+      "category": "complexity",
+      "autoRegister": false,
+      "description": "魔法数字"
+    }
+  ]
+}

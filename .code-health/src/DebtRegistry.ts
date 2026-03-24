@@ -16,9 +16,9 @@ export class DebtRegistryManager {
     try {
       const content = readFileSync(this.registryPath, 'utf-8');
       const parsed = JSON.parse(content);
-      return DebtRegistrySchema.parse(parsed);
+      return DebtRegistrySchema.parse(parsed) as unknown as DebtRegistry;
     } catch {
-      return DebtRegistrySchema.parse({
+      return {
         version: '1.0.0',
         lastUpdated: new Date().toISOString(),
         debts: [],
@@ -34,7 +34,7 @@ export class DebtRegistryManager {
           totalInterestHours: 0,
           totalRepaymentHours: 0,
         },
-      });
+      };
     }
   }
 

@@ -1,12 +1,33 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-03-25T00:00:00.000Z",
-  "debts": [],
+  "lastUpdated": "2026-03-24T18:48:45.552Z",
+  "debts": [
+    {
+      "title": "Test debt",
+      "description": "Testing the CLI",
+      "severity": "major",
+      "interestRate": 5,
+      "category": "architecture",
+      "affectedModules": [
+        "src/test.ts"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "CLI",
+      "status": "acknowledged",
+      "repaymentEstimate": 4,
+      "evidence": [],
+      "id": "TD-2026-001",
+      "reportedAt": "2026-03-24T18:48:45.551Z",
+      "repayments": []
+    }
+  ],
   "summary": {
-    "total": 0,
+    "total": 1,
     "bySeverity": {
       "critical": 0,
-      "major": 0,
+      "major": 1,
       "minor": 0,
       "cosmetic": 0
     },
@@ -14,7 +35,7 @@
       "type-safety": 0,
       "memory-leak": 0,
       "performance": 0,
-      "architecture": 0,
+      "architecture": 1,
       "test-coverage": 0,
       "documentation": 0,
       "security": 0,

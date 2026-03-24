@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd A:/3d && node .code-health/cli.js debt list 2>&1\",\"description\":\"Test CLI debt list command\"}",
+  "error": "Exit code 1\nnode:internal/modules/esm/resolve:275\r\n    throw new ERR_MODULE_NOT_FOUND(\r\n          ^\r\n\r\nError [ERR_MODULE_NOT_FOUND]: Cannot find module 'A:\\3d\\.code-health\\src\\commands\\debt.js' imported from A:\\3d\\.code-health\\cli.js\r\n    at finalizeResolution (node:internal/modules/esm/resolve:275:11)\r\n    at moduleResolve (node:internal/modules/esm/resolve:865:10)\r\n    at defaultResolve (node:internal/modules/esm/resolve:991:11)\r\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:7...",
+  "timestamp": "2026-03-24T18:47:22.410Z",
+  "retry_count": 1
+}

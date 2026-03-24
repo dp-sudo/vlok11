@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { debtCommands } from './src/commands/debt.js';
-import { reportCommand } from './src/commands/report.js';
-import { gateCommand } from './src/commands/gate.js';
-import { dashboardCommand } from './src/commands/dashboard.js';
+import { debtCommands } from './dist/commands/debt.js';
+import { reportCommand } from './dist/commands/report.js';
+import { gateCommand } from './dist/commands/gate.js';
+import { dashboardCommand } from './dist/commands/dashboard.js';
 
 const program = new Command();
 

@@ -25,6 +25,7 @@ export class InterestCalculator {
   shouldBlockMerge(debts: TechnicalDebt[]): { blocked: boolean; reasons: string[] } {
     if (!this.policy.blockMergeThresholds) return { blocked: false, reasons: [] };
     const reasons: string[] = [];
+    const now = new Date();
     const critical = debts.filter(d => d.severity === 'critical' && d.status !== 'paid');
     const totalInterest = this.calculateTotalInterest(debts.filter(d => d.status !== 'paid'));
     const threshold = this.policy.blockMergeThresholds;

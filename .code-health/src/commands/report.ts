@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { DebtRegistryManager } from '../DebtRegistry.js';
+import { printHealthReport } from '../scripts/health-report.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -13,7 +14,12 @@ const registry = new DebtRegistryManager(registryPath);
 export function reportCommand(): Command {
   return new Command('report')
     .description('Generate debt health report')
-    .action(() => {
+    .option('--detailed', 'Show detailed health report with threshold checks')
+    .action((opts) => {
+      if (opts.detailed) {
+        printHealthReport();
+        return;
+      }
       const summary = registry.getSummary();
       const debts = registry.listDebts();
       console.log(chalk.bold('\n=== Code Health Report ===\n'));

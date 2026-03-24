@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "mergeBlocking": {
+    "criticalDebtCount": 0,
+    "majorDebtCount": 5,
+    "totalInterestHours": 50,
+    "anyUsageCount": 10
+  },
+  "warningThresholds": {
+    "criticalDebtCount": 0,
+    "majorDebtCount": 3,
+    "totalInterestHours": 30,
+    "anyUsageCount": 5
+  },
+  "debtEscalation": {
+    "cosmeticToMinor": 4,
+    "minorToMajor": 3,
+    "majorToCritical": 2
+  },
+  "quarterlyInterestRate": {
+    "critical": 15,
+    "major": 10,
+    "minor": 5,
+    "cosmetic": 2
+  }
+}

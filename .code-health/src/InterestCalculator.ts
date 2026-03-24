@@ -1,5 +1,44 @@
 // .code-health/src/InterestCalculator.ts
 import type { TechnicalDebt, InterestPolicy } from './types.js';
+import { readFileSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const thresholdsPath = path.resolve(__dirname, '../config/thresholds.json');
+
+export interface ThresholdConfig {
+  mergeBlocking: {
+    criticalDebtCount: number;
+    majorDebtCount: number;
+    totalInterestHours: number;
+    anyUsageCount: number;
+  };
+  warningThresholds: Record<string, number>;
+}
+
+export function loadThresholds(): ThresholdConfig {
+  try {
+    return JSON.parse(readFileSync(thresholdsPath, 'utf-8'));
+  } catch {
+    // Return defaults
+    return {
+      mergeBlocking: {
+        criticalDebtCount: 0,
+        majorDebtCount: 5,
+        totalInterestHours: 50,
+        anyUsageCount: 10
+      },
+      warningThresholds: {
+        criticalDebtCount: 0,
+        majorDebtCount: 3,
+        totalInterestHours: 30,
+        anyUsageCount: 5
+      }
+    };
+  }
+}
 
 export class InterestCalculator {
   constructor(private policy: InterestPolicy) {}

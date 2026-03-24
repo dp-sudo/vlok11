@@ -61,16 +61,23 @@
       "interestRate": 5,
       "category": "duplication",
       "affectedModules": [
-        "src/features/render"
+        "src/features/render/GaussianSplattingRenderer.ts",
+        "src/features/scene/components/renderers/GaussianSplatRenderer.tsx"
       ],
       "introducedIn": {
         "commit": "unknown"
       },
       "reportedBy": "Claude Code Analysis",
       "reportedAt": "2026-03-24T18:49:40.568Z",
-      "status": "acknowledged",
+      "status": "monitored",
       "repaymentEstimate": 16,
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "code",
+          "content": "Analyzed both implementations: TS file is standalone WebGL renderer class, TSX is React component integration. Intentional architectural separation - not true duplication.",
+          "capturedAt": "2026-03-25T08:05:00.000Z"
+        }
+      ],
       "repayments": []
     },
     {

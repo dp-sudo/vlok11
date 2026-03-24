@@ -38,9 +38,19 @@
       },
       "reportedBy": "Claude Code Analysis",
       "reportedAt": "2026-03-24T18:49:38.534Z",
-      "status": "acknowledged",
+      "status": "monitored",
       "repaymentEstimate": 4,
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "code",
+          "content": "EventBus code already uses 'unknown' type for handlers (type-safe), not 'any'. The string overload exists by design for flexibility.",
+          "location": {
+            "file": "src/core/EventBus.ts",
+            "line": 14
+          },
+          "capturedAt": "2026-03-25T08:00:00.000Z"
+        }
+      ],
       "repayments": []
     },
     {

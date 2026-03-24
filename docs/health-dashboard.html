@@ -1,39 +1,4 @@
-// .code-health/src/commands/dashboard.ts
-import { Command } from 'commander';
-import chalk from 'chalk';
-import { writeFileSync } from 'fs';
-import { DebtRegistryManager } from '../DebtRegistry.js';
-
-export function dashboardCommand(): Command {
-  return new Command('dashboard')
-    .description('Generate health dashboard')
-    .option('-o, --output <path>', 'Output path', './docs/health-dashboard.html')
-    .action((opts) => {
-      const registryPath = new URL('../../config/debt-registry.json', import.meta.url).pathname;
-      const registry = new DebtRegistryManager(registryPath);
-      const summary = registry.getSummary();
-      const debts = registry.listDebts();
-
-      const html = generateDashboard(summary, debts);
-      writeFileSync(opts.output, html, 'utf-8');
-      console.log(chalk.green(`Dashboard generated: ${opts.output}`));
-    });
-}
-
-function generateDashboard(summary: ReturnType<DebtRegistryManager['getSummary']>, debts: ReturnType<DebtRegistryManager['listDebts']>): string {
-  const severityColors: Record<string, string> = {
-    critical: '#dc2626',
-    major: '#ca8a04',
-    minor: '#2563eb',
-    cosmetic: '#6b7280',
-  };
-
-  const debtsBySeverity = debts.reduce((acc, d) => {
-    acc[d.severity] = (acc[d.severity] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -73,39 +38,69 @@ function generateDashboard(summary: ReturnType<DebtRegistryManager['getSummary']
 
     <div class="summary">
       <div class="card">
-        <div class="card-value">${summary.total}</div>
+        <div class="card-value">0</div>
         <div class="card-label">Total Debts</div>
       </div>
       <div class="card critical">
-        <div class="card-value">${summary.bySeverity.critical}</div>
+        <div class="card-value">0</div>
         <div class="card-label">Critical</div>
       </div>
       <div class="card major">
-        <div class="card-value">${summary.bySeverity.major}</div>
+        <div class="card-value">0</div>
         <div class="card-label">Major</div>
       </div>
       <div class="card minor">
-        <div class="card-value">${summary.bySeverity.minor}</div>
+        <div class="card-value">0</div>
         <div class="card-label">Minor</div>
       </div>
       <div class="card cosmetic">
-        <div class="card-value">${summary.bySeverity.cosmetic}</div>
+        <div class="card-value">0</div>
         <div class="card-label">Cosmetic</div>
       </div>
     </div>
 
     <div class="severity-chart">
-      ${Object.entries(severityColors).map(([sev, color]) => `
+      
         <div>
           <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;font-size:0.75rem;">
-            <span style="text-transform:capitalize;">${sev}</span>
-            <span>${debtsBySeverity[sev] || 0}</span>
+            <span style="text-transform:capitalize;">critical</span>
+            <span>0</span>
           </div>
           <div class="severity-bar">
-            <div class="severity-fill" style="width:${((debtsBySeverity[sev] || 0) / summary.total * 100) || 0}%;background:${color}"></div>
+            <div class="severity-fill" style="width:0%;background:#dc2626"></div>
           </div>
         </div>
-      `).join('')}
+      
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;font-size:0.75rem;">
+            <span style="text-transform:capitalize;">major</span>
+            <span>0</span>
+          </div>
+          <div class="severity-bar">
+            <div class="severity-fill" style="width:0%;background:#ca8a04"></div>
+          </div>
+        </div>
+      
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;font-size:0.75rem;">
+            <span style="text-transform:capitalize;">minor</span>
+            <span>0</span>
+          </div>
+          <div class="severity-bar">
+            <div class="severity-fill" style="width:0%;background:#2563eb"></div>
+          </div>
+        </div>
+      
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;font-size:0.75rem;">
+            <span style="text-transform:capitalize;">cosmetic</span>
+            <span>0</span>
+          </div>
+          <div class="severity-bar">
+            <div class="severity-fill" style="width:0%;background:#6b7280"></div>
+          </div>
+        </div>
+      
     </div>
 
     <h1 style="margin-top:2rem;margin-bottom:1rem;">Debt Registry</h1>
@@ -121,21 +116,11 @@ function generateDashboard(summary: ReturnType<DebtRegistryManager['getSummary']
         </tr>
       </thead>
       <tbody>
-        ${debts.map(d => `
-          <tr>
-            <td><code>${d.id}</code></td>
-            <td>${d.title}</td>
-            <td><span class="badge badge-${d.severity}">${d.severity}</span></td>
-            <td>${d.category}</td>
-            <td>${d.status}</td>
-            <td>${d.repaymentEstimate || '-'}h</td>
-          </tr>
-        `).join('')}
+        
       </tbody>
     </table>
 
-    <div class="updated">Last updated: ${new Date().toISOString()}</div>
+    <div class="updated">Last updated: 2026-03-24T18:58:53.354Z</div>
   </div>
 </body>
-</html>`;
-}
+</html>

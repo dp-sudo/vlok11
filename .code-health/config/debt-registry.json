@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-03-25T00:00:00.000Z",
+  "debts": [],
+  "summary": {
+    "total": 0,
+    "bySeverity": {
+      "critical": 0,
+      "major": 0,
+      "minor": 0,
+      "cosmetic": 0
+    },
+    "byCategory": {
+      "type-safety": 0,
+      "memory-leak": 0,
+      "performance": 0,
+      "architecture": 0,
+      "test-coverage": 0,
+      "documentation": 0,
+      "security": 0,
+      "complexity": 0,
+      "duplication": 0,
+      "naming": 0,
+      "obsolete": 0,
+      "other": 0
+    },
+    "totalInterestHours": 0,
+    "totalRepaymentHours": 0
+  }
+}

@@ -41,7 +41,10 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "code-health": "node .code-health/cli.js",
+    "code-health:debt": "node .code-health/cli.js debt",
+    "code-health:report": "node .code-health/cli.js report"
   },
   "keywords": [
     "react",

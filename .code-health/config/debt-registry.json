@@ -1,8 +1,9 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-03-24T18:48:45.552Z",
+  "lastUpdated": "2026-03-24T18:50:15.897Z",
   "debts": [
     {
+      "id": "TD-2026-001",
       "title": "Test debt",
       "description": "Testing the CLI",
       "severity": "major",
@@ -15,34 +16,237 @@
         "commit": "unknown"
       },
       "reportedBy": "CLI",
+      "reportedAt": "2026-03-24T18:48:45.551Z",
+      "status": "discarded",
+      "repaymentEstimate": 4,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-002",
+      "title": "EventBus allows type erasure",
+      "description": "EventBus uses any for event payloads, losing type safety. The emit() method accepts any payload and handlers receive untyped events.",
+      "severity": "major",
+      "interestRate": 5,
+      "category": "type-safety",
+      "affectedModules": [
+        "src/core/EventBus.ts",
+        "src/core/EventTypes.ts"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:49:38.534Z",
       "status": "acknowledged",
       "repaymentEstimate": 4,
       "evidence": [],
-      "id": "TD-2026-001",
-      "reportedAt": "2026-03-24T18:48:45.551Z",
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-003",
+      "title": "Duplicate Gaussian Splatting implementations",
+      "description": "Two independent implementations of Gaussian Splatting renderer exist in the codebase, causing maintenance burden.",
+      "severity": "major",
+      "interestRate": 5,
+      "category": "duplication",
+      "affectedModules": [
+        "src/features/render"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:49:40.568Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 16,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-004",
+      "title": "Shader code duplication (random/luminance)",
+      "description": "Shader utility functions like random() and luminance() are duplicated across shader files.",
+      "severity": "minor",
+      "interestRate": 5,
+      "category": "duplication",
+      "affectedModules": [
+        "src/shared/shaders"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:49:41.819Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 8,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-005",
+      "title": "SettingsService weak encryption",
+      "description": "Base64 encoding used for sensitive data (encryption key) is easily reversible, not true encryption.",
+      "severity": "critical",
+      "interestRate": 5,
+      "category": "security",
+      "affectedModules": [
+        "src/features/settings"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:49:42.979Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 2,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-006",
+      "title": "PipelineEngine pseudo-parallelism",
+      "description": "PipelineEngine claims to support parallel execution but actually runs stages sequentially.",
+      "severity": "major",
+      "interestRate": 5,
+      "category": "architecture",
+      "affectedModules": [
+        "src/core/pipeline/PipelineEngine.ts"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:49:44.012Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 8,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-007",
+      "title": "ModelCacheService is unused",
+      "description": "ModelCacheService was created but never integrated into the AI service layer.",
+      "severity": "minor",
+      "interestRate": 5,
+      "category": "obsolete",
+      "affectedModules": [
+        "src/features/ai/services/ModelCacheService.ts"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:50:04.587Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 2,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-008",
+      "title": "Excessive magic numbers",
+      "description": "Multiple magic numbers scattered throughout codebase without named constants.",
+      "severity": "cosmetic",
+      "interestRate": 5,
+      "category": "complexity",
+      "affectedModules": [
+        "src/features/scene",
+        "src/features/render"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:50:05.891Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 12,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-009",
+      "title": "Memory leak risk (EventBus handlers)",
+      "description": "EventBus handlers registered in components may not be properly cleaned up on unmount.",
+      "severity": "minor",
+      "interestRate": 5,
+      "category": "memory-leak",
+      "affectedModules": [
+        "src/core/EventBus.ts"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:50:07.106Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 6,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-010",
+      "title": "Singleton abuse",
+      "description": "Overuse of singleton pattern creating tight coupling and making testing difficult.",
+      "severity": "major",
+      "interestRate": 5,
+      "category": "architecture",
+      "affectedModules": [
+        "src/features/scene",
+        "src/core"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:50:08.236Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 20,
+      "evidence": [],
+      "repayments": []
+    },
+    {
+      "id": "TD-2026-011",
+      "title": "Low documentation coverage",
+      "description": "Core modules lack API documentation, making onboarding difficult.",
+      "severity": "minor",
+      "interestRate": 5,
+      "category": "documentation",
+      "affectedModules": [
+        "src/core",
+        "src/features"
+      ],
+      "introducedIn": {
+        "commit": "unknown"
+      },
+      "reportedBy": "Claude Code Analysis",
+      "reportedAt": "2026-03-24T18:50:10.100Z",
+      "status": "acknowledged",
+      "repaymentEstimate": 8,
+      "evidence": [],
       "repayments": []
     }
   ],
   "summary": {
-    "total": 1,
+    "total": 11,
     "bySeverity": {
-      "critical": 0,
-      "major": 1,
-      "minor": 0,
-      "cosmetic": 0
+      "critical": 1,
+      "major": 5,
+      "minor": 4,
+      "cosmetic": 1
     },
     "byCategory": {
-      "type-safety": 0,
-      "memory-leak": 0,
+      "type-safety": 1,
+      "memory-leak": 1,
       "performance": 0,
-      "architecture": 1,
+      "architecture": 3,
       "test-coverage": 0,
-      "documentation": 0,
-      "security": 0,
-      "complexity": 0,
-      "duplication": 0,
+      "documentation": 1,
+      "security": 1,
+      "complexity": 1,
+      "duplication": 2,
       "naming": 0,
-      "obsolete": 0,
+      "obsolete": 1,
       "other": 0
     },
     "totalInterestHours": 0,

@@ -143,7 +143,7 @@
     {
       "id": "TD-2026-006",
       "title": "PipelineEngine pseudo-parallelism",
-      "description": "PipelineEngine claims to support parallel execution but actually runs stages sequentially.",
+      "description": "PipelineEngine claims to support parallel execution but actually runs stages sequentially. The getReadyStages() correctly identifies independent stages, but the for-loop executes them one at a time instead of using Promise.all().",
       "severity": "major",
       "interestRate": 5,
       "category": "architecture",
@@ -155,9 +155,20 @@
       },
       "reportedBy": "Claude Code Analysis",
       "reportedAt": "2026-03-24T18:49:44.012Z",
-      "status": "acknowledged",
+      "status": "scheduled",
+      "dueDate": "2026-04-15",
       "repaymentEstimate": 8,
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "code",
+          "content": "Line 146: for (const stageConfig of readyStages) executes stages sequentially. Should use Promise.all() for parallel execution of independent stages.",
+          "location": {
+            "file": "src/core/pipeline/PipelineEngine.ts",
+            "line": 146
+          },
+          "capturedAt": "2026-03-25T08:10:00.000Z"
+        }
+      ],
       "repayments": []
     },
     {

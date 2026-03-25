@@ -16,7 +16,8 @@ export class DepthStage implements PipelineStage {
 
   constructor(private aiService: AIService) {}
 
-  canSkip(input: StageInput): boolean {
+  canSkip(input: StageInput, signal?: AbortSignal): boolean {
+    if (signal?.aborted) return true;
     return input.depthUrl !== undefined;
   }
 

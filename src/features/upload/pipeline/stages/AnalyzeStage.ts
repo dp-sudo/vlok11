@@ -9,6 +9,12 @@ export class AnalyzeStage implements PipelineStage {
 
   constructor(private aiService: AIService) {}
 
+  private throwIfAborted(signal?: AbortSignal): void {
+    if (signal?.aborted) {
+      throw new Error('Aborted');
+    }
+  }
+
   async execute(input: StageInput): Promise<StageOutput> {
     logger.info('Starting analysis stage', {
       hasImageUrl: !!input.imageUrl,
@@ -36,6 +42,7 @@ export class AnalyzeStage implements PipelineStage {
         };
       }
 
+      this.throwIfAborted(input.signal);
       const analysis = await this.aiService.analyzeScene(imageBase64);
 
       logger.info('Analysis completed', { sceneType: analysis.sceneType });

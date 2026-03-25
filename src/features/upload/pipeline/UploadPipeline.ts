@@ -43,7 +43,7 @@ class LegacyStageAdapter implements CorePipelineStage<StageInput, StageOutput> {
   async execute(input: StageInput, context: StageContext<StageInput>): Promise<StageOutput> {
     const inputWithContext = { ...input, signal: context.signal, runId: context.runId };
 
-    if (this.legacyStage.canSkip?.(inputWithContext)) {
+    if (this.legacyStage.canSkip?.(inputWithContext, context.signal)) {
       return { ...inputWithContext, success: true };
     }
 
@@ -225,6 +225,7 @@ class UploadPipelineImpl implements UploadPipelineInterface {
     this.errorCallbacks.clear();
     this.progressCallbacks.clear();
     this.abortController?.abort();
+    this.abortController = null;
     this.releaseBlobUrls();
   }
 

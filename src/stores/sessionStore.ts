@@ -147,7 +147,7 @@ export const createSessionSlice = <T extends SessionSlice & { resetVideo: () => 
     uploadStart: (input) => {
       const currentStatus = get().status;
 
-      // S6 - 缺少并发上传保护
+      // S6 - Guard against concurrent uploads
       if (get().status === 'uploading') return;
 
       if (!isValidStatusTransition(currentStatus, 'uploading')) {

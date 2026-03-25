@@ -18,7 +18,7 @@ export interface PipelineProgress {
   totalStages: number;
 }
 export interface PipelineStage {
-  canSkip?(input: StageInput): boolean;
+  canSkip?(input: StageInput, signal?: AbortSignal): boolean;
   execute(input: StageInput): Promise<StageOutput>;
   readonly name: string;
   readonly order: number;

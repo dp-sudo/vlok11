@@ -235,13 +235,13 @@
     {
       "id": "TD-2026-010",
       "title": "Singleton abuse",
-      "description": "Overuse of singleton pattern creating tight coupling and making testing difficult.",
+      "description": "Overuse of singleton pattern (23 files using getInstance()) creating tight coupling and making testing difficult. Common in R3F apps but needs gradual refactoring to DI container.",
       "severity": "major",
       "interestRate": 5,
       "category": "architecture",
       "affectedModules": [
-        "src/features/scene",
-        "src/core"
+        "src/features/scene/services/camera/*.ts",
+        "src/core/services/*.ts"
       ],
       "introducedIn": {
         "commit": "unknown"
@@ -250,7 +250,13 @@
       "reportedAt": "2026-03-24T18:50:08.236Z",
       "status": "acknowledged",
       "repaymentEstimate": 20,
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "metric",
+          "content": "23 files use getInstance() singleton pattern",
+          "capturedAt": "2026-03-25T08:15:00.000Z"
+        }
+      ],
       "repayments": []
     },
     {
